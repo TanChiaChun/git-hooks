@@ -1,1 +1,20 @@
 #!/usr/bin/env bash
+
+get_git_branch() {
+    git branch --show-current
+}
+
+reject_commit_main_branch() {
+    local current_branch=$1
+
+    if [[ $current_branch == 'main' ]]; then
+        echo 'Cannot commit to main branch.'
+        exit 1
+    fi
+}
+
+main() {
+    reject_commit_main_branch "$(get_git_branch)"
+}
+
+main

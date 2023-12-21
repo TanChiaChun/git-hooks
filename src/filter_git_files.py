@@ -20,7 +20,7 @@ def get_git_files() -> list[str]:
     p = subprocess.run(
         ["git", "ls-files"], capture_output=True, check=True, text=True
     )
-    return p.stdout.split("\n")
+    return p.stdout.splitlines()
 
 
 def main() -> None:

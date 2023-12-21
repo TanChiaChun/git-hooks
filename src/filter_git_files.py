@@ -7,8 +7,8 @@ from enum import Enum
 class Language(Enum):
     """Languages with their file extensions."""
 
-    BASH = "sh"
-    PYTHON = "py"
+    BASH = ".sh"
+    PYTHON = ".py"
 
 
 def get_git_files() -> list[str]:

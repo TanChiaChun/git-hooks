@@ -87,6 +87,9 @@ def main() -> None:
     files = get_git_files()
     files = filter_git_files(files, Language[language])
 
+    for file in files:
+        print(file)
+
 
 if __name__ == "__main__":
     main()

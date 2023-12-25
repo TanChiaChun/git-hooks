@@ -27,7 +27,19 @@ def filter_git_files(files: list[str], language: Language) -> list[str]:
     Returns:
         List of filtered files.
     """
-    return [file for file in files if re.match(language.value, Path(file).name)]
+    filtered_files = [
+        file for file in files if re.match(language.value, Path(file).name)
+    ]
+
+    if language is Language.BASH:
+        files_no_extension = [
+            file for file in files if "." not in Path(file).name
+        ]
+        filtered_files.extend(
+            [file for file in files_no_extension if is_bash_file(file)]
+        )
+
+    return filtered_files
 
 
 def get_git_files() -> list[str]:
@@ -40,6 +52,25 @@ def get_git_files() -> list[str]:
         ["git", "ls-files"], capture_output=True, check=True, text=True
     )
     return p.stdout.splitlines()
+
+
+def is_bash_file(file: str) -> bool:
+    """Read first line of file, return True if bash is present.
+
+    Args:
+        file:
+            File to read.
+
+    Returns:
+        True if bash is present in first line of file, False if no.
+    """
+    with open(file, encoding="utf8") as f:
+        first_line = f.readline()
+
+    if "bash" in first_line:
+        return True
+
+    return False
 
 
 def main() -> None:

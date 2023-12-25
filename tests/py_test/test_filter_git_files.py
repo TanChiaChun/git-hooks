@@ -1,6 +1,8 @@
+import tempfile
 import unittest
+from pathlib import Path
 
-from filter_git_files import Language, filter_git_files
+from filter_git_files import Language, filter_git_files, is_bash_file
 
 
 class TestModule(unittest.TestCase):
@@ -20,7 +22,10 @@ class TestModule(unittest.TestCase):
             "tests/test_pre-commit.bats",
         ]
 
-        expected = ["src/bash.sh"]
+        expected = [
+            "src/bash.sh",
+            "src/pre-commit",
+        ]
         self.assertListEqual(expected, filter_git_files(files, Language.BASH))
 
         expected = [
@@ -41,6 +46,18 @@ class TestModule(unittest.TestCase):
         self.assertListEqual(
             expected, filter_git_files(files, Language.PYTHON_TEST)
         )
+
+    def test_is_bash_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            file = str(Path(tmpdirname, "pre-commit"))
+
+            with open(file, mode="w", encoding="utf8") as f:
+                f.write("#!/usr/bin/env bash\n")
+            self.assertTrue(is_bash_file(file))
+
+            with open(file, mode="w", encoding="utf8") as f:
+                f.write("\n")
+            self.assertFalse(is_bash_file(file))
 
 
 if __name__ == "__main__":

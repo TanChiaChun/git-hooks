@@ -1,32 +1,16 @@
 """Run git ls-files & filter based on language."""
 
+import re
 import subprocess
-from enum import Enum, auto
+from enum import Enum
 from pathlib import Path
 
 
 class Language(Enum):
     """Languages with their file extensions."""
 
-    BASH = auto()
-    PYTHON = auto()
-
-
-def get_language_extensions(language: Language) -> list[str]:
-    """Returns list of file extensions based on selected language.
-
-    Args:
-        language:
-            Language enum.
-
-    Returns:
-        List of file extensions.
-    """
-    match language:
-        case Language.BASH:
-            return ["sh"]
-        case Language.PYTHON:
-            return ["py"]
+    BASH = r".+\.sh"
+    PYTHON = r".+\.py"
 
 
 def filter_git_files(files: list[str], language: Language) -> list[str]:
@@ -41,11 +25,7 @@ def filter_git_files(files: list[str], language: Language) -> list[str]:
     Returns:
         List of filtered files.
     """
-    return [
-        file
-        for file in files
-        if Path(file).suffix[1:] in get_language_extensions(language)
-    ]
+    return [file for file in files if re.match(language.value, Path(file).name)]
 
 
 def get_git_files() -> list[str]:

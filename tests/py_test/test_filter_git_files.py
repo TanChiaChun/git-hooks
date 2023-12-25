@@ -24,11 +24,23 @@ class TestModule(unittest.TestCase):
         self.assertListEqual(expected, filter_git_files(files, Language.BASH))
 
         expected = [
+            "tests/test_bash.bats",
+            "tests/test_pre-commit.bats",
+        ]
+        self.assertListEqual(
+            expected, filter_git_files(files, Language.BASH_TEST)
+        )
+
+        expected = [
             "src/filter_git_files.py",
             "tests/py_test/__init__.py",
-            "tests/py_test/test_filter_git_files.py",
         ]
         self.assertListEqual(expected, filter_git_files(files, Language.PYTHON))
+
+        expected = ["tests/py_test/test_filter_git_files.py"]
+        self.assertListEqual(
+            expected, filter_git_files(files, Language.PYTHON_TEST)
+        )
 
 
 if __name__ == "__main__":

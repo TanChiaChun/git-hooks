@@ -10,7 +10,9 @@ class Language(Enum):
     """Languages with their file extensions."""
 
     BASH = r".+\.sh"
-    PYTHON = r".+\.py"
+    BASH_TEST = r".+\.bats"
+    PYTHON = r"(?!test).+\.py"
+    PYTHON_TEST = r"test.+\.py"
 
 
 def filter_git_files(files: list[str], language: Language) -> list[str]:

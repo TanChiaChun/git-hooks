@@ -1,5 +1,6 @@
 """Run git ls-files & filter based on language."""
 
+import argparse
 import re
 import subprocess
 from enum import Enum
@@ -75,7 +76,16 @@ def is_bash_file(file: str) -> bool:
 
 def main() -> None:
     """Main function."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "language",
+        choices=[name for name, member in Language.__members__.items()],
+    )
+    args = parser.parse_args()
+    language = args.language
+
     files = get_git_files()
+    files = filter_git_files(files, Language[language])
 
 
 if __name__ == "__main__":

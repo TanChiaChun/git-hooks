@@ -1,5 +1,5 @@
 setup() {
-    load ../src/bash.sh
+    load ../src/ci.sh
 }
 
 @test "get_first_env_var()" {

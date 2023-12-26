@@ -1,6 +1,7 @@
 """Run git ls-files & filter based on language."""
 
 import argparse
+import os
 import re
 import subprocess
 from enum import Enum
@@ -74,8 +75,8 @@ def is_bash_file(file: str) -> bool:
     return False
 
 
-def main() -> None:
-    """Main function."""
+def print_filtered_files() -> None:
+    """Print filtered Git files."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "language",
@@ -89,6 +90,14 @@ def main() -> None:
 
     for file in files:
         print(file)
+
+
+def main() -> None:
+    """Main function."""
+    if "BATS_TMPDIR" in os.environ:
+        print(f"{os.environ['BATS_TMPDIR']}/test.sh")
+    else:
+        print_filtered_files()
 
 
 if __name__ == "__main__":

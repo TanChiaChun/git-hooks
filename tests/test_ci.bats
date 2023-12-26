@@ -15,3 +15,35 @@ setup() {
 
     rm "$env_file"
 }
+
+@test "print_files()" {
+    mapfile -t expected_output <<"EOF"
+##################################################
+Files to check:
+src/ci.sh
+src/pre-commit
+##################################################
+EOF
+
+    run print_files 'src/ci.sh' 'src/pre-commit'
+    [ "$status" -eq 0 ]
+
+    local OLD_IFS="$IFS"
+    IFS=$'\n'
+    [ "$output" == "${expected_output[*]}" ]
+    IFS="$OLD_IFS"
+}
+
+@test "run_ci_bash_shfmt()" {
+    local sh_file="$BATS_TMPDIR/test.sh"
+
+    cat <<"EOF" > "$sh_file"
+#!/usr/bin/env bash
+
+ echo 'Hello'
+EOF
+
+    run run_ci_bash_shfmt
+    rm "$sh_file"
+    [ "$status" -ne 0 ]
+}

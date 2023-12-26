@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# shellcheck disable=SC1091
+source "${0%/*}/ci.sh"
+
 get_git_branch() {
     git branch --show-current
 }
@@ -14,7 +17,9 @@ reject_commit_main_branch() {
 }
 
 main() {
+    set -o errexit
     reject_commit_main_branch "$(get_git_branch)"
+    run_ci_bash_shfmt
 }
 
 main

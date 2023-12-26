@@ -5,9 +5,9 @@ get_git_branch() {
 }
 
 reject_commit_main_branch() {
-    local current_branch=$1
+    local current_branch="$1"
 
-    if [[ $current_branch == 'main' ]]; then
+    if [[ "$current_branch" == 'main' ]]; then
         echo 'Cannot commit to main branch.'
         exit 1
     fi

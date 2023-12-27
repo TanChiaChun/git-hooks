@@ -27,6 +27,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - name: Run shfmt
+        shell: bash
         run: |
           bash --version
           source ./src/ci.sh

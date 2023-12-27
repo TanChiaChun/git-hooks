@@ -1,5 +1,5 @@
 setup() {
-    load ../src/pre-commit
+ load ../src/pre-commit
 }
 
 @test "reject_commit_main_branch()" {

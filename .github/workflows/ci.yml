@@ -19,3 +19,9 @@ jobs:
        run: go install mvdan.cc/sh/v3/cmd/shfmt@latest
      - name: Get shfmt version
        run: shfmt --version
+     - name: Check out repository code
+       uses: actions/checkout@v4
+     - name: Run shfmt
+       run: |
+         source ./src/ci.sh
+         run_ci_bash_shfmt

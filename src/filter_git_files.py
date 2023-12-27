@@ -89,7 +89,7 @@ def print_filtered_files() -> None:
     files = filter_git_files(files, Language[language])
 
     for file in files:
-        print(f"./{file}")
+        print(file)
 
 
 def main() -> None:

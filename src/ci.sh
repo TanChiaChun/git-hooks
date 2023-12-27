@@ -30,7 +30,9 @@ run_ci() {
             ;;
     esac
 
-    mapfile -t files < <(python ./src/filter_git_files.py "$language")
+    local files_raw
+    files_raw="$(python ./src/filter_git_files.py "$language")"
+    mapfile -t files <<<"${files_raw//$'\r'/}"
     print_files "${files[@]}"
 
     case $choice in

@@ -23,4 +23,6 @@ main() {
     run_ci_bash_shfmt
 }
 
-main
+if [[ "$0" != *"bats-core"* ]]; then
+    main
+fi

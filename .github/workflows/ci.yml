@@ -15,6 +15,9 @@ jobs:
         run: >
           "$env:HOMEDRIVE/$env:HOMEPATH/go/bin"
           | Out-File -FilePath $env:GITHUB_PATH -Append
+      - name: Set Git autocrlf (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --global core.autocrlf input
       - name: Install shfmt
         run: |
           go install mvdan.cc/sh/v3/cmd/shfmt@latest

@@ -16,9 +16,9 @@ jobs:
           "$env:HOMEDRIVE/$env:HOMEPATH/go/bin"
           | Out-File -FilePath $env:GITHUB_PATH -Append
       - name: Install shfmt
-        run: go install mvdan.cc/sh/v3/cmd/shfmt@latest
-      - name: Get shfmt version
-        run: shfmt --version
+        run: |
+          go install mvdan.cc/sh/v3/cmd/shfmt@latest
+          shfmt --version
       - name: Check out repository code
         uses: actions/checkout@v4
       - name: Run shfmt

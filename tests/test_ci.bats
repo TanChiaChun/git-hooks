@@ -7,7 +7,7 @@ setup() {
     local env_name='PYTHONPATH'
     local env_line="$env_name=./src/"
 
-    echo "$env_line" > "$env_file"
+    echo "$env_line" >"$env_file"
 
     run get_first_env_var "$env_file" "$env_name"
     [ "$status" -eq 0 ]
@@ -34,16 +34,16 @@ EOF
     IFS="$OLD_IFS"
 }
 
-@test "run_ci_bash_shfmt()" {
+@test "run_ci_shfmt()" {
     local sh_file="$BATS_TMPDIR/test.sh"
 
-    cat <<"EOF" > "$sh_file"
+    cat <<"EOF" >"$sh_file"
 #!/usr/bin/env bash
 
  echo 'Hello'
 EOF
 
-    run run_ci_bash_shfmt
+    run run_ci 'shfmt'
     rm "$sh_file"
     [ "$status" -ne 0 ]
 }

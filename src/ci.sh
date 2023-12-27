@@ -25,6 +25,9 @@ run_ci() {
         'shfmt' | 'shfmt_write')
             local language='BASH'
             ;;
+        'shfmt_test' | 'shfmt_write_test')
+            local language='BASH_TEST'
+            ;;
     esac
 
     mapfile -t files < <(python ./src/filter_git_files.py "$language")
@@ -35,8 +38,16 @@ run_ci() {
             shfmt --diff --language-dialect bash --indent 4 --case-indent \
                 "${files[@]}"
             ;;
+        'shfmt_test')
+            shfmt --diff --language-dialect bats --indent 4 --case-indent \
+                "${files[@]}"
+            ;;
         'shfmt_write')
             shfmt --write --language-dialect bash --indent 4 --case-indent \
+                "${files[@]}"
+            ;;
+        'shfmt_write_test')
+            shfmt --write --language-dialect bats --indent 4 --case-indent \
                 "${files[@]}"
             ;;
     esac
@@ -44,8 +55,10 @@ run_ci() {
 
 run_ci_bash_shfmt() {
     run_ci 'shfmt'
+    run_ci 'shfmt_test'
 }
 
 run_ci_bash_shfmt_write() {
     run_ci 'shfmt_write'
+    run_ci 'shfmt_write_test'
 }

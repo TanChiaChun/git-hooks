@@ -18,6 +18,7 @@ reject_commit_main_branch() {
 
 main() {
     set -o errexit
+    set -o pipefail
     reject_commit_main_branch "$(get_git_branch)"
     run_ci_bash_shfmt
 }

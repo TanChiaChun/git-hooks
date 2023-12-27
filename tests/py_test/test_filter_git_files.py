@@ -77,7 +77,7 @@ class TestModule(unittest.TestCase):
             patcher_get_git_files.start()
             main()
             self.assertEqual(
-                mock_stdout.getvalue(), "src/bash.sh\nsrc/pre-commit\n"
+                mock_stdout.getvalue(), "./src/bash.sh\n./src/pre-commit\n"
             )
             patcher_get_git_files.stop()
 

@@ -35,16 +35,20 @@ run_ci() {
 
     case $choice in
         'shfmt')
-            shfmt --diff --language-dialect bash --indent 4 --case-indent "${files[@]}"
+            shfmt --diff --language-dialect bash --indent 4 --case-indent \
+                "${files[@]}"
             ;;
         'shfmt_test')
-            shfmt --diff --language-dialect bats --indent 4 --case-indent "${files[@]}"
+            shfmt --diff --language-dialect bats --indent 4 --case-indent \
+                "${files[@]}"
             ;;
         'shfmt_write')
-            shfmt --write --language-dialect bash --indent 4 --case-indent "${files[@]}"
+            shfmt --write --language-dialect bash --indent 4 --case-indent \
+                "${files[@]}"
             ;;
         'shfmt_write_test')
-            shfmt --write --language-dialect bats --indent 4 --case-indent "${files[@]}"
+            shfmt --write --language-dialect bats --indent 4 --case-indent \
+                "${files[@]}"
             ;;
     esac
 }

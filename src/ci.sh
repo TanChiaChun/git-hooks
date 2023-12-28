@@ -7,6 +7,17 @@ get_first_env_var() {
     grep --max-count=1 "$env_name=" "$env_file"
 }
 
+prepend_venv_bin_to_path() {
+    if [[ -e ./venv/bin ]]; then
+        PATH="./venv/bin:$PATH"
+    elif [[ -e ./venv/Scripts ]]; then
+        PATH="./venv/Scripts:$PATH"
+    else
+        echo 'Cannot find venv binary directory'
+        exit 1
+    fi
+}
+
 print_files() {
     local files=("$@")
 
@@ -33,6 +44,9 @@ run_ci() {
             ;;
         'shellcheck')
             local language='BASH_BOTH'
+            ;;
+        'black' | black_write)
+            local language='PYTHON_BOTH'
             ;;
     esac
 
@@ -66,6 +80,12 @@ run_ci() {
                 bats "$file"
             done
             ;;
+        'black')
+            black --check --diff --config ./config/pyproject.toml "${files[@]}"
+            ;;
+        'black_write')
+            black --config ./config/pyproject.toml "${files[@]}"
+            ;;
     esac
 }
 
@@ -91,4 +111,17 @@ run_ci_bash_shfmt() {
 run_ci_bash_shfmt_write() {
     run_ci 'shfmt_write'
     run_ci 'shfmt_write_test'
+}
+
+run_ci_python() {
+    prepend_venv_bin_to_path
+    run_ci_python_black
+}
+
+run_ci_python_black() {
+    run_ci 'black'
+}
+
+run_ci_python_black_write() {
+    run_ci 'black_write'
 }

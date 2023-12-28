@@ -21,6 +21,7 @@ main() {
     set -o pipefail
     reject_commit_main_branch "$(get_git_branch)"
     run_ci_bash
+    run_ci_python
 }
 
 if [[ "$0" != *"bats-core"* ]]; then

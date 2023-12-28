@@ -19,6 +19,19 @@ setup() {
     [ "$output" == "$env_line" ]
 }
 
+@test "prepend_venv_bin_to_path()" {
+    local test_dir="$BATS_TMPDIR/venv"
+
+    mkdir "$test_dir"
+    cd "$test_dir"
+
+    run prepend_venv_bin_to_path
+    cd "$OLDPWD"
+    rm -r "$test_dir"
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Cannot find venv binary directory' ]
+}
+
 @test "print_files()" {
     mapfile -t expected_output <<"EOF"
 ##################################################
@@ -49,6 +62,22 @@ EOF
     cp "$bats_fail_file" "$test_file"
 
     run run_ci 'bats'
+    [ "$status" -ne 0 ]
+}
+
+@test "run_ci_black()" {
+    prepend_venv_bin_to_path
+
+    cat <<"EOF" >"$test_file"
+pass
+EOF
+    run run_ci 'black'
+    [ "$status" -eq 0 ]
+
+    cat <<"EOF" >"$test_file"
+l = ["very", "very", "long", "long", "long", "list", "list", "list", "list", "list"]
+EOF
+    run run_ci 'black'
     [ "$status" -ne 0 ]
 }
 

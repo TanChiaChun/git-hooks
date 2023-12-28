@@ -35,7 +35,8 @@ setup() {
     run prepend_venv_bin_to_path
     export -n GITHUB_ACTIONS
     [ "$status" -eq 0 ]
-    [ "$output" == 'Skip prepend venv bin to Path as running from GitHub Actions' ]
+    [ "$output" == \
+        'Skip prepend venv bin to Path as running from GitHub Actions' ]
 }
 
 @test "print_files()" {

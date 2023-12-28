@@ -41,6 +41,15 @@ EOF
     cat <<"EOF" >"$sh_file"
 #!/usr/bin/env bash
 
+echo "Hello"
+EOF
+
+    run run_ci 'shellcheck'
+    [ "$status" -eq 0 ]
+
+    cat <<"EOF" >"$sh_file"
+#!/usr/bin/env bash
+
 echo "Hello\n"
 EOF
 
@@ -49,6 +58,15 @@ EOF
 }
 
 @test "run_ci_shfmt()" {
+    cat <<"EOF" >"$sh_file"
+#!/usr/bin/env bash
+
+echo 'Hello'
+EOF
+
+    run run_ci 'shfmt'
+    [ "$status" -eq 0 ]
+
     cat <<"EOF" >"$sh_file"
 #!/usr/bin/env bash
 

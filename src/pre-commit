@@ -20,7 +20,7 @@ main() {
     set -o errexit
     set -o pipefail
     reject_commit_main_branch "$(get_git_branch)"
-    run_ci_bash_shfmt
+    run_ci_bash
 }
 
 if [[ "$0" != *"bats-core"* ]]; then

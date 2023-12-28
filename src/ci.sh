@@ -16,10 +16,13 @@ print_files() {
         echo "$file"
     done
     echo '##################################################'
+    echo ''
 }
 
 run_ci() {
     local choice="$1"
+
+    echo "Running $choice"
 
     case "$choice" in
         'shfmt' | 'shfmt_write')
@@ -27,6 +30,9 @@ run_ci() {
             ;;
         'shfmt_test' | 'shfmt_write_test')
             local language='BASH_TEST'
+            ;;
+        'shellcheck')
+            local language='BASH_BOTH'
             ;;
     esac
 
@@ -52,7 +58,19 @@ run_ci() {
             shfmt --write --language-dialect bats --indent 4 --case-indent \
                 "${files[@]}"
             ;;
+        'shellcheck')
+            shellcheck --shell=bash "${files[@]}"
+            ;;
     esac
+}
+
+run_ci_bash() {
+    run_ci_bash_shfmt
+    run_ci_bash_shellcheck
+}
+
+run_ci_bash_shellcheck() {
+    run_ci 'shellcheck'
 }
 
 run_ci_bash_shfmt() {

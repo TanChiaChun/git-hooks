@@ -34,6 +34,20 @@ EOF
     IFS="$OLD_IFS"
 }
 
+@test "run_ci_shellcheck()" {
+    local sh_file="$BATS_TMPDIR/test.sh"
+
+    cat <<"EOF" >"$sh_file"
+#!/usr/bin/env bash
+
+echo "Hello\n"
+EOF
+
+    run run_ci 'shellcheck'
+    rm "$sh_file"
+    [ "$status" -ne 0 ]
+}
+
 @test "run_ci_shfmt()" {
     local sh_file="$BATS_TMPDIR/test.sh"
 

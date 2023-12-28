@@ -32,6 +32,10 @@ jobs:
         run: choco install shellcheck
       - name: Get ShellCheck version
         run: shellcheck --version
+      - name: Install Bats
+        run: |
+          npm install --global bats
+          bats --version
       - name: Install Bash (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
@@ -51,3 +55,8 @@ jobs:
         run: |
           source ./src/ci.sh
           run_ci_bash_shellcheck
+      - name: Run Bats
+        shell: bash
+        run: |
+          source ./src/ci.sh
+          run_ci_bash_bats

@@ -30,9 +30,7 @@ class TestModule(unittest.TestCase):
             "src/bash.sh",
             "src/pre-commit",
         ]
-        self.assertListEqual(
-            expected, filter_git_files(self.files, Language.BASH)
-        )
+        self.assertListEqual(expected, filter_git_files(self.files, Language.BASH))
 
         expected = [
             "tests/test_bash.bats",

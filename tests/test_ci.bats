@@ -24,7 +24,6 @@ setup() {
 
     mkdir "$test_dir"
     cd "$test_dir"
-
     run prepend_venv_bin_to_path
     cd "$OLDPWD"
     rm -r "$test_dir"
@@ -46,10 +45,8 @@ src/ci.sh
 src/pre-commit
 ##################################################
 EOF
-
     run print_files 'src/ci.sh' 'src/pre-commit'
     [ "$status" -eq 0 ]
-
     local OLD_IFS="$IFS"
     IFS=$'\n'
     [ "$output" == "${expected_output[*]}" ]
@@ -61,12 +58,10 @@ EOF
     local bats_fail_file="$BATS_TEST_DIRNAME/test_fail.bats.sample"
 
     cp "$bats_success_file" "$test_file"
-
     run run_ci 'bats'
     [ "$status" -eq 0 ]
 
     cp "$bats_fail_file" "$test_file"
-
     run run_ci 'bats'
     [ "$status" -ne 0 ]
 }
@@ -93,7 +88,6 @@ EOF
 
 echo "Hello"
 EOF
-
     run run_ci 'shellcheck'
     [ "$status" -eq 0 ]
 
@@ -102,7 +96,6 @@ EOF
 
 echo "Hello\n"
 EOF
-
     run run_ci 'shellcheck'
     [ "$status" -ne 0 ]
 }
@@ -113,7 +106,6 @@ EOF
 
 echo 'Hello'
 EOF
-
     run run_ci 'shfmt'
     [ "$status" -eq 0 ]
 
@@ -122,7 +114,6 @@ EOF
 
  echo 'Hello'
 EOF
-
     run run_ci 'shfmt'
     [ "$status" -ne 0 ]
 }

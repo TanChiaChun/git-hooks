@@ -17,6 +17,17 @@ class Language(Enum):
     PYTHON_TEST = r"test.+\.py"
 
 
+class LanguageChoice(Enum):
+    """Choice of Languages."""
+
+    BASH = [Language.BASH]
+    BASH_TEST = [Language.BASH_TEST]
+    BASH_BOTH = [Language.BASH, Language.BASH_TEST]
+    PYTHON = [Language.PYTHON]
+    PYTHON_TEST = [Language.PYTHON_TEST]
+    PYTHON_BOTH = [Language.PYTHON, Language.PYTHON_TEST]
+
+
 def filter_git_files(files: list[str], language: Language) -> list[str]:
     """Filter git files by language.
 
@@ -79,16 +90,18 @@ def print_filtered_files() -> None:
     """Print filtered Git files."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "language",
-        choices=[name for name, member in Language.__members__.items()],
+        "language_choice",
+        choices=[name for name, member in LanguageChoice.__members__.items()],
     )
     args = parser.parse_args()
-    language = args.language
+    language_choice = args.language_choice
 
     files = get_git_files()
-    files = filter_git_files(files, Language[language])
+    filtered_files = []
+    for language in LanguageChoice[language_choice].value:
+        filtered_files.extend(filter_git_files(files, language))
 
-    for file in files:
+    for file in filtered_files:
         print(file)
 
 

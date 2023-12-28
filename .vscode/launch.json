@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["BASH"]
+            "args": ["BASH_BOTH"]
         }
     ]
 }

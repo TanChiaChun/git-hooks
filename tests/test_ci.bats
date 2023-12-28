@@ -24,7 +24,7 @@ setup() {
 
     mkdir "$test_dir"
     cd "$test_dir"
-    export -n GITHUB_ACTIONS
+    export GITHUB_ACTIONS='false'
     run prepend_venv_bin_to_path
     cd "$OLDPWD"
     rm -r "$test_dir"

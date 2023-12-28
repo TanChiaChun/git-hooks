@@ -22,15 +22,15 @@ jobs:
         run: |
           go install mvdan.cc/sh/v3/cmd/shfmt@latest
           shfmt --version
-      - name: Install shellcheck (macOS)
+      - name: Install ShellCheck (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           brew update
           brew install shellcheck
-      - name: Install shellcheck (Windows)
+      - name: Install ShellCheck (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         run: choco install shellcheck
-      - name: Get shellcheck version
+      - name: Get ShellCheck version
         run: shellcheck --version
       - name: Install Bash (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
@@ -46,7 +46,7 @@ jobs:
         run: |
           source ./src/ci.sh
           run_ci_bash_shfmt
-      - name: Run shellcheck
+      - name: Run ShellCheck
         shell: bash
         run: |
           source ./src/ci.sh

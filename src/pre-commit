@@ -19,8 +19,12 @@ reject_commit_main_branch() {
 main() {
     set -o errexit
     set -o pipefail
+
     reject_commit_main_branch "$(get_git_branch)"
+
     run_ci_bash
+
+    prepend_venv_bin_to_path
     run_ci_python
 }
 

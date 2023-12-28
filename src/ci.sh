@@ -114,7 +114,6 @@ run_ci_bash_shfmt_write() {
 }
 
 run_ci_python() {
-    prepend_venv_bin_to_path
     run_ci_python_black
 }
 

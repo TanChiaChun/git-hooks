@@ -30,6 +30,12 @@ setup() {
     rm -r "$test_dir"
     [ "$status" -eq 1 ]
     [ "$output" == 'Cannot find venv binary directory' ]
+
+    export GITHUB_ACTIONS='true'
+    run prepend_venv_bin_to_path
+    export -n GITHUB_ACTIONS
+    [ "$status" -eq 0 ]
+    [ "$output" == 'Skip prepend venv bin to Path as running from GitHub Actions' ]
 }
 
 @test "print_files()" {

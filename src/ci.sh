@@ -8,6 +8,11 @@ get_first_env_var() {
 }
 
 prepend_venv_bin_to_path() {
+    if [[ "$GITHUB_ACTIONS" == 'true' ]]; then
+        echo 'Skip prepend venv bin to Path as running from GitHub Actions'
+        return
+    fi
+
     if [[ -e ./venv/bin ]]; then
         PATH="./venv/bin:$PATH"
     elif [[ -e ./venv/Scripts ]]; then

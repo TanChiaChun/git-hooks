@@ -1,3 +1,7 @@
+setup_file() {
+    export sh_file="$BATS_TMPDIR/test.sh"
+}
+
 setup() {
     load ../src/ci.sh
 }
@@ -34,8 +38,6 @@ EOF
 }
 
 @test "run_ci_shellcheck()" {
-    local sh_file="$BATS_TMPDIR/test.sh"
-
     cat <<"EOF" >"$sh_file"
 #!/usr/bin/env bash
 
@@ -43,13 +45,10 @@ echo "Hello\n"
 EOF
 
     run run_ci 'shellcheck'
-    rm "$sh_file"
     [ "$status" -ne 0 ]
 }
 
 @test "run_ci_shfmt()" {
-    local sh_file="$BATS_TMPDIR/test.sh"
-
     cat <<"EOF" >"$sh_file"
 #!/usr/bin/env bash
 
@@ -57,6 +56,11 @@ EOF
 EOF
 
     run run_ci 'shfmt'
-    rm "$sh_file"
     [ "$status" -ne 0 ]
+}
+
+teardown_file() {
+    if [[ -e "$sh_file" ]]; then
+        rm "$sh_file"
+    fi
 }

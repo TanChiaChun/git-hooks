@@ -53,6 +53,12 @@ run_ci() {
         'black' | 'black_write')
             local language='PYTHON_BOTH'
             ;;
+        'pylint')
+            local language='PYTHON'
+            ;;
+        'pylint_test')
+            local language='PYTHON_TEST'
+            ;;
     esac
 
     local files_raw
@@ -91,6 +97,17 @@ run_ci() {
         'black_write')
             black --config ./config/pyproject.toml "${files[@]}"
             ;;
+        'pylint')
+            for file in "${files[@]}"; do
+                pylint --rcfile ./config/pylintrc.toml "$file"
+            done
+            ;;
+        'pylint_test')
+            for file in "${files[@]}"; do
+                env "$(get_first_env_var ./.env PYTHONPATH)" \
+                    pylint --rcfile ./config/pylintrc_test.toml "$file"
+            done
+            ;;
     esac
 }
 
@@ -121,6 +138,7 @@ run_ci_bash_shfmt_write() {
 run_ci_python() {
     prepend_venv_bin_to_path
     run_ci_python_black
+    run_ci_python_pylint
 }
 
 run_ci_python_black() {
@@ -129,4 +147,9 @@ run_ci_python_black() {
 
 run_ci_python_black_write() {
     run_ci 'black_write'
+}
+
+run_ci_python_pylint() {
+    run_ci 'pylint'
+    run_ci 'pylint_test'
 }

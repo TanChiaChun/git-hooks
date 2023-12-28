@@ -50,7 +50,7 @@ run_ci() {
         'shellcheck')
             local language='BASH_BOTH'
             ;;
-        'black' | black_write)
+        'black' | 'black_write')
             local language='PYTHON_BOTH'
             ;;
     esac

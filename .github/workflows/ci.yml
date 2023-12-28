@@ -70,3 +70,26 @@ jobs:
         run: |
           source ./src/ci.sh
           run_ci_bash_bats
+  python:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Get Python version
+        run: python --version
+      - name: Install packages
+        run: |
+          pip install --requirement ./requirements-dev.txt
+          black --version
+      - name: Run Black
+        shell: bash
+        run: |
+          source ./src/ci.sh
+          run_ci_python_black

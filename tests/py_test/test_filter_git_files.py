@@ -116,5 +116,4 @@ class TestModule(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    t = 0
     unittest.main()

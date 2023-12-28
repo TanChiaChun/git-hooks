@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=SC1091
+# shellcheck source=/dev/null
 source "${0%/*}/ci.sh"
 
 get_git_branch() {

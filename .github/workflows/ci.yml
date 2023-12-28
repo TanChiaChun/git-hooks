@@ -27,11 +27,12 @@ jobs:
         run: |
           brew update
           brew install bash
+      - name: Get Bash version
+        run: bash --version
       - name: Check out repository code
         uses: actions/checkout@v4
       - name: Run shfmt
         shell: bash
         run: |
-          bash --version
           source ./src/ci.sh
           run_ci_bash_shfmt

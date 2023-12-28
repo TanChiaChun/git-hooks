@@ -40,7 +40,9 @@ def filter_git_files(files: list[str], language: Language) -> list[str]:
     Returns:
         List of filtered files.
     """
-    filtered_files = [file for file in files if re.match(language.value, Path(file).name)]
+    filtered_files = [
+        file for file in files if re.match(language.value, Path(file).name)
+    ]
 
     if language is Language.BASH:
         files_no_extension = [

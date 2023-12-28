@@ -1,7 +1,7 @@
 name: CI
 on: push
 jobs:
-  shfmt:
+  bash:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -22,6 +22,21 @@ jobs:
         run: |
           go install mvdan.cc/sh/v3/cmd/shfmt@latest
           shfmt --version
+      - name: Install shellcheck (Ubuntu)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install shellcheck
+      - name: Install shellcheck (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          brew update
+          brew install shellcheck
+      - name: Install shellcheck (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: choco install shellcheck
+      - name: Get shellcheck version
+        run: shellcheck --version
       - name: Install Bash
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
@@ -36,3 +51,8 @@ jobs:
         run: |
           source ./src/ci.sh
           run_ci_bash_shfmt
+      - name: Run shellcheck
+        shell: bash
+        run: |
+          source ./src/ci.sh
+          run_ci_bash_shellcheck

@@ -19,6 +19,7 @@ jobs:
         run: |
           pip install --requirement ./requirements-dev.txt
           black --version
+          pylint --version
       - name: Install Bash (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
@@ -31,6 +32,11 @@ jobs:
         run: |
           source ./src/ci.sh
           run_ci_python_black
+      - name: Run Pylint
+        shell: bash
+        run: |
+          source ./src/ci.sh
+          run_ci_python_pylint
   bash:
     strategy:
       matrix:

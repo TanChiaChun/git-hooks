@@ -32,7 +32,7 @@ jobs:
         run: choco install shellcheck
       - name: Get shellcheck version
         run: shellcheck --version
-      - name: Install Bash
+      - name: Install Bash (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           brew update

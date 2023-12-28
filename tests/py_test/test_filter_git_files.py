@@ -112,7 +112,7 @@ class TestModule(unittest.TestCase):
     @patch("sys.stdout", new_callable=io.StringIO)
     def test_main_bats(self, mock_stdout: io.StringIO) -> None:
         main()
-        self.assertEqual(mock_stdout.getvalue(), "/test.sh\n")
+        self.assertEqual(mock_stdout.getvalue(), "/test\n")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 setup_file() {
-    export sh_file="$BATS_TMPDIR/test.sh"
+    export test_file="$BATS_TMPDIR/test"
 }
 
 setup() {
@@ -41,19 +41,19 @@ EOF
     local bats_success_file="$BATS_TEST_DIRNAME/test_success.bats.sample"
     local bats_fail_file="$BATS_TEST_DIRNAME/test_fail.bats.sample"
 
-    cp "$bats_success_file" "$sh_file"
+    cp "$bats_success_file" "$test_file"
 
     run run_ci 'bats'
     [ "$status" -eq 0 ]
 
-    cp "$bats_fail_file" "$sh_file"
+    cp "$bats_fail_file" "$test_file"
 
     run run_ci 'bats'
     [ "$status" -ne 0 ]
 }
 
 @test "run_ci_shellcheck()" {
-    cat <<"EOF" >"$sh_file"
+    cat <<"EOF" >"$test_file"
 #!/usr/bin/env bash
 
 echo "Hello"
@@ -62,7 +62,7 @@ EOF
     run run_ci 'shellcheck'
     [ "$status" -eq 0 ]
 
-    cat <<"EOF" >"$sh_file"
+    cat <<"EOF" >"$test_file"
 #!/usr/bin/env bash
 
 echo "Hello\n"
@@ -73,7 +73,7 @@ EOF
 }
 
 @test "run_ci_shfmt()" {
-    cat <<"EOF" >"$sh_file"
+    cat <<"EOF" >"$test_file"
 #!/usr/bin/env bash
 
 echo 'Hello'
@@ -82,7 +82,7 @@ EOF
     run run_ci 'shfmt'
     [ "$status" -eq 0 ]
 
-    cat <<"EOF" >"$sh_file"
+    cat <<"EOF" >"$test_file"
 #!/usr/bin/env bash
 
  echo 'Hello'
@@ -93,7 +93,7 @@ EOF
 }
 
 teardown_file() {
-    if [[ -e "$sh_file" ]]; then
-        rm "$sh_file"
+    if [[ -e "$test_file" ]]; then
+        rm "$test_file"
     fi
 }

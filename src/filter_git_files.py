@@ -108,7 +108,7 @@ def print_filtered_files() -> None:
 def main() -> None:
     """Main function."""
     if "BATS_TMPDIR" in os.environ:
-        print(f"{os.environ['BATS_TMPDIR']}/test.sh")
+        print(f"{os.environ['BATS_TMPDIR']}/test")
     else:
         print_filtered_files()
 

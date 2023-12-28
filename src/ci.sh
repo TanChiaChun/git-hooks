@@ -28,7 +28,7 @@ run_ci() {
         'shfmt' | 'shfmt_write')
             local language='BASH'
             ;;
-        'shfmt_test' | 'shfmt_write_test')
+        'shfmt_test' | 'shfmt_write_test' | 'bats')
             local language='BASH_TEST'
             ;;
         'shellcheck')
@@ -61,12 +61,22 @@ run_ci() {
         'shellcheck')
             shellcheck --shell=bash "${files[@]}"
             ;;
+        'bats')
+            for file in "${files[@]}"; do
+                bats "$file"
+            done
+            ;;
     esac
 }
 
 run_ci_bash() {
     run_ci_bash_shfmt
     run_ci_bash_shellcheck
+    run_ci_bash_bats
+}
+
+run_ci_bash_bats() {
+    run_ci 'bats'
 }
 
 run_ci_bash_shellcheck() {

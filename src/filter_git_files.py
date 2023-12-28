@@ -11,10 +11,10 @@ from pathlib import Path
 class Language(Enum):
     """Languages with their file extensions."""
 
-    BASH = r".+\.sh"
-    BASH_TEST = r".+\.bats"
-    PYTHON = r"(?!test).+\.py"
-    PYTHON_TEST = r"test.+\.py"
+    BASH = r".+\.sh$"
+    BASH_TEST = r".+\.bats$"
+    PYTHON = r"(?!test).+\.py$"
+    PYTHON_TEST = r"test.+\.py$"
 
 
 class LanguageChoice(Enum):

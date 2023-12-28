@@ -37,6 +37,21 @@ EOF
     IFS="$OLD_IFS"
 }
 
+@test "run_ci_bats()" {
+    local bats_success_file="$BATS_TEST_DIRNAME/test_success.bats.sample"
+    local bats_fail_file="$BATS_TEST_DIRNAME/test_fail.bats.sample"
+
+    cp "$bats_success_file" "$sh_file"
+
+    run run_ci 'bats'
+    [ "$status" -eq 0 ]
+
+    cp "$bats_fail_file" "$sh_file"
+
+    run run_ci 'bats'
+    [ "$status" -ne 0 ]
+}
+
 @test "run_ci_shellcheck()" {
     cat <<"EOF" >"$sh_file"
 #!/usr/bin/env bash

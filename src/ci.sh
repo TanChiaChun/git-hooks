@@ -1,10 +1,28 @@
 #!/usr/bin/env bash
 
+echo_red_text() {
+    local text="$1"
+    declare -r RED_CODE=31
+    declare -r RESET_CODE=0
+
+    echo -e "\e[${RED_CODE}m$text\e[${RESET_CODE}m"
+}
+
 get_first_env_var() {
     local env_file="$1"
     local env_name="$2"
 
     grep --max-count=1 "$env_name=" "$env_file"
+}
+
+handle_ci_fail() {
+    local ci="$1"
+
+    echo_red_text '##################################################'
+    echo_red_text "$ci fail"
+    echo_red_text '##################################################'
+
+    return 1 # For fail-fast behavior of set -o errexit & pipefail
 }
 
 prepend_venv_bin_to_path() {
@@ -66,59 +84,91 @@ run_ci() {
     mapfile -t files <<<"${files_raw//$'\r'/}"
     print_files "${files[@]}"
 
+    local is_error=0
     case "$choice" in
         'shfmt')
-            shfmt --diff --language-dialect 'bash' --indent 4 --case-indent \
-                "${files[@]}"
+            if ! shfmt --diff --language-dialect 'bash' --indent 4 \
+                --case-indent "${files[@]}"; then
+                is_error=1
+            fi
             ;;
         'shfmt_test')
-            shfmt --diff --language-dialect 'bats' --indent 4 --case-indent \
-                "${files[@]}"
+            if ! shfmt --diff --language-dialect 'bats' --indent 4 \
+                --case-indent "${files[@]}"; then
+                is_error=1
+            fi
             ;;
         'shfmt_write')
-            shfmt --write --language-dialect 'bash' --indent 4 --case-indent \
-                "${files[@]}"
+            if ! shfmt --write --language-dialect 'bash' --indent 4 \
+                --case-indent "${files[@]}"; then
+                is_error=1
+            fi
             ;;
         'shfmt_write_test')
-            shfmt --write --language-dialect 'bats' --indent 4 --case-indent \
-                "${files[@]}"
+            if ! shfmt --write --language-dialect 'bats' --indent 4 \
+                --case-indent "${files[@]}"; then
+                is_error=1
+            fi
             ;;
         'shellcheck')
-            shellcheck --shell=bash "${files[@]}"
+            if ! shellcheck --shell=bash "${files[@]}"; then
+                is_error=1
+            fi
             ;;
         'bats')
             for file in "${files[@]}"; do
-                bats "$file"
+                if ! bats "$file"; then
+                    is_error=1
+                fi
             done
             ;;
         'black')
-            black --check --diff --config './config/pyproject.toml' "${files[@]}"
+            if ! black --check --diff --config './config/pyproject.toml' \
+                "${files[@]}"; then
+                is_error=1
+            fi
             ;;
         'black_write')
-            black --config './config/pyproject.toml' "${files[@]}"
+            if ! black --config './config/pyproject.toml' "${files[@]}"; then
+                is_error=1
+            fi
             ;;
         'pylint')
             for file in "${files[@]}"; do
-                pylint --rcfile './config/pylintrc.toml' "$file"
+                if ! pylint --rcfile './config/pylintrc.toml' "$file"; then
+                    is_error=1
+                fi
             done
             ;;
         'pylint_test')
             for file in "${files[@]}"; do
-                env "$(get_first_env_var .'/.env' 'PYTHONPATH')" \
-                    pylint --rcfile './config/pylintrc_test.toml' "$file"
+                if ! env "$(get_first_env_var .'/.env' 'PYTHONPATH')" \
+                    pylint --rcfile './config/pylintrc_test.toml' "$file"; then
+                    is_error=1
+                fi
             done
             ;;
         'mypy')
-            env "$(get_first_env_var './.env' 'PYTHONPATH')" \
-                mypy --config-file './config/mypy.ini' "${files[@]}"
+            if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \
+                mypy --config-file './config/mypy.ini' "${files[@]}"; then
+                is_error=1
+            fi
             ;;
         'isort')
-            isort --diff --check-only "${files[@]}"
+            if ! isort --diff --check-only "${files[@]}"; then
+                is_error=1
+            fi
             ;;
         'isort_write')
-            isort "${files[@]}"
+            if ! isort "${files[@]}"; then
+                is_error=1
+            fi
             ;;
     esac
+
+    if [[ "$is_error" -eq 1 ]]; then
+        handle_ci_fail "$choice"
+    fi
 }
 
 run_ci_bash() {
@@ -185,6 +235,8 @@ run_ci_python_unittest() {
     options_raw="$(python './src/get_unittest_options.py')"
     mapfile -t options <<<"${options_raw//$'\r'/}"
 
-    env "$(get_first_env_var './.env' 'PYTHONPATH')" \
-        python -m unittest "${options[@]}"
+    if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \
+        python -m unittest "${options[@]}"; then
+        handle_ci_fail 'unittest'
+    fi
 }

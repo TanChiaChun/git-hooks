@@ -20,6 +20,20 @@ setup() {
     [ "$output" == "$env_line" ]
 }
 
+@test "handle_ci_fail()" {
+    mapfile -t expected_output <<EOF
+$(echo_red_text '##################################################')
+$(echo_red_text 'unittest fail')
+$(echo_red_text '##################################################')
+EOF
+    run handle_ci_fail 'unittest'
+    [ "$status" -eq 1 ]
+    local OLD_IFS="$IFS"
+    IFS=$'\n'
+    [ "$output" == "${expected_output[*]}" ]
+    IFS="$OLD_IFS"
+}
+
 @test "prepend_venv_bin_to_path()" {
     local test_dir="$BATS_TMPDIR/venv"
 

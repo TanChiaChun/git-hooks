@@ -54,22 +54,6 @@ EOF
         'Skip prepend venv bin to Path as running from GitHub Actions' ]
 }
 
-@test "print_files()" {
-    mapfile -t expected_output <<"EOF"
-##################################################
-Files to check:
-src/ci.sh
-src/pre-commit
-##################################################
-EOF
-    run print_files 'src/ci.sh' 'src/pre-commit'
-    [ "$status" -eq 0 ]
-    local OLD_IFS="$IFS"
-    IFS=$'\n'
-    [ "$output" == "${expected_output[*]}" ]
-    IFS="$OLD_IFS"
-}
-
 @test "run_ci_bats()" {
     local bats_success_file="$BATS_TEST_DIRNAME/test_success.bats.sample"
     local bats_fail_file="$BATS_TEST_DIRNAME/test_fail.bats.sample"

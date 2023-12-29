@@ -41,22 +41,8 @@ prepend_venv_bin_to_path() {
     fi
 }
 
-print_files() {
-    local files=("$@")
-
-    echo '##################################################'
-    echo 'Files to check:'
-    for file in "${files[@]}"; do
-        echo "$file"
-    done
-    echo '##################################################'
-    echo ''
-}
-
 run_ci() {
     local choice="$1"
-
-    echo "Running $choice"
 
     case "$choice" in
         'shfmt' | 'shfmt_write')
@@ -82,7 +68,13 @@ run_ci() {
     local files_raw
     files_raw="$(python './src/filter_git_files.py' "$language")"
     mapfile -t files <<<"${files_raw//$'\r'/}"
-    print_files "${files[@]}"
+
+    echo '##################################################'
+    echo "Running $choice"
+    for file in "${files[@]}"; do
+        echo "$file"
+    done
+    echo '##################################################'
 
     local is_error=0
     case "$choice" in
@@ -230,7 +222,9 @@ run_ci_python_pylint() {
 }
 
 run_ci_python_unittest() {
+    echo '##################################################'
     echo 'Running unittest'
+    echo '##################################################'
 
     options_raw="$(python './src/get_unittest_options.py')"
     mapfile -t options <<<"${options_raw//$'\r'/}"

@@ -16,7 +16,7 @@ setup() {
 
     run get_first_env_var "$env_file" "$env_name"
     rm "$env_file"
-    [ "$status" -eq 1 ]
+    [ "$status" -eq 0 ]
     [ "$output" == "$env_line" ]
 }
 

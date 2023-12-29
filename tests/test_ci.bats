@@ -84,21 +84,6 @@ EOF
     [ "$status" -ne 0 ]
 }
 
-@test "run_ci_pylint()" {
-    prepend_venv_bin_to_path
-
-    cat <<"EOF" >"$test_file"
-EOF
-    run run_ci 'pylint'
-    [ "$status" -eq 0 ]
-
-    cat <<"EOF" >"$test_file"
-pass
-EOF
-    run run_ci 'pylint'
-    [ "$status" -ne 0 ]
-}
-
 @test "run_ci_mypy()" {
     prepend_venv_bin_to_path
 
@@ -125,6 +110,21 @@ if __name__ == "__main__":
 pass
 EOF
     run run_ci 'mypy'
+    [ "$status" -ne 0 ]
+}
+
+@test "run_ci_pylint()" {
+    prepend_venv_bin_to_path
+
+    cat <<"EOF" >"$test_file"
+EOF
+    run run_ci 'pylint'
+    [ "$status" -eq 0 ]
+
+    cat <<"EOF" >"$test_file"
+pass
+EOF
+    run run_ci 'pylint'
     [ "$status" -ne 0 ]
 }
 

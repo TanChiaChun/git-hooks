@@ -50,7 +50,7 @@ run_ci() {
         'shellcheck')
             local language='BASH_BOTH'
             ;;
-        'black' | 'black_write' | 'mypy')
+        'black' | 'black_write' | 'mypy' | 'isort' | 'isort_write')
             local language='PYTHON_BOTH'
             ;;
         'pylint')
@@ -112,6 +112,12 @@ run_ci() {
             env "$(get_first_env_var './.env' 'PYTHONPATH')" \
                 mypy --config-file './config/mypy.ini' "${files[@]}"
             ;;
+        'isort')
+            isort --diff --check-only "${files[@]}"
+            ;;
+        'isort_write')
+            isort "${files[@]}"
+            ;;
     esac
 }
 
@@ -144,6 +150,7 @@ run_ci_python() {
     run_ci_python_black
     run_ci_python_pylint
     run_ci_python_mypy
+    run_ci_python_isort
 }
 
 run_ci_python_black() {
@@ -152,6 +159,14 @@ run_ci_python_black() {
 
 run_ci_python_black_write() {
     run_ci 'black_write'
+}
+
+run_ci_python_isort() {
+    run_ci 'isort'
+}
+
+run_ci_python_isort_write() {
+    run_ci 'isort_write'
 }
 
 run_ci_python_mypy() {

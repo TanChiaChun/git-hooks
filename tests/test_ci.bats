@@ -84,6 +84,24 @@ EOF
     [ "$status" -ne 0 ]
 }
 
+@test "run_ci_isort()" {
+    prepend_venv_bin_to_path
+
+    cat <<"EOF" >"$test_file"
+import re
+import string
+EOF
+    run run_ci 'isort'
+    [ "$status" -eq 0 ]
+
+    cat <<"EOF" >"$test_file"
+import string
+import re
+EOF
+    run run_ci 'isort'
+    [ "$status" -ne 0 ]
+}
+
 @test "run_ci_mypy()" {
     prepend_venv_bin_to_path
 

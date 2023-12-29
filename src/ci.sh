@@ -151,6 +151,7 @@ run_ci_python() {
     run_ci_python_pylint
     run_ci_python_mypy
     run_ci_python_isort
+    run_ci_python_unittest
 }
 
 run_ci_python_black() {
@@ -176,4 +177,14 @@ run_ci_python_mypy() {
 run_ci_python_pylint() {
     run_ci 'pylint'
     run_ci 'pylint_test'
+}
+
+run_ci_python_unittest() {
+    echo 'Running unittest'
+
+    options_raw="$(python './src/get_unittest_options.py')"
+    mapfile -t options <<<"${options_raw//$'\r'/}"
+
+    env "$(get_first_env_var './.env' 'PYTHONPATH')" \
+        python -m unittest "${options[@]}"
 }

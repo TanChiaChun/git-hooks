@@ -6,6 +6,7 @@
 
 
 import json
+import os
 from pathlib import Path
 
 
@@ -25,14 +26,26 @@ def get_vscode_options(p: Path) -> list[str]:
     return options
 
 
+def get_unittest_options() -> list[str]:
+    """Return list of unittest options."""
+    options = []
+    settings_path = Path(".vscode/settings.json")
+
+    if "BATS_TEST_FILENAME" in os.environ:
+        test_path = Path(os.environ["BATS_TEST_FILENAME"]).parent
+        options.extend(["-v", f"{test_path}/test.py"])
+    elif settings_path.is_file():
+        options.append("discover")
+        options.extend(get_vscode_options(settings_path))
+    else:
+        options.extend(["discover", "-v", "-s", "./tests", "-p", "test*.py"])
+
+    return options
+
+
 def main() -> None:
     """Main function."""
-    options = ["-v", "-s", "./tests", "-p", "test*.py"]
-    p = Path(".vscode/settings.json")
-    if p.is_file():
-        options = get_vscode_options(p)
-
-    for option in options:
+    for option in get_unittest_options():
         print(option)
 
 

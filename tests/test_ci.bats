@@ -1,5 +1,6 @@
 setup_file() {
     export test_file="$BATS_TMPDIR/test"
+    export py_test_file="${BATS_TEST_FILENAME%/*}/test.py"
 }
 
 setup() {
@@ -146,6 +147,41 @@ EOF
     [ "$status" -ne 0 ]
 }
 
+@test "run_ci_python_unittest()" {
+    prepend_venv_bin_to_path
+
+    cat <<"EOF" >"$py_test_file"
+import unittest
+
+
+class TestModule(unittest.TestCase):
+    def test_main(self) -> None:
+        self.assertEqual(0, 0)
+
+
+if __name__ == "__main__":
+    unittest.main()
+EOF
+    run run_ci_python_unittest
+    [ "$status" -eq 0 ]
+
+    rm -r "${BATS_TEST_FILENAME%/*}/__pycache__"
+    cat <<"EOF" >"$py_test_file"
+import unittest
+
+
+class TestModule(unittest.TestCase):
+    def test_main(self) -> None:
+        self.assertEqual(0, 1)
+
+
+if __name__ == "__main__":
+    unittest.main()
+EOF
+    run run_ci_python_unittest
+    [ "$status" -ne 0 ]
+}
+
 @test "run_ci_shellcheck()" {
     cat <<"EOF" >"$test_file"
 #!/usr/bin/env bash
@@ -185,5 +221,8 @@ EOF
 teardown_file() {
     if [[ -f "$test_file" ]]; then
         rm "$test_file"
+    fi
+    if [[ -f "$py_test_file" ]]; then
+        rm "$py_test_file"
     fi
 }

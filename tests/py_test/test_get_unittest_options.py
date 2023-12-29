@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, mock_open, patch
 
-from get_unittest_options import get_vscode_options, main
+from get_unittest_options import get_unittest_options, get_vscode_options, main
 
 
 class TestModule(unittest.TestCase):
@@ -17,12 +17,17 @@ class TestModule(unittest.TestCase):
         ):
             self.assertListEqual(get_vscode_options(Path("")), options)
 
+    @patch.dict("os.environ", values={"BATS_TEST_FILENAME": ""})
+    def test_get_unittest_options(self) -> None:
+        self.assertListEqual(get_unittest_options(), ["-v", "./test.py"])
+
     @patch("pathlib.Path.is_file", new=Mock(return_value=False))
     def test_main(self) -> None:
         with patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             main()
             self.assertEqual(
-                mock_stdout.getvalue(), "-v\n-s\n./tests\n-p\ntest*.py\n"
+                mock_stdout.getvalue(),
+                "discover\n-v\n-s\n./tests\n-p\ntest*.py\n",
             )
 
 

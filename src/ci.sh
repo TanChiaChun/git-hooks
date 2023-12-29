@@ -13,9 +13,9 @@ prepend_venv_bin_to_path() {
         return
     fi
 
-    if [[ -e ./venv/bin ]]; then
+    if [[ -e './venv/bin' ]]; then
         PATH="./venv/bin:$PATH"
-    elif [[ -e ./venv/Scripts ]]; then
+    elif [[ -e './venv/Scripts' ]]; then
         PATH="./venv/Scripts:$PATH"
     else
         echo 'Cannot find venv binary directory'
@@ -62,25 +62,25 @@ run_ci() {
     esac
 
     local files_raw
-    files_raw="$(python ./src/filter_git_files.py "$language")"
+    files_raw="$(python './src/filter_git_files.py' "$language")"
     mapfile -t files <<<"${files_raw//$'\r'/}"
     print_files "${files[@]}"
 
-    case $choice in
+    case "$choice" in
         'shfmt')
-            shfmt --diff --language-dialect bash --indent 4 --case-indent \
+            shfmt --diff --language-dialect 'bash' --indent 4 --case-indent \
                 "${files[@]}"
             ;;
         'shfmt_test')
-            shfmt --diff --language-dialect bats --indent 4 --case-indent \
+            shfmt --diff --language-dialect 'bats' --indent 4 --case-indent \
                 "${files[@]}"
             ;;
         'shfmt_write')
-            shfmt --write --language-dialect bash --indent 4 --case-indent \
+            shfmt --write --language-dialect 'bash' --indent 4 --case-indent \
                 "${files[@]}"
             ;;
         'shfmt_write_test')
-            shfmt --write --language-dialect bats --indent 4 --case-indent \
+            shfmt --write --language-dialect 'bats' --indent 4 --case-indent \
                 "${files[@]}"
             ;;
         'shellcheck')
@@ -92,25 +92,25 @@ run_ci() {
             done
             ;;
         'black')
-            black --check --diff --config ./config/pyproject.toml "${files[@]}"
+            black --check --diff --config './config/pyproject.toml' "${files[@]}"
             ;;
         'black_write')
-            black --config ./config/pyproject.toml "${files[@]}"
+            black --config './config/pyproject.toml' "${files[@]}"
             ;;
         'pylint')
             for file in "${files[@]}"; do
-                pylint --rcfile ./config/pylintrc.toml "$file"
+                pylint --rcfile './config/pylintrc.toml' "$file"
             done
             ;;
         'pylint_test')
             for file in "${files[@]}"; do
-                env "$(get_first_env_var ./.env PYTHONPATH)" \
-                    pylint --rcfile ./config/pylintrc_test.toml "$file"
+                env "$(get_first_env_var .'/.env' 'PYTHONPATH')" \
+                    pylint --rcfile './config/pylintrc_test.toml' "$file"
             done
             ;;
         'mypy')
-            env "$(get_first_env_var ./.env PYTHONPATH)" \
-                mypy --config-file ./config/mypy.ini "${files[@]}"
+            env "$(get_first_env_var './.env' 'PYTHONPATH')" \
+                mypy --config-file './config/mypy.ini' "${files[@]}"
             ;;
     esac
 }

@@ -20,6 +20,7 @@ jobs:
           pip install --requirement ./requirements-dev.txt
           black --version
           pylint --version
+          mypy --version
       - name: Install Bash (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
@@ -37,6 +38,11 @@ jobs:
         run: |
           source ./src/ci.sh
           run_ci_python_pylint
+      - name: Run mypy
+        shell: bash
+        run: |
+          source ./src/ci.sh
+          run_ci_python_mypy
   bash:
     strategy:
       matrix:

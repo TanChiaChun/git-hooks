@@ -49,6 +49,11 @@ jobs:
         run: |
           source ./src/ci.sh
           run_ci_python_isort
+      - name: Run unittest
+        shell: bash
+        run: |
+          source ./src/ci.sh
+          run_ci_python_unittest
   bash:
     strategy:
       matrix:

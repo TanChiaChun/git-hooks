@@ -1,7 +1,7 @@
 """Run git ls-files & filter based on language."""
 
-import argparse
 import os
+import argparse
 import re
 import subprocess
 from enum import Enum

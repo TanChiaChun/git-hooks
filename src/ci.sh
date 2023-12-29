@@ -50,7 +50,7 @@ run_ci() {
         'shellcheck')
             local language='BASH_BOTH'
             ;;
-        'black' | 'black_write')
+        'black' | 'black_write' | 'mypy')
             local language='PYTHON_BOTH'
             ;;
         'pylint')
@@ -108,6 +108,10 @@ run_ci() {
                     pylint --rcfile ./config/pylintrc_test.toml "$file"
             done
             ;;
+        'mypy')
+            env "$(get_first_env_var ./.env PYTHONPATH)" \
+                mypy --config-file ./config/mypy.ini "${files[@]}"
+            ;;
     esac
 }
 
@@ -139,6 +143,7 @@ run_ci_python() {
     prepend_venv_bin_to_path
     run_ci_python_black
     run_ci_python_pylint
+    run_ci_python_mypy
 }
 
 run_ci_python_black() {
@@ -147,6 +152,10 @@ run_ci_python_black() {
 
 run_ci_python_black_write() {
     run_ci 'black_write'
+}
+
+run_ci_python_mypy() {
+    run_ci 'mypy'
 }
 
 run_ci_python_pylint() {

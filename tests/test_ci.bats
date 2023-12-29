@@ -99,6 +99,35 @@ EOF
     [ "$status" -ne 0 ]
 }
 
+@test "run_ci_mypy()" {
+    prepend_venv_bin_to_path
+
+    cat <<"EOF" >"$test_file"
+def main() -> None:
+    """Main function."""
+    pass
+
+
+if __name__ == "__main__":
+    main()
+EOF
+    run run_ci 'mypy'
+    [ "$status" -eq 0 ]
+
+    cat <<"EOF" >"$test_file"
+def main():
+    """Main function."""
+    pass
+
+
+if __name__ == "__main__":
+    main()
+pass
+EOF
+    run run_ci 'mypy'
+    [ "$status" -ne 0 ]
+}
+
 @test "run_ci_shellcheck()" {
     cat <<"EOF" >"$test_file"
 #!/usr/bin/env bash

@@ -7,7 +7,10 @@
 
 def main() -> None:
     """Main function."""
-    print("-v -s ./tests -p test*.py")
+    options = ["-v", "-s", "./tests", "-p", "test*.py"]
+
+    for option in options:
+        print(option)
 
 
 if __name__ == "__main__":

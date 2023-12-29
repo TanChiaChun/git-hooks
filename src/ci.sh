@@ -13,9 +13,9 @@ prepend_venv_bin_to_path() {
         return
     fi
 
-    if [[ -e './venv/bin' ]]; then
+    if [[ -d './venv/bin' ]]; then
         PATH="./venv/bin:$PATH"
-    elif [[ -e './venv/Scripts' ]]; then
+    elif [[ -d './venv/Scripts' ]]; then
         PATH="./venv/Scripts:$PATH"
     else
         echo 'Cannot find venv binary directory'

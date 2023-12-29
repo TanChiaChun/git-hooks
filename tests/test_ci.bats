@@ -165,7 +165,7 @@ EOF
 }
 
 teardown_file() {
-    if [[ -e "$test_file" ]]; then
+    if [[ -f "$test_file" ]]; then
         rm "$test_file"
     fi
 }

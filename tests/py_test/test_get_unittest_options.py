@@ -27,7 +27,7 @@ class TestModule(unittest.TestCase):
             main()
             self.assertEqual(
                 mock_stdout.getvalue(),
-                "discover\n-v\n-s\n./tests\n-p\ntest*.py\n",
+                "dscover\n-v\n-s\n./tests\n-p\ntest*.py\n",
             )
 
 

@@ -27,7 +27,7 @@ class TestModule(unittest.TestCase):
 
     def test_filter_git_files(self) -> None:
         expected = [
-            "src/bash.sh",
+            "sr/bash.sh",
             "src/pre-commit",
         ]
         self.assertListEqual(

@@ -37,7 +37,7 @@ prepend_venv_bin_to_path() {
         PATH="./venv/Scripts:$PATH"
     else
         echo 'Cannot find venv binary directory'
-        exit 1
+        return 1 # For fail-fast behavior of set -o errexit & pipefail
     fi
 }
 

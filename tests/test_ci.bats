@@ -231,6 +231,26 @@ EOF
     [ "$status" -ne 0 ]
 }
 
+@test "update_working_dir()" {
+    declare -g git_hooks_working_dir # To clear shellcheck SC2154
+
+    run update_working_dir
+    [ "$status" -eq 0 ]
+    [[ "$git_hooks_working_dir" == *'/git-hooks' ]]
+
+    cd "$BATS_TMPDIR"
+
+    mkdir "$BATS_TMPDIR/git-hooks"
+    run update_working_dir
+    rm -r './git-hooks'
+    [ "$status" -eq 0 ]
+
+    run update_working_dir
+    cd "$OLDPWD"
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Unsupported git-hooks working directory' ]
+}
+
 teardown_file() {
     if [[ -f "$test_file" ]]; then
         rm "$test_file"

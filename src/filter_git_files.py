@@ -15,6 +15,7 @@ class Language(Enum):
     BASH_TEST = r".+\.bats$"
     PYTHON = r"(?!test).+\.py$"
     PYTHON_TEST = r"test.+\.py$"
+    MARKDOWN = r".+\.md$"
 
 
 class LanguageChoice(Enum):
@@ -26,6 +27,7 @@ class LanguageChoice(Enum):
     PYTHON = [Language.PYTHON]
     PYTHON_TEST = [Language.PYTHON_TEST]
     PYTHON_BOTH = [Language.PYTHON, Language.PYTHON_TEST]
+    MARKDOWN = [Language.MARKDOWN]
 
 
 def filter_git_files(files: list[str], language: Language) -> list[str]:

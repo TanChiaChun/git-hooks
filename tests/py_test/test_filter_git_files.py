@@ -55,6 +55,11 @@ class TestModule(unittest.TestCase):
             expected, filter_git_files(self.files, Language.PYTHON_TEST)
         )
 
+        expected = ["README.md"]
+        self.assertListEqual(
+            expected, filter_git_files(self.files, Language.MARKDOWN)
+        )
+
     def test_is_bash_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdirname:
             file = str(Path(tmpdirname, "pre-commit"))

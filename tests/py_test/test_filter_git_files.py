@@ -72,6 +72,8 @@ class TestModule(unittest.TestCase):
                 f.write("\n")
             self.assertFalse(is_bash_file(file))
 
+            self.assertFalse(is_bash_file(tmpdirname))
+
     def test_main(self) -> None:
         patcher_get_git_files = patch(
             "filter_git_files.get_git_files",

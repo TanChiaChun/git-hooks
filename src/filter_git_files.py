@@ -79,11 +79,12 @@ def is_bash_file(file: str) -> bool:
     Returns:
         True if bash is present in first line of file, False if no.
     """
-    with open(file, encoding="utf8") as f:
-        first_line = f.readline()
+    if Path(file).is_file():
+        with open(file, encoding="utf8") as f:
+            first_line = f.readline()
 
-    if "bash" in first_line:
-        return True
+        if "bash" in first_line:
+            return True
 
     return False
 

@@ -2,14 +2,14 @@
 
 add_wd() {
     # add_working_directory
-    local path="$1"
+    local filepath="$1"
 
-    if [[ "$path" == '.'* ]] || [[ "$path" == '/'* ]]; then
+    if [[ "$filepath" == '.'* ]] || [[ "$filepath" == '/'* ]]; then
         echo 'Path should not start with . or /'
         exit 1
     fi
 
-    echo "$git_hooks_working_dir/$path"
+    echo "$git_hooks_working_dir/$filepath"
 }
 
 echo_red_text() {

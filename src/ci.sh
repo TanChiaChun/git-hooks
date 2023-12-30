@@ -63,6 +63,9 @@ run_ci() {
         'pylint_test')
             local language='PYTHON_TEST'
             ;;
+        'markdown' | 'markdown_write')
+            local language='MARKDOWN'
+            ;;
     esac
 
     local files_raw
@@ -156,6 +159,18 @@ run_ci() {
                 is_error=1
             fi
             ;;
+        'markdown')
+            if ! markdownlint --config ./config/.markdownlint.jsonc \
+                "${files[@]}"; then
+                is_error=1
+            fi
+            ;;
+        'markdown_write')
+            if ! markdownlint --config ./config/.markdownlint.jsonc --fix \
+                "${files[@]}"; then
+                is_error=1
+            fi
+            ;;
     esac
 
     if [[ "$is_error" -eq 1 ]]; then
@@ -185,6 +200,14 @@ run_ci_bash_shfmt() {
 run_ci_bash_shfmt_write() {
     run_ci 'shfmt_write'
     run_ci 'shfmt_write_test'
+}
+
+run_ci_markdown() {
+    run_ci 'markdown'
+}
+
+run_ci_markdown_write() {
+    run_ci 'markdown_write'
 }
 
 run_ci_python() {

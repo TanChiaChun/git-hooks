@@ -101,6 +101,21 @@ EOF
     [ "$status" -ne 0 ]
 }
 
+@test "run_ci_markdown()" {
+    cat <<"EOF" >"$test_file"
+# git-hooks
+EOF
+    run run_ci 'markdown'
+    [ "$status" -eq 0 ]
+
+    cat <<"EOF" >"$test_file"
+# git-hooks
+
+EOF
+    run run_ci 'markdown'
+    [ "$status" -ne 0 ]
+}
+
 @test "run_ci_mypy()" {
     prepend_venv_bin_to_path
 

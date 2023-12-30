@@ -37,7 +37,7 @@ prepend_venv_bin_to_path() {
         PATH="./venv/Scripts:$PATH"
     else
         echo 'Cannot find venv binary directory'
-        return 1 # For fail-fast behavior of set -o errexit & pipefail
+        return 1
     fi
 }
 
@@ -212,7 +212,7 @@ run_ci_markdown_write() {
 
 run_ci_python() {
     if ! prepend_venv_bin_to_path; then
-        return 1 # For fail-fast behavior of set -o errexit & pipefail
+        return 1
     fi
 
     run_ci_python_black

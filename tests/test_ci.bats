@@ -48,6 +48,14 @@ EOF
     IFS="$OLD_IFS"
 }
 
+@test "has_python_files()" {
+    run has_python_files
+    [ "$status" -eq 0 ]
+
+    # Cannot test fail test case for now as filter_git_files.py has been set to
+    # always output 1 file when run from Bats.
+}
+
 @test "prepend_venv_bin_to_path()" {
     local test_dir="$BATS_TMPDIR/venv"
 

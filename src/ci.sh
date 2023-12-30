@@ -2,14 +2,14 @@
 
 add_wd() {
     # add_working_directory
-    local path="$1"
+    local filepath="$1"
 
-    if [[ "$path" == '.'* ]] || [[ "$path" == '/'* ]]; then
+    if [[ "$filepath" == '.'* ]] || [[ "$filepath" == '/'* ]]; then
         echo 'Path should not start with . or /'
         exit 1
     fi
 
-    echo "$git_hooks_working_dir/$path"
+    echo "$git_hooks_working_dir/$filepath"
 }
 
 echo_red_text() {
@@ -35,6 +35,17 @@ handle_ci_fail() {
     echo_red_text '##################################################'
 
     return 1 # For fail-fast behavior of set -o errexit & pipefail
+}
+
+has_python_files() {
+    local files_raw
+    files_raw="$(python "$(add_wd 'src/filter_git_files.py')" 'PYTHON_BOTH')"
+    mapfile -t files <<<"${files_raw//$'\r'/}"
+
+    if [[ "${files[*]}" == '' ]]; then
+        echo "python no files"
+        return 1
+    fi
 }
 
 prepend_venv_bin_to_path() {
@@ -233,15 +244,18 @@ run_ci_markdown_write() {
 }
 
 run_ci_python() {
-    if ! prepend_venv_bin_to_path; then
-        return 1
+    if [[ -d './venv' ]]; then
+        prepend_venv_bin_to_path
+        run_ci_python_black
+        run_ci_python_pylint
+        run_ci_python_mypy
+        run_ci_python_isort
+        run_ci_python_unittest
+    else
+        if (has_python_files); then
+            return 1
+        fi
     fi
-
-    run_ci_python_black
-    run_ci_python_pylint
-    run_ci_python_mypy
-    run_ci_python_isort
-    run_ci_python_unittest
 }
 
 run_ci_python_black() {

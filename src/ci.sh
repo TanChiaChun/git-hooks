@@ -160,13 +160,13 @@ run_ci() {
             fi
             ;;
         'markdown')
-            if ! markdownlint --config ./config/.markdownlint.jsonc \
+            if ! markdownlint --config './config/.markdownlint.jsonc' \
                 "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'markdown_write')
-            if ! markdownlint --config ./config/.markdownlint.jsonc --fix \
+            if ! markdownlint --config './config/.markdownlint.jsonc' --fix \
                 "${files[@]}"; then
                 is_error=1
             fi

@@ -101,6 +101,10 @@ jobs:
         run: |
           pip install --requirement ./requirements-dev.txt
           black --version
+      - name: Install markdownlint
+        run: |
+          npm install --global markdownlint-cli
+          markdownlint --version
       - name: Install Bash (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: |

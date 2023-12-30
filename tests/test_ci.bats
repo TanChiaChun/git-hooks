@@ -7,6 +7,20 @@ setup() {
     load '../src/ci.sh'
 }
 
+@test "add_wd()" {
+    run add_wd 'path'
+    [ "$status" -eq 0 ]
+    [[ "$output" == *'/path' ]]
+
+    run add_wd './path'
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Path should not start with . or /' ]
+
+    run add_wd '/path'
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Path should not start with . or /' ]
+}
+
 @test "get_first_env_var()" {
     local env_file="$BATS_TMPDIR/.env"
     local env_name='PYTHONPATH'

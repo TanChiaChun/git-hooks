@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+add_wd() {
+    # add_working_directory
+    local path="$1"
+
+    if [[ "$path" == '.'* ]] || [[ "$path" == '/'* ]]; then
+        echo 'Path should not start with . or /'
+        exit 1
+    fi
+
+    echo "$git_hooks_working_dir/$path"
+}
+
 echo_red_text() {
     local text="$1"
     declare -r RED_CODE=31
@@ -69,7 +81,7 @@ run_ci() {
     esac
 
     local files_raw
-    files_raw="$(python './src/filter_git_files.py' "$language")"
+    files_raw="$(python "$(add_wd 'src/filter_git_files.py')" "$language")"
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
     echo '##################################################'
@@ -118,19 +130,21 @@ run_ci() {
             done
             ;;
         'black')
-            if ! black --check --diff --config './config/pyproject.toml' \
-                "${files[@]}"; then
+            if ! black --check --diff --config \
+                "$(add_wd 'config/pyproject.toml')" "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'black_write')
-            if ! black --config './config/pyproject.toml' "${files[@]}"; then
+            if ! black --config "$(add_wd 'config/pyproject.toml')" \
+                "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'pylint')
             for file in "${files[@]}"; do
-                if ! pylint --rcfile './config/pylintrc.toml' "$file"; then
+                if ! pylint --rcfile "$(add_wd 'config/pylintrc.toml')" \
+                    "$file"; then
                     is_error=1
                 fi
             done
@@ -138,14 +152,16 @@ run_ci() {
         'pylint_test')
             for file in "${files[@]}"; do
                 if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \
-                    pylint --rcfile './config/pylintrc_test.toml' "$file"; then
+                    pylint --rcfile "$(add_wd 'config/pylintrc_test.toml')" \
+                    "$file"; then
                     is_error=1
                 fi
             done
             ;;
         'mypy')
             if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \
-                mypy --config-file './config/mypy.ini' "${files[@]}"; then
+                mypy --config-file "$(add_wd 'config/mypy.ini')" \
+                "${files[@]}"; then
                 is_error=1
             fi
             ;;
@@ -160,13 +176,14 @@ run_ci() {
             fi
             ;;
         'markdown')
-            if ! markdownlint --config './config/.markdownlint.jsonc' \
-                "${files[@]}"; then
+            if ! markdownlint --config \
+                "$(add_wd 'config/.markdownlint.jsonc')" "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'markdown_write')
-            if ! markdownlint --config './config/.markdownlint.jsonc' --fix \
+            if ! markdownlint --config \
+                "$(add_wd 'config/.markdownlint.jsonc')" --fix \
                 "${files[@]}"; then
                 is_error=1
             fi
@@ -252,7 +269,7 @@ run_ci_python_unittest() {
     echo 'Running unittest'
     echo '##################################################'
 
-    options_raw="$(python './src/get_unittest_options.py')"
+    options_raw="$(python "$(add_wd 'src/get_unittest_options.py')")"
     mapfile -t options <<<"${options_raw//$'\r'/}"
 
     if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \

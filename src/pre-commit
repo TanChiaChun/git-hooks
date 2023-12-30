@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# shellcheck source=/dev/null
+source "${0%/*}/ci.sh"
+
+get_git_branch() {
+    git branch --show-current
+}
+
+reject_commit_main_branch() {
+    local current_branch="$1"
+
+    if [[ "$current_branch" == 'main' ]]; then
+        echo 'Cannot commit to main branch.'
+        exit 1
+    fi
+}
+
+main() {
+    set -o errexit
+    set -o pipefail
+    reject_commit_main_branch "$(get_git_branch)"
+    run_ci_bash
+    run_ci_python
+    run_ci_markdown
+}
+
+if [[ "$0" != *"bats-core"* ]]; then
+    main
+fi

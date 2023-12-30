@@ -84,6 +84,11 @@ run_ci() {
     files_raw="$(python "$(add_wd 'src/filter_git_files.py')" "$language")"
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
+    if [[ "${files[*]}" == '' ]]; then
+        echo "$choice no files"
+        return
+    fi
+
     echo '##################################################'
     echo "Running $choice"
     for file in "${files[@]}"; do

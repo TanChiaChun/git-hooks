@@ -137,7 +137,7 @@ run_ci() {
             ;;
         'pylint_test')
             for file in "${files[@]}"; do
-                if ! env "$(get_first_env_var .'/.env' 'PYTHONPATH')" \
+                if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \
                     pylint --rcfile './config/pylintrc_test.toml' "$file"; then
                     is_error=1
                 fi

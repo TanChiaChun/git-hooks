@@ -211,7 +211,10 @@ run_ci_markdown_write() {
 }
 
 run_ci_python() {
-    prepend_venv_bin_to_path
+    if ! prepend_venv_bin_to_path; then
+        return 1 # For fail-fast behavior of set -o errexit & pipefail
+    fi
+
     run_ci_python_black
     run_ci_python_pylint
     run_ci_python_mypy

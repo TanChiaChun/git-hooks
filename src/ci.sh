@@ -297,7 +297,7 @@ run_ci_python_unittest() {
     fi
 }
 
-update_working_dir() {
+set_git_hooks_working_dir() {
     if [[ "$PWD" == *'/git-hooks' ]]; then
         git_hooks_working_dir="$PWD"
     elif [[ -d './git-hooks' ]]; then
@@ -307,11 +307,11 @@ update_working_dir() {
         return 1
     fi
 
-    echo "Updated working directory to '$git_hooks_working_dir'"
+    echo "Set git-hooks working directory to '$git_hooks_working_dir'"
 }
 
 main() {
-    if ! update_working_dir; then
+    if ! set_git_hooks_working_dir; then
         return 1
     fi
 }

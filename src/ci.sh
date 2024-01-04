@@ -43,7 +43,6 @@ has_python_files() {
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
     if [[ "${files[*]}" == '' ]]; then
-        echo "python no files"
         return 1
     fi
 }
@@ -253,7 +252,10 @@ run_ci_python() {
         run_ci_python_unittest
     else
         if (has_python_files); then
+            echo "python files found, but venv not created"
             return 1
+        else
+            echo "python no files"
         fi
     fi
 }

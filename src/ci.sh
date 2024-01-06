@@ -1,17 +1,5 @@
 #!/usr/bin/env bash
 
-add_wd() {
-    # add_working_directory
-    local filepath="$1"
-
-    if [[ "$filepath" == '.'* ]] || [[ "$filepath" == '/'* ]]; then
-        echo 'Path should not start with . or /'
-        exit 1
-    fi
-
-    echo "$git_hooks_working_dir/$filepath"
-}
-
 echo_red_text() {
     local text="$1"
     declare -r RED_CODE=31
@@ -39,7 +27,8 @@ handle_ci_fail() {
 
 has_python_files() {
     local files_raw
-    files_raw="$(python "$(add_wd 'src/filter_git_files.py')" 'PYTHON_BOTH')"
+    files_raw="$(python "$(update_path 'src/filter_git_files.py')" \
+        'PYTHON_BOTH')"
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
     if [[ "${files[*]}" == '' ]]; then
@@ -91,7 +80,7 @@ run_ci() {
     esac
 
     local files_raw
-    files_raw="$(python "$(add_wd 'src/filter_git_files.py')" "$language")"
+    files_raw="$(python "$(update_path 'src/filter_git_files.py')" "$language")"
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
     if [[ "${files[*]}" == '' ]]; then
@@ -146,19 +135,19 @@ run_ci() {
             ;;
         'black')
             if ! black --check --diff --config \
-                "$(add_wd 'config/pyproject.toml')" "${files[@]}"; then
+                "$(update_path 'config/pyproject.toml')" "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'black_write')
-            if ! black --config "$(add_wd 'config/pyproject.toml')" \
+            if ! black --config "$(update_path 'config/pyproject.toml')" \
                 "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'pylint')
             for file in "${files[@]}"; do
-                if ! pylint --rcfile "$(add_wd 'config/pylintrc.toml')" \
+                if ! pylint --rcfile "$(update_path 'config/pylintrc.toml')" \
                     "$file"; then
                     is_error=1
                 fi
@@ -166,8 +155,8 @@ run_ci() {
             ;;
         'pylint_test')
             for file in "${files[@]}"; do
-                if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \
-                    pylint --rcfile "$(add_wd 'config/pylintrc_test.toml')" \
+                if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" pylint \
+                    --rcfile "$(update_path 'config/pylintrc_test.toml')" \
                     "$file"; then
                     is_error=1
                 fi
@@ -175,7 +164,7 @@ run_ci() {
             ;;
         'mypy')
             if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \
-                mypy --config-file "$(add_wd 'config/mypy.ini')" \
+                mypy --config-file "$(update_path 'config/mypy.ini')" \
                 "${files[@]}"; then
                 is_error=1
             fi
@@ -192,13 +181,14 @@ run_ci() {
             ;;
         'markdown')
             if ! markdownlint --config \
-                "$(add_wd 'config/.markdownlint.jsonc')" "${files[@]}"; then
+                "$(update_path 'config/.markdownlint.jsonc')" \
+                "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'markdown_write')
             if ! markdownlint --config \
-                "$(add_wd 'config/.markdownlint.jsonc')" --fix \
+                "$(update_path 'config/.markdownlint.jsonc')" --fix \
                 "${files[@]}"; then
                 is_error=1
             fi
@@ -290,7 +280,7 @@ run_ci_python_unittest() {
     echo 'Running unittest'
     echo '##################################################'
 
-    options_raw="$(python "$(add_wd 'src/get_unittest_options.py')")"
+    options_raw="$(python "$(update_path 'src/get_unittest_options.py')")"
     mapfile -t options <<<"${options_raw//$'\r'/}"
 
     if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \
@@ -310,6 +300,22 @@ set_git_hooks_working_dir() {
     fi
 
     echo "Set git-hooks working directory to '$git_hooks_working_dir'"
+}
+
+update_path() {
+    local filepath="$1"
+
+    if [[ "$filepath" == '.'* ]] || [[ "$filepath" == '/'* ]]; then
+        echo 'Path should not start with . or /'
+        exit 1
+    fi
+
+    local dir="$git_hooks_working_dir"
+    if [[ -f "./$filepath" ]]; then
+        dir='.'
+    fi
+
+    echo "$dir/$filepath"
 }
 
 main() {

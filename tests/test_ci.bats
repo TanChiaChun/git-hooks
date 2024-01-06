@@ -7,20 +7,6 @@ setup() {
     load '../src/ci.sh'
 }
 
-@test "add_wd()" {
-    run add_wd 'path'
-    [ "$status" -eq 0 ]
-    [[ "$output" == *'/path' ]]
-
-    run add_wd './path'
-    [ "$status" -eq 1 ]
-    [ "$output" == 'Path should not start with . or /' ]
-
-    run add_wd '/path'
-    [ "$status" -eq 1 ]
-    [ "$output" == 'Path should not start with . or /' ]
-}
-
 @test "get_first_env_var()" {
     local env_file="$BATS_TMPDIR/.env"
     local env_name='PYTHONPATH'
@@ -271,6 +257,28 @@ EOF
     cd "$OLDPWD"
     [ "$status" -eq 1 ]
     [ "$output" == 'Unsupported git-hooks working directory' ]
+}
+
+@test "update_path()" {
+    run update_path 'path'
+    [ "$status" -eq 0 ]
+    [[ "$output" == *'/path' ]]
+
+    run update_path './path'
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Path should not start with . or /' ]
+
+    run update_path '/path'
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Path should not start with . or /' ]
+
+    cd "$BATS_TMPDIR"
+    echo '' >'./test.ini'
+    run update_path 'test.ini'
+    rm './test.ini'
+    cd "$OLDPWD"
+    [ "$status" -eq 0 ]
+    [ "$output" == './test.ini' ]
 }
 
 teardown_file() {

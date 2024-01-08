@@ -170,12 +170,15 @@ run_ci() {
             fi
             ;;
         'isort')
-            if ! isort --diff --check-only "${files[@]}"; then
+            if ! isort --diff --check-only \
+                --settings-path "$(update_path 'config/.isort.cfg')" \
+                "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'isort_write')
-            if ! isort "${files[@]}"; then
+            if ! isort --settings-path "$(update_path 'config/.isort.cfg')" \
+                "${files[@]}"; then
                 is_error=1
             fi
             ;;

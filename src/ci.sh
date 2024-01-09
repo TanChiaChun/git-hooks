@@ -147,7 +147,8 @@ run_ci() {
             ;;
         'pylint')
             for file in "${files[@]}"; do
-                if ! pylint --rcfile "$(update_path 'config/pylintrc.toml')" \
+                if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" pylint \
+                    --rcfile "$(update_path 'config/pylintrc.toml')" \
                     "$file"; then
                     is_error=1
                 fi

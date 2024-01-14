@@ -169,6 +169,12 @@ EOF
 }
 
 @test "run_ci_python_unittest()" {
+    cd "$BATS_TMPDIR"
+    run run_ci_python_unittest
+    cd "$OLDPWD"
+    [ "$status" -eq 0 ]
+    [ "$output" == 'unittest tests directory not found' ]
+
     prepend_venv_bin_to_path
 
     cat <<"EOF" >"$py_test_file"

@@ -280,6 +280,11 @@ run_ci_python_pylint() {
 }
 
 run_ci_python_unittest() {
+    if [[ ! -d ./tests ]]; then
+        echo 'unittest tests directory not found'
+        return
+    fi
+
     echo '##################################################'
     echo 'Running unittest'
     echo '##################################################'

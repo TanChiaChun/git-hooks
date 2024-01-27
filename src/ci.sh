@@ -15,6 +15,16 @@ get_first_env_var() {
     grep --max-count=1 "$env_name=" "$env_file"
 }
 
+get_venv_bin_path() {
+    local start_dir="$1"
+
+    if [[ -d "$start_dir/venv/bin" ]]; then
+        echo "$start_dir/venv/bin"
+    elif [[ -d "$start_dir/venv/Scripts" ]]; then
+        echo "$start_dir/venv/Scripts"
+    fi
+}
+
 handle_ci_fail() {
     local ci="$1"
 
@@ -42,14 +52,14 @@ prepend_venv_bin_to_path() {
         return
     fi
 
-    if [[ -d './venv/bin' ]]; then
-        PATH="./venv/bin:$PATH"
-    elif [[ -d './venv/Scripts' ]]; then
-        PATH="./venv/Scripts:$PATH"
-    else
+    local venv_bin_path
+    venv_bin_path="$(get_venv_bin_path '.')"
+    if [[ -z "$venv_bin_path" ]]; then
         echo 'Cannot find venv binary directory'
         return 1
     fi
+
+    PATH="$venv_bin_path:$PATH"
 }
 
 run_ci() {

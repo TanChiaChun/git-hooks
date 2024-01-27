@@ -4,7 +4,6 @@
 - Generate defaults if not.
 """
 
-
 import json
 import os
 from pathlib import Path

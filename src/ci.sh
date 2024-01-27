@@ -10,7 +10,7 @@ echo_red_text() {
 
 get_current_script_dir() {
     local current_script_path
-    current_script_path="$(realpath "${BASH_SOURCE[0]}")"
+    current_script_path="$(readlink -f "${BASH_SOURCE[0]}")"
 
     get_parent_dir "$current_script_path"
 }

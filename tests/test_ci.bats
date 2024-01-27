@@ -20,6 +20,24 @@ setup() {
     [ "$output" == "$env_line" ]
 }
 
+@test "get_venv_bin_path()" {
+    cd "$BATS_TMPDIR"
+
+    mkdir -p 'venv/bin'
+    run get_venv_bin_path
+    rm -r './venv'
+    [ "$status" -eq 0 ]
+    [ "$output" == './venv/bin' ]
+
+    mkdir -p 'venv/Scripts'
+    run get_venv_bin_path
+    rm -r './venv'
+    [ "$status" -eq 0 ]
+    [ "$output" == './venv/Scripts' ]
+
+    cd "$OLDPWD"
+}
+
 @test "handle_ci_fail()" {
     mapfile -t expected_output <<EOF
 $(echo_red_text '##################################################')

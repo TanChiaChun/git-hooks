@@ -16,10 +16,12 @@ get_first_env_var() {
 }
 
 get_venv_bin_path() {
-    if [[ -d './venv/bin' ]]; then
-        echo './venv/bin'
-    elif [[ -d './venv/Scripts' ]]; then
-        echo './venv/Scripts'
+    local start_dir="$1"
+
+    if [[ -d "$start_dir/venv/bin" ]]; then
+        echo "$start_dir/venv/bin"
+    elif [[ -d "$start_dir/venv/Scripts" ]]; then
+        echo "$start_dir/venv/Scripts"
     fi
 }
 
@@ -51,7 +53,7 @@ prepend_venv_bin_to_path() {
     fi
 
     local venv_bin_path
-    venv_bin_path="$(get_venv_bin_path)"
+    venv_bin_path="$(get_venv_bin_path '.')"
     if [[ -z "$venv_bin_path" ]]; then
         echo 'Cannot find venv binary directory'
         return 1

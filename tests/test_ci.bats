@@ -259,12 +259,13 @@ EOF
     [[ "$git_hooks_working_dir" == *'/git-hooks' ]]
 
     cd "$BATS_TMPDIR"
-
     mkdir "$BATS_TMPDIR/git-hooks"
     run set_git_hooks_working_dir
     rm -r './git-hooks'
+    cd "$OLDPWD"
     [ "$status" -eq 0 ]
 
+    cd "$BATS_TMPDIR"
     run set_git_hooks_working_dir
     cd "$OLDPWD"
     [ "$status" -eq 1 ]

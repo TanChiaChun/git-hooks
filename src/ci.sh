@@ -8,6 +8,13 @@ echo_red_text() {
     echo -e "\e[${RED_CODE}m$text\e[${RESET_CODE}m"
 }
 
+get_current_script_dir() {
+    local current_script_path
+    current_script_path="$(readlink -f "${BASH_SOURCE[0]}")"
+
+    get_parent_dir "$current_script_path"
+}
+
 get_first_env_var() {
     local env_file="$1"
     local env_name="$2"
@@ -15,14 +22,10 @@ get_first_env_var() {
     grep --max-count=1 "$env_name=" "$env_file"
 }
 
-get_venv_bin_path() {
-    local start_dir="$1"
+get_parent_dir() {
+    local file_path="$1"
 
-    if [[ -d "$start_dir/venv/bin" ]]; then
-        echo "$start_dir/venv/bin"
-    elif [[ -d "$start_dir/venv/Scripts" ]]; then
-        echo "$start_dir/venv/Scripts"
-    fi
+    echo "${file_path%/*}"
 }
 
 handle_ci_fail() {
@@ -321,6 +324,19 @@ set_git_hooks_working_dir() {
     echo "Set git-hooks working directory to '$git_hooks_working_dir'"
 }
 
+source_py_sh() {
+    local py_sh_path
+    py_sh_path="$(get_current_script_dir)/py.sh"
+
+    if [[ ! -f "$py_sh_path" ]]; then
+        echo "$py_sh_path not found"
+        return 1
+    fi
+
+    # shellcheck source=/dev/null
+    source "$py_sh_path"
+}
+
 update_path() {
     local filepath="$1"
 
@@ -338,6 +354,9 @@ update_path() {
 }
 
 main() {
+    if ! source_py_sh; then
+        return 1
+    fi
     if ! set_git_hooks_working_dir; then
         return 1
     fi

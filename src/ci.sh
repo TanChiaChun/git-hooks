@@ -28,6 +28,19 @@ get_parent_dir() {
     echo "${file_path%/*}"
 }
 
+get_pythonpath_value() {
+    local env_line
+    env_line="$(get_first_env_var './.env' 'PYTHONPATH')"
+    local env_value="${env_line#*=}"
+
+    if [[ ("$env_value" == *':'*) || ("$env_value" == *';'*) ]]; then
+        echo 'Multiple PYTHONPATH directories not supported for isort'
+        return 1
+    fi
+
+    echo "$env_value"
+}
+
 handle_ci_fail() {
     local ci="$1"
 

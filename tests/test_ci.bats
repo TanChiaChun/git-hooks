@@ -26,6 +26,38 @@ setup() {
     [ "$output" == '/path' ]
 }
 
+@test "get_pythonpath_value()" {
+    local env_file="./.env"
+    local env_value='./src/'
+
+    local env_line="PYTHONPATH=$env_value"
+    cd "$BATS_TMPDIR"
+    echo "$env_line" >"$env_file"
+    run get_pythonpath_value
+    rm "$env_file"
+    cd "$OLDPWD"
+    [ "$status" -eq 0 ]
+    [ "$output" == "$env_value" ]
+
+    env_line="PYTHONPATH=$env_value:./dir"
+    cd "$BATS_TMPDIR"
+    echo "$env_line" >"$env_file"
+    run get_pythonpath_value
+    rm "$env_file"
+    cd "$OLDPWD"
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Multiple PYTHONPATH directories not supported for isort' ]
+
+    env_line="PYTHONPATH=$env_value;./dir"
+    cd "$BATS_TMPDIR"
+    echo "$env_line" >"$env_file"
+    run get_pythonpath_value
+    rm "$env_file"
+    cd "$OLDPWD"
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Multiple PYTHONPATH directories not supported for isort' ]
+}
+
 @test "handle_ci_fail()" {
     mapfile -t expected_output <<EOF
 $(echo_red_text '##################################################')

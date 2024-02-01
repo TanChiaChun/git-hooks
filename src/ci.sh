@@ -197,14 +197,16 @@ run_ci() {
             fi
             ;;
         'isort')
-            if ! isort --diff --check-only \
+            if ! isort --src-path "$(get_pythonpath_value)" --diff \
+                --check-only \
                 --settings-path "$(update_path 'config/.isort.cfg')" \
                 "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'isort_write')
-            if ! isort --settings-path "$(update_path 'config/.isort.cfg')" \
+            if ! isort --src-path "$(get_pythonpath_value)" \
+                --settings-path "$(update_path 'config/.isort.cfg')" \
                 "${files[@]}"; then
                 is_error=1
             fi

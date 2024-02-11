@@ -43,5 +43,7 @@ setup() {
     rm -r './venv'
     cd "$OLDPWD"
 
+    echo "$python_path" >&3
+    echo "${BATS_TMPDIR}${venv_bin_path:1}/python" >&3
     [[ "$python_path" =~ .+"${BATS_TMPDIR}${venv_bin_path:1}/python" ]]
 }

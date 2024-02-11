@@ -43,8 +43,6 @@ setup() {
     rm -r './venv'
     cd "$OLDPWD"
 
-    local expected="${BATS_TMPDIR#/*/}${venv_bin_path:1}/python"
-    echo "$python_path" >&3
-    echo "$expected" >&3
+    local expected="${venv_bin_path:1}/python"
     [[ "$python_path" =~ .*"$expected" ]]
 }

@@ -28,3 +28,21 @@ setup() {
     [ "$status" -eq 0 ]
     [ "$output" == "$BATS_TMPDIR/venv/bin" ]
 }
+
+@test "project_venv()" {
+    cd "$BATS_TMPDIR"
+    create_project_venv
+    activate_project_venv_bash
+
+    local venv_bin_path
+    venv_bin_path="$(get_venv_bin_path '.')"
+    local python_path
+    python_path="$(which python)"
+
+    deactivate
+    rm -r './venv'
+    cd "$OLDPWD"
+
+    local expected="${venv_bin_path:1}/python"
+    [[ "$python_path" =~ .*"$expected" ]]
+}

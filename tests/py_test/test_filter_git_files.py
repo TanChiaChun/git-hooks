@@ -5,7 +5,13 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from filter_git_files import Language, filter_git_files, is_bash_file, main
+from filter_git_files import (
+    Language,
+    filter_git_files,
+    is_bash_file,
+    is_in_migrations_dir,
+    main,
+)
 
 
 class TestModule(unittest.TestCase):
@@ -23,6 +29,7 @@ class TestModule(unittest.TestCase):
             "tests/py_test/test_filter_git_files.py",
             "tests/test_bash.bats",
             "tests/test_pre-commit.bats",
+            "mysite/productivity/migrations/0001_initial.py",
         ]
 
     def test_filter_git_files_bash(self) -> None:
@@ -83,6 +90,26 @@ class TestModule(unittest.TestCase):
     def test_is_bash_file_false_dir(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdirname:
             self.assertIs(is_bash_file(tmpdirname), False)
+
+    def test_is_in_migrations_dir_true(self) -> None:
+        self.assertIs(
+            is_in_migrations_dir(
+                "mysite/productivity/migrations/0001_initial.py"
+            ),
+            True,
+        )
+
+    def test_is_in_migrations_dir_false_dir_path(self) -> None:
+        self.assertIs(
+            is_in_migrations_dir("src/filter_git_files.py"),
+            False,
+        )
+
+    def test_is_in_migrations_dir_false_root_path(self) -> None:
+        self.assertIs(
+            is_in_migrations_dir("filter_git_files.py"),
+            False,
+        )
 
     def test_main_bash(self) -> None:
         patcher_get_git_files = patch(

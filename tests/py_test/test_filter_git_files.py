@@ -70,7 +70,7 @@ class TestModule(unittest.TestCase):
 
             with open(file, mode="w", encoding="utf8") as f:
                 f.write("#!/usr/bin/env bash\n")
-            self.assertTrue(is_bash_file(file))
+            self.assertIs(is_bash_file(file), True)
 
     def test_is_bash_file_false_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -78,11 +78,11 @@ class TestModule(unittest.TestCase):
 
             with open(file, mode="w", encoding="utf8") as f:
                 f.write("\n")
-            self.assertFalse(is_bash_file(file))
+            self.assertIs(is_bash_file(file), False)
 
     def test_is_bash_file_false_dir(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdirname:
-            self.assertFalse(is_bash_file(tmpdirname))
+            self.assertIs(is_bash_file(tmpdirname), False)
 
     def test_main_bash(self) -> None:
         patcher_get_git_files = patch(

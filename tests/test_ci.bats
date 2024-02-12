@@ -38,8 +38,13 @@ setup() {
     cd "$OLDPWD"
     [ "$status" -eq 0 ]
     [ "$output" == "$env_value" ]
+}
 
-    env_line="PYTHONPATH=$env_value:./dir"
+@test "get_pythonpath_value_fail_multi_unix()" {
+    local env_file="./.env"
+    local env_value='./src/'
+
+    local env_line="PYTHONPATH=$env_value:./dir"
     cd "$BATS_TMPDIR"
     echo "$env_line" >"$env_file"
     run get_pythonpath_value
@@ -47,8 +52,13 @@ setup() {
     cd "$OLDPWD"
     [ "$status" -eq 1 ]
     [ "$output" == 'Multiple PYTHONPATH directories not supported for isort' ]
+}
 
-    env_line="PYTHONPATH=$env_value;./dir"
+@test "get_pythonpath_value_fail_multi_windows()" {
+    local env_file="./.env"
+    local env_value='./src/'
+
+    local env_line="PYTHONPATH=$env_value;./dir"
     cd "$BATS_TMPDIR"
     echo "$env_line" >"$env_file"
     run get_pythonpath_value
@@ -80,18 +90,23 @@ EOF
     # always output 1 file when run from Bats.
 }
 
-@test "prepend_venv_bin_to_path()" {
+@test "prepend_venv_bin_to_path_not_found()" {
     local test_dir="$BATS_TMPDIR/venv"
 
     mkdir "$test_dir"
     cd "$test_dir"
+    # shellcheck disable=SC2030
     export GITHUB_ACTIONS='false'
     run prepend_venv_bin_to_path
+    export -n GITHUB_ACTIONS
     cd "$OLDPWD"
     rm -r "$test_dir"
     [ "$status" -eq 1 ]
     [ "$output" == 'Cannot find venv binary directory' ]
+}
 
+@test "prepend_venv_bin_to_path_github_actions()" {
+    # shellcheck disable=SC2031
     export GITHUB_ACTIONS='true'
     run prepend_venv_bin_to_path
     export -n GITHUB_ACTIONS
@@ -100,20 +115,23 @@ EOF
         'Skip prepend venv bin to Path as running from GitHub Actions' ]
 }
 
-@test "run_ci_bats()" {
-    local bats_success_file="$BATS_TEST_DIRNAME/test_success.bats.sample"
-    local bats_fail_file="$BATS_TEST_DIRNAME/test_fail.bats.sample"
+@test "run_ci_bats_pass()" {
+    local bats_pass_file="$BATS_TEST_DIRNAME/test_pass.bats.sample"
 
-    cp "$bats_success_file" "$test_file"
+    cp "$bats_pass_file" "$test_file"
     run run_ci 'bats'
     [ "$status" -eq 0 ]
+}
+
+@test "run_ci_bats_fail()" {
+    local bats_fail_file="$BATS_TEST_DIRNAME/test_fail.bats.sample"
 
     cp "$bats_fail_file" "$test_file"
     run run_ci 'bats'
     [ "$status" -ne 0 ]
 }
 
-@test "run_ci_black()" {
+@test "run_ci_black_pass()" {
     prepend_venv_bin_to_path
 
     cat <<"EOF" >"$test_file"
@@ -121,6 +139,10 @@ pass
 EOF
     run run_ci 'black'
     [ "$status" -eq 0 ]
+}
+
+@test "run_ci_black_fail()" {
+    prepend_venv_bin_to_path
 
     cat <<"EOF" >"$test_file"
 l = ["very", "very", "long", "long", "long", "list", "list", "list", "list", "list"]
@@ -129,7 +151,7 @@ EOF
     [ "$status" -ne 0 ]
 }
 
-@test "run_ci_isort()" {
+@test "run_ci_isort_pass()" {
     prepend_venv_bin_to_path
 
     cat <<"EOF" >"$test_file"
@@ -138,6 +160,10 @@ import string
 EOF
     run run_ci 'isort'
     [ "$status" -eq 0 ]
+}
+
+@test "run_ci_isort_fail()" {
+    prepend_venv_bin_to_path
 
     cat <<"EOF" >"$test_file"
 import string
@@ -147,13 +173,16 @@ EOF
     [ "$status" -ne 0 ]
 }
 
-@test "run_ci_markdown()" {
+@test "run_ci_markdown_pass()" {
     cat <<"EOF" >"$test_file"
 # git-hooks
 EOF
     run run_ci 'markdown'
     [ "$status" -eq 0 ]
 
+}
+
+@test "run_ci_markdown_fail()" {
     cat <<"EOF" >"$test_file"
 # git-hooks
 
@@ -162,7 +191,7 @@ EOF
     [ "$status" -ne 0 ]
 }
 
-@test "run_ci_mypy()" {
+@test "run_ci_mypy_pass()" {
     prepend_venv_bin_to_path
 
     cat <<"EOF" >"$test_file"
@@ -176,6 +205,10 @@ if __name__ == "__main__":
 EOF
     run run_ci 'mypy'
     [ "$status" -eq 0 ]
+}
+
+@test "run_ci_mypy_fail()" {
+    prepend_venv_bin_to_path
 
     cat <<"EOF" >"$test_file"
 def main():
@@ -191,13 +224,17 @@ EOF
     [ "$status" -ne 0 ]
 }
 
-@test "run_ci_pylint()" {
+@test "run_ci_pylint_pass()" {
     prepend_venv_bin_to_path
 
     cat <<"EOF" >"$test_file"
 EOF
     run run_ci 'pylint'
     [ "$status" -eq 0 ]
+}
+
+@test "run_ci_pylint_fail()" {
+    prepend_venv_bin_to_path
 
     cat <<"EOF" >"$test_file"
 pass
@@ -206,13 +243,15 @@ EOF
     [ "$status" -ne 0 ]
 }
 
-@test "run_ci_python_unittest()" {
+@test "run_ci_python_unittest_empty()" {
     cd "$BATS_TMPDIR"
     run run_ci_python_unittest
     cd "$OLDPWD"
     [ "$status" -eq 0 ]
     [ "$output" == 'unittest tests directory not found' ]
+}
 
+@test "run_ci_python_unittest_pass()" {
     prepend_venv_bin_to_path
 
     cat <<"EOF" >"$py_test_file"
@@ -229,6 +268,10 @@ if __name__ == "__main__":
 EOF
     run run_ci_python_unittest
     [ "$status" -eq 0 ]
+}
+
+@test "run_ci_python_unittest_fail()" {
+    prepend_venv_bin_to_path
 
     rm -r "${BATS_TEST_FILENAME%/*}/__pycache__"
     cat <<"EOF" >"$py_test_file"
@@ -247,7 +290,7 @@ EOF
     [ "$status" -ne 0 ]
 }
 
-@test "run_ci_shellcheck()" {
+@test "run_ci_shellcheck_pass()" {
     cat <<"EOF" >"$test_file"
 #!/usr/bin/env bash
 
@@ -255,6 +298,9 @@ echo "Hello"
 EOF
     run run_ci 'shellcheck'
     [ "$status" -eq 0 ]
+}
+
+@test "run_ci_shellcheck_fail()" {
 
     cat <<"EOF" >"$test_file"
 #!/usr/bin/env bash
@@ -265,7 +311,7 @@ EOF
     [ "$status" -ne 0 ]
 }
 
-@test "run_ci_shfmt()" {
+@test "run_ci_shfmt_pass()" {
     cat <<"EOF" >"$test_file"
 #!/usr/bin/env bash
 
@@ -273,6 +319,9 @@ echo 'Hello'
 EOF
     run run_ci 'shfmt'
     [ "$status" -eq 0 ]
+}
+
+@test "run_ci_shfmt_fail()" {
 
     cat <<"EOF" >"$test_file"
 #!/usr/bin/env bash
@@ -283,20 +332,24 @@ EOF
     [ "$status" -ne 0 ]
 }
 
-@test "set_git_hooks_working_dir()" {
+@test "set_git_hooks_working_dir_current_repo()" {
     declare -g git_hooks_working_dir # To clear shellcheck SC2154
 
     run set_git_hooks_working_dir
     [ "$status" -eq 0 ]
     [[ "$git_hooks_working_dir" == *'/git-hooks' ]]
+}
 
+@test "set_git_hooks_working_dir_submodule_repo()" {
     cd "$BATS_TMPDIR"
     mkdir "$BATS_TMPDIR/git-hooks"
     run set_git_hooks_working_dir
     rm -r './git-hooks'
     cd "$OLDPWD"
     [ "$status" -eq 0 ]
+}
 
+@test "set_git_hooks_working_dir_fail()" {
     cd "$BATS_TMPDIR"
     run set_git_hooks_working_dir
     cd "$OLDPWD"
@@ -308,15 +361,9 @@ EOF
     run update_path 'path'
     [ "$status" -eq 0 ]
     [[ "$output" == *'/path' ]]
+}
 
-    run update_path './path'
-    [ "$status" -eq 1 ]
-    [ "$output" == 'Path should not start with . or /' ]
-
-    run update_path '/path'
-    [ "$status" -eq 1 ]
-    [ "$output" == 'Path should not start with . or /' ]
-
+@test "update_path2()" {
     cd "$BATS_TMPDIR"
     echo '' >'./test.ini'
     run update_path 'test.ini'
@@ -324,6 +371,18 @@ EOF
     cd "$OLDPWD"
     [ "$status" -eq 0 ]
     [ "$output" == './test.ini' ]
+}
+
+@test "update_path_fail_dot()" {
+    run update_path './path'
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Path should not start with . or /' ]
+}
+
+@test "update_path_fail_slash()" {
+    run update_path '/path'
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Path should not start with . or /' ]
 }
 
 teardown_file() {

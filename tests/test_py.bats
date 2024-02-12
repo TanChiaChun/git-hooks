@@ -2,7 +2,7 @@ setup() {
     load '../src/py.sh'
 }
 
-@test "get_venv_bin_path()" {
+@test "get_venv_bin_path_posix()" {
     cd "$BATS_TMPDIR"
     mkdir -p 'venv/bin'
     run get_venv_bin_path '.'
@@ -10,7 +10,9 @@ setup() {
     cd "$OLDPWD"
     [ "$status" -eq 0 ]
     [ "$output" == './venv/bin' ]
+}
 
+@test "get_venv_bin_path_windows()" {
     cd "$BATS_TMPDIR"
     mkdir -p 'venv/Scripts'
     run get_venv_bin_path '.'
@@ -18,7 +20,9 @@ setup() {
     cd "$OLDPWD"
     [ "$status" -eq 0 ]
     [ "$output" == './venv/Scripts' ]
+}
 
+@test "get_venv_bin_path_custom_dir()" {
     cd "$BATS_TMPDIR"
     mkdir "$BATS_TMPDIR/venv"
     mkdir "$BATS_TMPDIR/venv/bin"

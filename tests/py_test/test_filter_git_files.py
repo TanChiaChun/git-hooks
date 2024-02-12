@@ -25,7 +25,7 @@ class TestModule(unittest.TestCase):
             "tests/test_pre-commit.bats",
         ]
 
-    def test_filter_git_files(self) -> None:
+    def test_filter_git_files_bash(self) -> None:
         expected = [
             "src/bash.sh",
             "src/pre-commit",
@@ -34,6 +34,7 @@ class TestModule(unittest.TestCase):
             expected, filter_git_files(self.files, Language.BASH)
         )
 
+    def test_filter_git_files_bash_test(self) -> None:
         expected = [
             "tests/test_bash.bats",
             "tests/test_pre-commit.bats",
@@ -42,6 +43,7 @@ class TestModule(unittest.TestCase):
             expected, filter_git_files(self.files, Language.BASH_TEST)
         )
 
+    def test_filter_git_files_python(self) -> None:
         expected = [
             "src/filter_git_files.py",
             "tests/py_test/__init__.py",
@@ -50,17 +52,19 @@ class TestModule(unittest.TestCase):
             expected, filter_git_files(self.files, Language.PYTHON)
         )
 
+    def test_filter_git_files_python_test(self) -> None:
         expected = ["tests/py_test/test_filter_git_files.py"]
         self.assertListEqual(
             expected, filter_git_files(self.files, Language.PYTHON_TEST)
         )
 
+    def test_filter_git_files_markdown(self) -> None:
         expected = ["README.md"]
         self.assertListEqual(
             expected, filter_git_files(self.files, Language.MARKDOWN)
         )
 
-    def test_is_bash_file(self) -> None:
+    def test_is_bash_file_true(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdirname:
             file = str(Path(tmpdirname, "pre-commit"))
 
@@ -68,13 +72,19 @@ class TestModule(unittest.TestCase):
                 f.write("#!/usr/bin/env bash\n")
             self.assertTrue(is_bash_file(file))
 
+    def test_is_bash_file_false_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            file = str(Path(tmpdirname, "pre-commit"))
+
             with open(file, mode="w", encoding="utf8") as f:
                 f.write("\n")
             self.assertFalse(is_bash_file(file))
 
+    def test_is_bash_file_false_dir(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdirname:
             self.assertFalse(is_bash_file(tmpdirname))
 
-    def test_main(self) -> None:
+    def test_main_bash(self) -> None:
         patcher_get_git_files = patch(
             "filter_git_files.get_git_files",
             new=Mock(return_value=self.files),
@@ -92,6 +102,15 @@ class TestModule(unittest.TestCase):
             )
 
             patcher_sys_argv.stop()
+
+        patcher_get_git_files.stop()
+
+    def test_main_bash_both(self) -> None:
+        patcher_get_git_files = patch(
+            "filter_git_files.get_git_files",
+            new=Mock(return_value=self.files),
+        )
+        patcher_get_git_files.start()
 
         with patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             patcher_sys_argv = patch.object(sys, "argv", new=["", "BASH_BOTH"])

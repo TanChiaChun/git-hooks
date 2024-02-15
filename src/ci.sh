@@ -15,6 +15,18 @@ get_current_script_dir() {
     get_parent_dir "$current_script_path"
 }
 
+get_env_value() {
+    local env_line="$1"
+
+    if [[ "$env_line" =~ .+'='.+ ]]; then
+        echo "${env_line#*=}"
+    else
+        echo 'Invalid env line'
+        return 1
+    fi
+
+}
+
 get_first_env_var() {
     local env_file="$1"
     local env_name="$2"
@@ -31,7 +43,11 @@ get_parent_dir() {
 get_pythonpath_value() {
     local env_line
     env_line="$(get_first_env_var './.env' 'PYTHONPATH')"
-    local env_value="${env_line#*=}"
+    local env_value
+    if ! env_value="$(get_env_value "$env_line")"; then
+        echo 'Invalid env line'
+        return 1
+    fi
 
     if [[ ("$env_value" == *':'*) || ("$env_value" == *';'*) ]]; then
         echo 'Multiple PYTHONPATH directories not supported for isort'

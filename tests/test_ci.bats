@@ -7,6 +7,30 @@ setup() {
     load '../src/ci.sh'
 }
 
+@test "get_env_value()" {
+    run get_env_value 'PYTHONPATH=./src/'
+    [ "$status" -eq 0 ]
+    [ "$output" == './src/' ]
+}
+
+@test "get_env_value_no_equal()" {
+    run get_env_value 'PYTHONPATH./src/'
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Invalid env line' ]
+}
+
+@test "get_env_value_no_key()" {
+    run get_env_value '=./src/'
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Invalid env line' ]
+}
+
+@test "get_env_value_no_value()" {
+    run get_env_value 'PYTHONPATH='
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Invalid env line' ]
+}
+
 @test "get_first_env_var()" {
     local env_file="$BATS_TMPDIR/.env"
     local env_name='PYTHONPATH'
@@ -38,6 +62,18 @@ setup() {
     cd "$OLDPWD"
     [ "$status" -eq 0 ]
     [ "$output" == "$env_value" ]
+}
+
+@test "get_pythonpath_value_fail_invalid_env()" {
+    local env_file="./.env"
+
+    cd "$BATS_TMPDIR"
+    echo '' >"$env_file"
+    run get_pythonpath_value
+    rm "$env_file"
+    cd "$OLDPWD"
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Invalid env line' ]
 }
 
 @test "get_pythonpath_value_fail_multi_unix()" {

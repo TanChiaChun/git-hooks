@@ -15,6 +15,18 @@ get_current_script_dir() {
     get_parent_dir "$current_script_path"
 }
 
+get_env_value() {
+    local env_line="$1"
+
+    if [[ "$env_line" =~ .+'='.+ ]]; then
+        echo "${env_line#*=}"
+    else
+        echo 'Invalid env line'
+        return 1
+    fi
+
+}
+
 get_first_env_var() {
     local env_file="$1"
     local env_name="$2"
@@ -31,7 +43,11 @@ get_parent_dir() {
 get_pythonpath_value() {
     local env_line
     env_line="$(get_first_env_var './.env' 'PYTHONPATH')"
-    local env_value="${env_line#*=}"
+    local env_value
+    if ! env_value="$(get_env_value "$env_line")"; then
+        echo 'Invalid env line'
+        return 1
+    fi
 
     if [[ ("$env_value" == *':'*) || ("$env_value" == *';'*) ]]; then
         echo 'Multiple PYTHONPATH directories not supported for isort'
@@ -69,7 +85,7 @@ prepend_venv_bin_to_path() {
     fi
 
     local venv_bin_path
-    venv_bin_path="$(get_venv_bin_path '.')"
+    venv_bin_path="$(get_venv_bin_path "$PWD")"
     if [[ -z "$venv_bin_path" ]]; then
         echo 'Cannot find venv binary directory'
         return 1
@@ -271,7 +287,11 @@ run_ci_python() {
         run_ci_python_pylint
         run_ci_python_mypy
         run_ci_python_isort
-        run_ci_python_unittest
+        if [[ -n "$(get_first_env_var './.env' 'MY_DJANGO_PROJECT')" ]]; then
+            run_ci_python_django_test
+        else
+            run_ci_python_unittest
+        fi
     else
         if (has_python_files); then
             echo "python files found, but venv not created"
@@ -288,6 +308,26 @@ run_ci_python_black() {
 
 run_ci_python_black_write() {
     run_ci 'black_write'
+}
+
+run_ci_python_django_test() {
+    echo '##################################################'
+    echo 'Running Django test'
+    echo '##################################################'
+
+    cd "$(get_env_value "$(get_first_env_var './.env' 'MY_DJANGO_PROJECT')")" ||
+        return 1
+
+    local is_error=0
+    if ! python ./manage.py test; then
+        is_error=1
+    fi
+
+    cd "$OLDPWD" || exit 1
+
+    if [[ "$is_error" -eq 1 ]]; then
+        handle_ci_fail 'Django test'
+    fi
 }
 
 run_ci_python_isort() {

@@ -287,7 +287,11 @@ run_ci_python() {
         run_ci_python_pylint
         run_ci_python_mypy
         run_ci_python_isort
-        run_ci_python_unittest
+        if [[ -n "$(get_first_env_var './.env' 'MY_DJANGO_PROJECT')" ]]; then
+            run_ci_python_django_test
+        else
+            run_ci_python_unittest
+        fi
     else
         if (has_python_files); then
             echo "python files found, but venv not created"
@@ -304,6 +308,26 @@ run_ci_python_black() {
 
 run_ci_python_black_write() {
     run_ci 'black_write'
+}
+
+run_ci_python_django_test() {
+    echo '##################################################'
+    echo 'Running Django test'
+    echo '##################################################'
+
+    cd "$(get_env_value "$(get_first_env_var './.env' 'MY_DJANGO_PROJECT')")" ||
+        return 1
+
+    local is_error=0
+    if ! python ./manage.py test; then
+        is_error=1
+    fi
+
+    cd "$OLDPWD" || exit 1
+
+    if [[ "$is_error" -eq 1 ]]; then
+        handle_ci_fail 'Django test'
+    fi
 }
 
 run_ci_python_isort() {

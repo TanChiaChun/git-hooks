@@ -85,7 +85,7 @@ prepend_venv_bin_to_path() {
     fi
 
     local venv_bin_path
-    venv_bin_path="$(get_venv_bin_path '.')"
+    venv_bin_path="$(get_venv_bin_path "$PWD")"
     if [[ -z "$venv_bin_path" ]]; then
         echo 'Cannot find venv binary directory'
         return 1

@@ -31,12 +31,6 @@ setup() {
     [ "$output" == 'Invalid env line' ]
 }
 
-@test "get_parent_dir()" {
-    run get_parent_dir '/path/bash.sh'
-    [ "$status" -eq 0 ]
-    [ "$output" == '/path' ]
-}
-
 @test "get_pythonpath_value()" {
     local env_file="./.env"
     local env_value='./src/'

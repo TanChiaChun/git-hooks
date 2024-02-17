@@ -8,13 +8,6 @@ echo_red_text() {
     echo -e "\e[${RED_CODE}m$text\e[${RESET_CODE}m"
 }
 
-get_current_script_dir() {
-    local current_script_path
-    current_script_path="$(readlink -f "${BASH_SOURCE[0]}")"
-
-    get_parent_dir "$current_script_path"
-}
-
 get_env_value() {
     local env_line="$1"
 
@@ -25,12 +18,6 @@ get_env_value() {
         return 1
     fi
 
-}
-
-get_parent_dir() {
-    local file_path="$1"
-
-    echo "${file_path%/*}"
 }
 
 get_pythonpath_value() {
@@ -372,8 +359,14 @@ set_git_hooks_working_dir() {
     echo "Set git-hooks working directory to '$git_hooks_working_dir'"
 }
 
-source_sh() {
-    local sh_path="$1"
+source_sh_script_dir() {
+    local filename="$1"
+
+    local current_script_path
+    current_script_path="$(readlink -f "${BASH_SOURCE[0]}")"
+    local current_script_dir="${current_script_path%/*}"
+
+    local sh_path="$current_script_dir/$filename"
 
     if [[ ! -f "$sh_path" ]]; then
         echo "$sh_path not found"
@@ -401,10 +394,10 @@ update_path() {
 }
 
 main() {
-    if ! source_sh "$(get_current_script_dir)/helper.sh"; then
+    if ! source_sh_script_dir 'helper.sh'; then
         return 1
     fi
-    if ! source_sh "$(get_current_script_dir)/py.sh"; then
+    if ! source_sh_script_dir 'py.sh'; then
         return 1
     fi
     if ! set_git_hooks_working_dir; then

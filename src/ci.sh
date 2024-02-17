@@ -8,18 +8,6 @@ echo_red_text() {
     echo -e "\e[${RED_CODE}m$text\e[${RESET_CODE}m"
 }
 
-get_env_value() {
-    local env_line="$1"
-
-    if [[ "$env_line" =~ .+'='.+ ]]; then
-        echo "${env_line#*=}"
-    else
-        echo 'Invalid env line'
-        return 1
-    fi
-
-}
-
 get_pythonpath_value() {
     local env_line
     env_line="$(get_first_env_var './.env' 'PYTHONPATH')"

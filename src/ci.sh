@@ -380,10 +380,7 @@ set_git_hooks_working_dir() {
 }
 
 source_sh() {
-    local filename="$1"
-
-    local sh_path
-    sh_path="$(get_current_script_dir)/$filename"
+    local sh_path="$1"
 
     if [[ ! -f "$sh_path" ]]; then
         echo "$sh_path not found"
@@ -411,7 +408,7 @@ update_path() {
 }
 
 main() {
-    if ! source_sh 'py.sh'; then
+    if ! source_sh "$(get_current_script_dir)/py.sh"; then
         return 1
     fi
     if ! set_git_hooks_working_dir; then

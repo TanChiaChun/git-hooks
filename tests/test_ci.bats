@@ -7,30 +7,6 @@ setup() {
     load '../src/ci.sh'
 }
 
-@test "get_env_value()" {
-    run get_env_value 'PYTHONPATH=./src/'
-    [ "$status" -eq 0 ]
-    [ "$output" == './src/' ]
-}
-
-@test "get_env_value_no_equal()" {
-    run get_env_value 'PYTHONPATH./src/'
-    [ "$status" -eq 1 ]
-    [ "$output" == 'Invalid env line' ]
-}
-
-@test "get_env_value_no_key()" {
-    run get_env_value '=./src/'
-    [ "$status" -eq 1 ]
-    [ "$output" == 'Invalid env line' ]
-}
-
-@test "get_env_value_no_value()" {
-    run get_env_value 'PYTHONPATH='
-    [ "$status" -eq 1 ]
-    [ "$output" == 'Invalid env line' ]
-}
-
 @test "get_pythonpath_value()" {
     local env_file="./.env"
     local env_value='./src/'

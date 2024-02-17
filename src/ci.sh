@@ -267,7 +267,7 @@ run_ci_python() {
         run_ci_python_pylint
         run_ci_python_mypy
         run_ci_python_isort
-        if [[ -n "$(get_first_env_var './.env' 'MY_DJANGO_PROJECT')" ]]; then
+        if (is_django_project); then
             run_ci_python_django_test
         else
             run_ci_python_unittest

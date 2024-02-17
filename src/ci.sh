@@ -27,13 +27,6 @@ get_env_value() {
 
 }
 
-get_first_env_var() {
-    local env_file="$1"
-    local env_name="$2"
-
-    grep --max-count=1 "$env_name=" "$env_file"
-}
-
 get_parent_dir() {
     local file_path="$1"
 
@@ -408,6 +401,9 @@ update_path() {
 }
 
 main() {
+    if ! source_sh "$(get_current_script_dir)/helper.sh"; then
+        return 1
+    fi
     if ! source_sh "$(get_current_script_dir)/py.sh"; then
         return 1
     fi

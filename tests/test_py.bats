@@ -33,6 +33,22 @@ setup() {
     [ "$output" == "$BATS_TMPDIR/venv/bin" ]
 }
 
+@test "is_django_project_false()" {
+    run is_django_project
+    [ "$status" -eq 1 ]
+}
+
+@test "is_django_project_true()" {
+    local env_file="./.env"
+
+    cd "$BATS_TMPDIR"
+    echo 'MY_DJANGO_PROJECT=./mysite' >"$env_file"
+    run is_django_project
+    rm "$env_file"
+    cd "$OLDPWD"
+    [ "$status" -eq 0 ]
+}
+
 @test "project_venv()" {
     cd "$BATS_TMPDIR"
     create_project_venv

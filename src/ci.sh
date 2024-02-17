@@ -8,13 +8,6 @@ echo_red_text() {
     echo -e "\e[${RED_CODE}m$text\e[${RESET_CODE}m"
 }
 
-get_current_script_dir() {
-    local current_script_path
-    current_script_path="$(readlink -f "${BASH_SOURCE[0]}")"
-
-    get_parent_dir "$current_script_path"
-}
-
 get_env_value() {
     local env_line="$1"
 
@@ -25,19 +18,6 @@ get_env_value() {
         return 1
     fi
 
-}
-
-get_first_env_var() {
-    local env_file="$1"
-    local env_name="$2"
-
-    grep --max-count=1 "$env_name=" "$env_file"
-}
-
-get_parent_dir() {
-    local file_path="$1"
-
-    echo "${file_path%/*}"
 }
 
 get_pythonpath_value() {
@@ -287,7 +267,7 @@ run_ci_python() {
         run_ci_python_pylint
         run_ci_python_mypy
         run_ci_python_isort
-        if [[ -n "$(get_first_env_var './.env' 'MY_DJANGO_PROJECT')" ]]; then
+        if (is_django_project); then
             run_ci_python_django_test
         else
             run_ci_python_unittest
@@ -379,17 +359,22 @@ set_git_hooks_working_dir() {
     echo "Set git-hooks working directory to '$git_hooks_working_dir'"
 }
 
-source_py_sh() {
-    local py_sh_path
-    py_sh_path="$(get_current_script_dir)/py.sh"
+source_sh_script_dir() {
+    local filename="$1"
 
-    if [[ ! -f "$py_sh_path" ]]; then
-        echo "$py_sh_path not found"
+    local current_script_path
+    current_script_path="$(readlink -f "${BASH_SOURCE[0]}")"
+    local current_script_dir="${current_script_path%/*}"
+
+    local sh_path="$current_script_dir/$filename"
+
+    if [[ ! -f "$sh_path" ]]; then
+        echo "$sh_path not found"
         return 1
     fi
 
     # shellcheck source=/dev/null
-    source "$py_sh_path"
+    source "$sh_path"
 }
 
 update_path() {
@@ -409,7 +394,10 @@ update_path() {
 }
 
 main() {
-    if ! source_py_sh; then
+    if ! source_sh_script_dir 'helper.sh'; then
+        return 1
+    fi
+    if ! source_sh_script_dir 'py.sh'; then
         return 1
     fi
     if ! set_git_hooks_working_dir; then

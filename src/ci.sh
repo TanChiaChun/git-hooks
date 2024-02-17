@@ -283,8 +283,10 @@ run_ci_python_django_test() {
     echo 'Running Django test'
     echo '##################################################'
 
-    cd "$(get_env_value "$(get_first_env_var './.env' 'MY_DJANGO_PROJECT')")" ||
-        return 1
+    local django_dir
+    django_dir="$(get_env_value \
+        "$(get_first_env_var './.env' 'MY_DJANGO_PROJECT')")"
+    cd "$django_dir" || return 1
 
     local is_error=0
     if ! python ./manage.py test; then

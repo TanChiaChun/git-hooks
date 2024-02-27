@@ -251,6 +251,10 @@ run_ci_markdown_write() {
 run_ci_python() {
     if [[ -d './venv' ]]; then
         prepend_venv_bin_to_path
+        if (is_django_project); then
+            set_django_env_var
+        fi
+
         run_ci_python_black
         run_ci_python_pylint
         run_ci_python_mypy

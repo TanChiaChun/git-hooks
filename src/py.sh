@@ -34,17 +34,20 @@ set_django_env_var() {
     local django_dir
     if ! django_dir="$(get_env_value \
         "$(get_first_env_var './.env' 'MY_DJANGO_PROJECT')")"; then
+        echo 'Django environment variables not set'
         return 1
     fi
 
     local env_line
     if ! env_line="$(grep --max-count=1 'DJANGO_SETTINGS_MODULE' \
         "$django_dir/manage.py")"; then
+        echo 'Django environment variables not set'
         return 1
     fi
 
     [[ "$env_line" =~ [^'"']+'"'([^'"']+)'"'[^'"']+'"'([^'"']+)'"' ]]
     if [[ "${#BASH_REMATCH[@]}" -ne 3 ]]; then
+        echo 'Django environment variables not set'
         return 1
     fi
     local key="${BASH_REMATCH[1]}"

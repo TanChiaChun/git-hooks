@@ -109,6 +109,7 @@ setup() {
     run set_django_env_var
     cd "$OLDPWD"
     [ "$status" -eq 1 ]
+    [[ "$output" == *'Django environment variables not set' ]]
 }
 
 @test "set_django_env_var_no_env_line()" {
@@ -120,6 +121,7 @@ setup() {
     rm "$env_file"
     cd "$OLDPWD"
     [ "$status" -eq 1 ]
+    [ "$output" == 'Django environment variables not set' ]
 }
 
 @test "set_django_env_var_no_django_env_line()" {
@@ -137,6 +139,7 @@ setup() {
     rm "$env_file"
     cd "$OLDPWD"
     [ "$status" -eq 1 ]
+    [ "$output" == 'Django environment variables not set' ]
 }
 
 @test "set_django_env_var_regex_mismatch()" {
@@ -154,4 +157,5 @@ setup() {
     rm "$env_file"
     cd "$OLDPWD"
     [ "$status" -eq 1 ]
+    [ "$output" == 'Django environment variables not set' ]
 }

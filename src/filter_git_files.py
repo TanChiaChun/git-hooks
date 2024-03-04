@@ -99,7 +99,8 @@ def is_in_migrations_dir(file: str) -> bool:
     E.g. Django generated migration file.
 
     Args:
-        file: File path.
+        file:
+            File path.
 
     Returns:
         True if file inside 'migrations' directory, False if no.

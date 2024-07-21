@@ -84,9 +84,17 @@ jobs:
         run: choco install shellcheck
       - name: Get ShellCheck version
         run: shellcheck --version
+      - name: Add npm local bin directory to GitHub Path (non-Windows)
+        if: ${{ matrix.os != 'windows-latest' }}
+        run: echo "$PWD/node_modules/.bin" >> $GITHUB_PATH
+      - name: Add npm local bin directory to GitHub Path (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: >
+          "$PWD/node_modules/.bin"
+          | Out-File -FilePath $env:GITHUB_PATH -Append
       - name: Install Bats
         run: |
-          npm install --global bats
+          npm install bats
           bats --version
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -100,7 +108,7 @@ jobs:
           black --version
       - name: Install markdownlint
         run: |
-          npm install --global markdownlint-cli
+          npm install markdownlint-cli
           markdownlint --version
       - name: Install Bash (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
@@ -132,9 +140,17 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+      - name: Add npm local bin directory to GitHub Path (non-Windows)
+        if: ${{ matrix.os != 'windows-latest' }}
+        run: echo "$PWD/node_modules/.bin" >> $GITHUB_PATH
+      - name: Add npm local bin directory to GitHub Path (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: >
+          "$PWD/node_modules/.bin"
+          | Out-File -FilePath $env:GITHUB_PATH -Append
       - name: Install markdownlint
         run: |
-          npm install --global markdownlint-cli
+          npm install markdownlint-cli
           markdownlint --version
       - name: Install Bash (macOS)
         if: ${{ matrix.os == 'macos-latest' }}

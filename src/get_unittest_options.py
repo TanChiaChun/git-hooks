@@ -28,7 +28,7 @@ def get_vscode_options(p: Path) -> list[str]:
 def get_unittest_options() -> list[str]:
     """Return list of unittest options."""
     options = []
-    settings_path = Path(".vscode/settings.json")
+    settings_path = Path(".vscode", "settings.json")
 
     if "BATS_TEST_FILENAME" in os.environ:
         test_path = Path(os.environ["BATS_TEST_FILENAME"]).parent

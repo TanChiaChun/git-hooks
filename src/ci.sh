@@ -37,7 +37,7 @@ handle_ci_fail() {
 
 has_python_files() {
     local files_raw
-    files_raw="$(python "$(update_path 'src/filter_git_files.py')" \
+    files_raw="$(python "$(update_path 'src/git_files_filter.py')" \
         'PYTHON_BOTH')"
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
@@ -90,7 +90,7 @@ run_ci() {
     esac
 
     local files_raw
-    files_raw="$(python "$(update_path 'src/filter_git_files.py')" "$language")"
+    files_raw="$(python "$(update_path 'src/git_files_filter.py')" "$language")"
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
     if [[ "${files[*]}" == '' ]]; then
@@ -331,7 +331,7 @@ run_ci_python_unittest() {
     echo 'Running unittest'
     echo '##################################################'
 
-    options_raw="$(python "$(update_path 'src/get_unittest_options.py')")"
+    options_raw="$(python "$(update_path 'src/unittest_options.py')")"
     mapfile -t options <<<"${options_raw//$'\r'/}"
 
     if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \

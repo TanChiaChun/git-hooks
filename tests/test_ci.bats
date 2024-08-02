@@ -79,7 +79,7 @@ EOF
     run has_python_files
     [ "$status" -eq 0 ]
 
-    # Cannot test fail test case for now as filter_git_files.py has been set to
+    # Cannot test fail test case for now as git_files_filter.py has been set to
     # always output 1 file when run from Bats.
 }
 

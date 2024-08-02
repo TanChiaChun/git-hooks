@@ -331,7 +331,7 @@ run_ci_python_unittest() {
     echo 'Running unittest'
     echo '##################################################'
 
-    options_raw="$(python "$(update_path 'src/get_unittest_options.py')")"
+    options_raw="$(python "$(update_path 'src/unittest_options.py')")"
     mapfile -t options <<<"${options_raw//$'\r'/}"
 
     if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \

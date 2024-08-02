@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, mock_open, patch
 
-from get_unittest_options import get_unittest_options, get_vscode_options, main
+from unittest_options import get_unittest_options, get_vscode_options, main
 
 
 class TestModule(unittest.TestCase):
@@ -12,7 +12,7 @@ class TestModule(unittest.TestCase):
         options = ["-v", "-s", "./tests/tests", "-p", "test*.py"]
         settings_data = {"python.testing.unittestArgs": options}
         with patch(
-            "get_unittest_options.open",
+            "unittest_options.open",
             new=mock_open(read_data=json.dumps(settings_data)),
         ):
             self.assertListEqual(get_vscode_options(Path("")), options)

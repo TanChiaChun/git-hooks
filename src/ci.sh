@@ -37,7 +37,7 @@ handle_ci_fail() {
 
 has_python_files() {
     local files_raw
-    files_raw="$(python "$(update_path 'src/filter_git_files.py')" \
+    files_raw="$(python "$(update_path 'src/git_files_filter.py')" \
         'PYTHON_BOTH')"
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
@@ -90,7 +90,7 @@ run_ci() {
     esac
 
     local files_raw
-    files_raw="$(python "$(update_path 'src/filter_git_files.py')" "$language")"
+    files_raw="$(python "$(update_path 'src/git_files_filter.py')" "$language")"
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
     if [[ "${files[*]}" == '' ]]; then

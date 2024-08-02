@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from filter_git_files import (
+from git_files_filter import (
     Language,
     filter_git_files,
     is_bash_file,
@@ -23,10 +23,10 @@ class TestModule(unittest.TestCase):
             "LICENSE",
             "README.md",
             "src/bash.sh",
-            "src/filter_git_files.py",
+            "src/git_files_filter.py",
             "src/pre-commit",
             "tests/py_test/__init__.py",
-            "tests/py_test/test_filter_git_files.py",
+            "tests/py_test/test_git_files_filter.py",
             "tests/test_bash.bats",
             "tests/test_pre-commit.bats",
             "mysite/productivity/migrations/0001_initial.py",
@@ -52,7 +52,7 @@ class TestModule(unittest.TestCase):
 
     def test_filter_git_files_python(self) -> None:
         expected = [
-            "src/filter_git_files.py",
+            "src/git_files_filter.py",
             "tests/py_test/__init__.py",
         ]
         self.assertListEqual(
@@ -60,7 +60,7 @@ class TestModule(unittest.TestCase):
         )
 
     def test_filter_git_files_python_test(self) -> None:
-        expected = ["tests/py_test/test_filter_git_files.py"]
+        expected = ["tests/py_test/test_git_files_filter.py"]
         self.assertListEqual(
             expected, filter_git_files(self.files, Language.PYTHON_TEST)
         )
@@ -101,19 +101,19 @@ class TestModule(unittest.TestCase):
 
     def test_is_in_migrations_dir_false_dir_path(self) -> None:
         self.assertIs(
-            is_in_migrations_dir("src/filter_git_files.py"),
+            is_in_migrations_dir("src/git_files_filter.py"),
             False,
         )
 
     def test_is_in_migrations_dir_false_root_path(self) -> None:
         self.assertIs(
-            is_in_migrations_dir("filter_git_files.py"),
+            is_in_migrations_dir("git_files_filter.py"),
             False,
         )
 
     def test_main_bash(self) -> None:
         patcher_get_git_files = patch(
-            "filter_git_files.get_git_files",
+            "git_files_filter.get_git_files",
             new=Mock(return_value=self.files),
         )
         patcher_get_git_files.start()
@@ -134,7 +134,7 @@ class TestModule(unittest.TestCase):
 
     def test_main_bash_both(self) -> None:
         patcher_get_git_files = patch(
-            "filter_git_files.get_git_files",
+            "git_files_filter.get_git_files",
             new=Mock(return_value=self.files),
         )
         patcher_get_git_files.start()

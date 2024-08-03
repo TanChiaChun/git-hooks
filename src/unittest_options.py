@@ -18,6 +18,12 @@ def get_vscode_options(p: Path) -> list[str]:
 
     Returns:
         List of unittest options.
+
+    Raises:
+        FileNotFoundError:
+            settings.json not found.
+        json.JSONDecodeError:
+            Error decoding settings.json.
     """
     with open(p, encoding="utf8") as f:
         j = json.load(f)
@@ -26,18 +32,24 @@ def get_vscode_options(p: Path) -> list[str]:
 
 
 def get_unittest_options() -> list[str]:
-    """Return list of unittest options."""
-    options = []
-    settings_path = Path(".vscode", "settings.json")
+    """Return list of unittest options.
 
+    - For BATS Test, return 1 module test.py.
+    - If error reading Visual Studio Code settings.json, return a set of default
+    options.
+    """
     if "BATS_TEST_FILENAME" in os.environ:
         test_path = Path(os.environ["BATS_TEST_FILENAME"]).parent
-        options.extend(["-v", f"{test_path}/test.py"])
-    elif settings_path.is_file():
-        options.append("discover")
-        options.extend(get_vscode_options(settings_path))
-    else:
-        options.extend(["discover", "-v", "-s", "./tests", "-p", "test*.py"])
+
+        return ["-v", f"{test_path}/test.py"]
+
+    settings_path = Path(".vscode", "settings.json")
+    options = ["discover"]
+    try:
+        vscode_options = get_vscode_options(settings_path)
+    except (FileNotFoundError, json.JSONDecodeError):
+        vscode_options = ["-v", "-s", "./tests", "-p", "test*.py"]
+    options.extend(vscode_options)
 
     return options
 

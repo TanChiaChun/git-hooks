@@ -87,6 +87,10 @@ run_ci() {
         'markdown' | 'markdown_write')
             local language='MARKDOWN'
             ;;
+        *)
+            echo 'Invalid CI choice'
+            return 1
+            ;;
     esac
 
     local files_raw

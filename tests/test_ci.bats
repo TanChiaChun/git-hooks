@@ -144,6 +144,12 @@ EOF
     [ "$status" -ne 0 ]
 }
 
+@test "run_ci_invalid_choice()" {
+    run run_ci 'invalid'
+    [ "$status" -eq 1 ]
+    [ "$output" == 'Invalid CI choice' ]
+}
+
 @test "run_ci_isort_pass()" {
     prepend_venv_bin_to_path
 

@@ -111,55 +111,39 @@ class TestModule(unittest.TestCase):
             False,
         )
 
-    def test_main_bash(self) -> None:
-        patcher_get_git_files = patch(
-            "git_files_filter.get_git_files",
-            new=Mock(return_value=self.files),
-        )
-        patcher_get_git_files.start()
-
-        with patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
-            patcher_sys_argv = patch.object(sys, "argv", new=["", "BASH"])
-            patcher_sys_argv.start()
-
+    @patch.object(sys, "argv", new=["", "BASH"])
+    @patch("sys.stdout", new_callable=io.StringIO)
+    def test_main_bash(self, mock_stdout: io.StringIO) -> None:
+        with patch(
+            "git_files_filter.get_git_files", new=Mock(return_value=self.files)
+        ):
             main()
-            self.assertEqual(
-                mock_stdout.getvalue(),
-                "\n".join(["src/bash.sh", "src/pre-commit", ""]),
-            )
 
-            patcher_sys_argv.stop()
-
-        patcher_get_git_files.stop()
-
-    def test_main_bash_both(self) -> None:
-        patcher_get_git_files = patch(
-            "git_files_filter.get_git_files",
-            new=Mock(return_value=self.files),
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            "\n".join(["src/bash.sh", "src/pre-commit", ""]),
         )
-        patcher_get_git_files.start()
 
-        with patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
-            patcher_sys_argv = patch.object(sys, "argv", new=["", "BASH_BOTH"])
-            patcher_sys_argv.start()
-
+    @patch.object(sys, "argv", new=["", "BASH_BOTH"])
+    @patch("sys.stdout", new_callable=io.StringIO)
+    def test_main_bash_both(self, mock_stdout: io.StringIO) -> None:
+        with patch(
+            "git_files_filter.get_git_files", new=Mock(return_value=self.files)
+        ):
             main()
-            self.assertEqual(
-                mock_stdout.getvalue(),
-                "\n".join(
-                    [
-                        "src/bash.sh",
-                        "src/pre-commit",
-                        "tests/test_bash.bats",
-                        "tests/test_pre-commit.bats",
-                        "",
-                    ]
-                ),
-            )
 
-            patcher_sys_argv.stop()
-
-        patcher_get_git_files.stop()
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            "\n".join(
+                [
+                    "src/bash.sh",
+                    "src/pre-commit",
+                    "tests/test_bash.bats",
+                    "tests/test_pre-commit.bats",
+                    "",
+                ]
+            ),
+        )
 
     @patch.dict("os.environ", values={"BATS_TMPDIR": ""})
     @patch("sys.stdout", new_callable=io.StringIO)

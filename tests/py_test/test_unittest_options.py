@@ -22,13 +22,13 @@ class TestModule(unittest.TestCase):
         self.assertListEqual(get_unittest_options(), ["-v", "./test.py"])
 
     @patch("pathlib.Path.is_file", new=Mock(return_value=False))
-    def test_main(self) -> None:
-        with patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
-            main()
-            self.assertEqual(
-                mock_stdout.getvalue(),
-                "discover\n-v\n-s\n./tests\n-p\ntest*.py\n",
-            )
+    @patch("sys.stdout", new_callable=io.StringIO)
+    def test_main(self, mock_stdout: io.StringIO) -> None:
+        main()
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            "discover\n-v\n-s\n./tests\n-p\ntest*.py\n",
+        )
 
 
 if __name__ == "__main__":

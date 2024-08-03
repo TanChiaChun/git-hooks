@@ -2,8 +2,7 @@ import io
 import sys
 import tempfile
 import unittest
-from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, mock_open, patch
 
 from git_files_filter import (
     Language,
@@ -71,21 +70,17 @@ class TestModule(unittest.TestCase):
             expected, filter_git_files(self.files, Language.MARKDOWN)
         )
 
+    @patch(
+        "git_files_filter.open",
+        new=mock_open(read_data="#!/usr/bin/env bash\n"),
+    )
+    @patch("pathlib.Path.is_file", new=Mock(return_value=True))
     def test_is_bash_file_true(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            file = str(Path(tmpdirname, "pre-commit"))
+        self.assertIs(is_bash_file(""), True)
 
-            with open(file, mode="w", encoding="utf8") as f:
-                f.write("#!/usr/bin/env bash\n")
-            self.assertIs(is_bash_file(file), True)
-
+    @patch("git_files_filter.open", new=mock_open(read_data="\n"))
     def test_is_bash_file_false_file(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            file = str(Path(tmpdirname, "pre-commit"))
-
-            with open(file, mode="w", encoding="utf8") as f:
-                f.write("\n")
-            self.assertIs(is_bash_file(file), False)
+        self.assertIs(is_bash_file(""), False)
 
     def test_is_bash_file_false_dir(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdirname:

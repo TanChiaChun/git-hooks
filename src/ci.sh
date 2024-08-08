@@ -264,9 +264,9 @@ run_ci_python() {
         run_ci_python_mypy
         run_ci_python_isort
         if (is_django_project); then
-            run_ci_python_django_test
+            run_ci_python_test_django_django
         else
-            run_ci_python_unittest
+            run_ci_python_test_unittest
         fi
     else
         if (has_python_files); then
@@ -286,28 +286,6 @@ run_ci_python_black_write() {
     run_ci 'black_write'
 }
 
-run_ci_python_django_test() {
-    echo '##################################################'
-    echo 'Running Django test'
-    echo '##################################################'
-
-    local django_dir
-    django_dir="$(get_env_value \
-        "$(get_first_env_var './.env' 'MY_DJANGO_PROJECT')")"
-    cd "$django_dir" || return 1
-
-    local is_error=0
-    if ! python ./manage.py test; then
-        is_error=1
-    fi
-
-    cd "$OLDPWD" || exit 1
-
-    if [[ "$is_error" -eq 1 ]]; then
-        handle_ci_fail 'Django test'
-    fi
-}
-
 run_ci_python_isort() {
     run_ci 'isort'
 }
@@ -325,23 +303,111 @@ run_ci_python_pylint() {
     run_ci 'pylint_test'
 }
 
-run_ci_python_unittest() {
+run_ci_python_test() {
+    local choice="$1"
+
     if [[ ! -d ./tests ]]; then
         echo 'unittest tests directory not found'
         return
     fi
 
     echo '##################################################'
-    echo 'Running unittest'
+    echo "Running $choice"
     echo '##################################################'
 
     options_raw="$(python "$(update_path 'src/unittest_options.py')")"
     mapfile -t options <<<"${options_raw//$'\r'/}"
 
-    if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \
-        python -m unittest "${options[@]}"; then
-        handle_ci_fail 'unittest'
+    local is_error=0
+    case "$choice" in
+        'unittest')
+            if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \
+                python -m unittest "${options[@]}"; then
+                is_error=1
+            fi
+            ;;
+        'coverage_py')
+            if env "$(get_first_env_var './.env' 'PYTHONPATH')" \
+                coverage run --branch -m unittest "${options[@]}"; then
+                coverage html
+            else
+                is_error=1
+            fi
+            ;;
+        *)
+            echo 'Invalid test choice'
+            return 1
+            ;;
+    esac
+
+    if [[ "$is_error" -eq 1 ]]; then
+        handle_ci_fail "$choice"
     fi
+}
+
+run_ci_python_test_coverage_py() {
+    if (is_django_project); then
+        run_ci_python_test_django 'coverage_py'
+    else
+        run_ci_python_test 'coverage_py'
+    fi
+}
+
+run_ci_python_test_django() {
+    local choice="$1"
+
+    local test_name
+    case "$choice" in
+        'django')
+            test_name='Django test'
+            ;;
+        'coverage_py')
+            test_name='Django test - Coverage.py'
+            ;;
+        *)
+            echo 'Invalid django test choice'
+            return 1
+            ;;
+    esac
+
+    echo '##################################################'
+    echo "Running $test_name"
+    echo '##################################################'
+
+    local django_dir
+    django_dir="$(get_env_value \
+        "$(get_first_env_var './.env' 'MY_DJANGO_PROJECT')")"
+    cd "$django_dir" || return 1
+
+    local is_error=0
+    case "$choice" in
+        'django')
+            if ! python ./manage.py test; then
+                is_error=1
+            fi
+            ;;
+        'coverage_py')
+            if coverage run --branch --source='.' ./manage.py test; then
+                coverage html
+            else
+                is_error=1
+            fi
+            ;;
+    esac
+
+    cd "$OLDPWD" || exit 1
+
+    if [[ "$is_error" -eq 1 ]]; then
+        handle_ci_fail "$test_name"
+    fi
+}
+
+run_ci_python_test_django_django() {
+    run_ci_python_test_django 'django'
+}
+
+run_ci_python_test_unittest() {
+    run_ci_python_test 'unittest'
 }
 
 set_git_hooks_working_dir() {

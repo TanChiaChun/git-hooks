@@ -114,7 +114,12 @@ def is_in_migrations_dir(file: str) -> bool:
 
 
 def print_filtered_files(language_choice: LanguageChoice) -> None:
-    """Print filtered Git files."""
+    """Print filtered Git files.
+
+    Args:
+        language_choice:
+            `LanguageChoice` Enum.
+    """
     files = get_git_files()
     filtered_files = []
     for language in language_choice.value:

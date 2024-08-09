@@ -81,23 +81,23 @@ class TestModule(unittest.TestCase):
 
         self.assertListEqual(git_files, [Path(file) for file in self.files])
 
+    @patch("subprocess.run", new=Mock(side_effect=FileNotFoundError))
     def test_get_git_files_git_not_found(self) -> None:
-        with patch(
-            "subprocess.run", new=Mock(side_effect=FileNotFoundError)
-        ), self.assertRaises(FileNotFoundError), self.assertLogs(
+        with self.assertRaises(FileNotFoundError), self.assertLogs(
             logger="git_files_filter", level="ERROR"
         ) as cm:
             get_git_files()
 
             self.assertEqual(cm.records[0].getMessage(), "git not found")
 
+    @patch(
+        "subprocess.run",
+        new=Mock(
+            side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
+        ),
+    )
     def test_get_git_files_called_process_error(self) -> None:
-        with patch(
-            "subprocess.run",
-            new=Mock(
-                side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
-            ),
-        ), self.assertRaises(subprocess.CalledProcessError), self.assertLogs(
+        with self.assertRaises(subprocess.CalledProcessError), self.assertLogs(
             logger="git_files_filter", level="ERROR"
         ) as cm:
             get_git_files()

@@ -1,11 +1,15 @@
 """Run git ls-files & filter based on language."""
 
 import argparse
+import logging
 import os
 import re
 import subprocess
+import sys
 from enum import Enum
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 class Language(Enum):
@@ -61,16 +65,31 @@ def filter_git_files(files: list[str], language: Language) -> list[str]:
     return filtered_files
 
 
-def get_git_files() -> list[str]:
+def get_git_files() -> list[Path]:
     """Run git ls-files & return list of files.
 
     Returns:
         List of files.
+
+    Raises:
+        FileNotFoundError:
+            `git` not found.
+
+        subprocess.CalledProcessError:
+            Error running `git ls-file`.
     """
-    p = subprocess.run(
-        ["git", "ls-files"], capture_output=True, check=True, text=True
-    )
-    return p.stdout.splitlines()
+    try:
+        p = subprocess.run(
+            ["git", "ls-files"], capture_output=True, check=True, text=True
+        )
+    except FileNotFoundError:
+        logger.error("git not found")
+        raise
+    except subprocess.CalledProcessError:
+        logger.error("Error running git ls-file")
+        raise
+
+    return [Path(file) for file in p.stdout.splitlines()]
 
 
 def is_bash_file(file: str) -> bool:
@@ -113,14 +132,18 @@ def is_in_migrations_dir(file: str) -> bool:
     return False
 
 
-def print_filtered_files(language_choice: LanguageChoice) -> None:
+def print_filtered_files(
+    git_files: list[Path], language_choice: LanguageChoice
+) -> None:
     """Print filtered Git files.
 
     Args:
+        git_files:
+            List of git files.
         language_choice:
             `LanguageChoice` Enum.
     """
-    files = get_git_files()
+    files = [str(file) for file in git_files]
     filtered_files = []
     for language in language_choice.value:
         filtered_files.extend(filter_git_files(files, language))
@@ -135,6 +158,8 @@ def main() -> None:
         print(f"{os.environ['BATS_TMPDIR']}/test")
         return
 
+    logging.basicConfig()
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "language_choice",
@@ -142,7 +167,12 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    print_filtered_files(LanguageChoice[args.language_choice])
+    try:
+        git_files = get_git_files()
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        sys.exit(1)
+
+    print_filtered_files(git_files, LanguageChoice[args.language_choice])
 
 
 if __name__ == "__main__":

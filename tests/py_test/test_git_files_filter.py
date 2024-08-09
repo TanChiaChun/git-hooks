@@ -1,12 +1,15 @@
 import io
+import subprocess
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import Mock, mock_open, patch
 
 from git_files_filter import (
     Language,
     filter_git_files,
+    get_git_files,
     is_bash_file,
     is_in_migrations_dir,
     main,
@@ -69,6 +72,40 @@ class TestModule(unittest.TestCase):
         self.assertListEqual(
             expected, filter_git_files(self.files, Language.MARKDOWN)
         )
+
+    def test_get_git_files(self) -> None:
+        completed_process_mock = Mock(stdout="\n".join(self.files) + "\n")
+        with patch(
+            "subprocess.run", new=Mock(return_value=completed_process_mock)
+        ):
+            git_files = get_git_files()
+
+        self.assertListEqual(git_files, [Path(file) for file in self.files])
+
+    def test_get_git_files_git_not_found(self) -> None:
+        with patch(
+            "subprocess.run", new=Mock(side_effect=FileNotFoundError)
+        ), self.assertRaises(FileNotFoundError), self.assertLogs(
+            logger="git_files_filter", level="ERROR"
+        ) as cm:
+            get_git_files()
+
+            self.assertEqual(cm.records[0].getMessage(), "git not found")
+
+    def test_get_git_files_called_process_error(self) -> None:
+        with patch(
+            "subprocess.run",
+            new=Mock(
+                side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
+            ),
+        ), self.assertRaises(subprocess.CalledProcessError), self.assertLogs(
+            logger="git_files_filter", level="ERROR"
+        ) as cm:
+            get_git_files()
+
+            self.assertEqual(
+                cm.records[0].getMessage(), "Error running git ls-file"
+            )
 
     @patch(
         "git_files_filter.open",

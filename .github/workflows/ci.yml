@@ -106,6 +106,10 @@ jobs:
         run: |
           pip install --requirement './requirements-dev.txt'
           black --version
+          pylint --version
+          mypy --version
+          isort --version
+          coverage --version
       - name: Install markdownlint
         run: |
           npm install markdownlint-cli

@@ -55,11 +55,13 @@ def filter_git_files(files: list[str], language: Language) -> list[str]:
             file for file in files if "." not in Path(file).name
         ]
         filtered_files.extend(
-            [file for file in files_no_extension if is_bash_file(file)]
+            [file for file in files_no_extension if is_bash_file(Path(file))]
         )
     elif language is Language.PYTHON:
         filtered_files = [
-            file for file in filtered_files if not is_in_migrations_dir(file)
+            file
+            for file in filtered_files
+            if not is_in_migrations_dir(Path(file))
         ]
 
     return filtered_files
@@ -92,7 +94,7 @@ def get_git_files() -> list[Path]:
     return [Path(file) for file in p.stdout.splitlines()]
 
 
-def is_bash_file(file: str) -> bool:
+def is_bash_file(file: Path) -> bool:
     """Read first line of file, return True if bash is present.
 
     Args:
@@ -102,17 +104,16 @@ def is_bash_file(file: str) -> bool:
     Returns:
         True if bash is present in first line of file, False if no.
     """
-    if Path(file).is_file():
-        with open(file, encoding="utf8") as f:
+    if file.is_file():
+        with file.open(encoding="utf8") as f:
             first_line = f.readline()
 
-        if "bash" in first_line:
-            return True
+        return "bash" in first_line
 
     return False
 
 
-def is_in_migrations_dir(file: str) -> bool:
+def is_in_migrations_dir(file: Path) -> bool:
     """Check if file is inside a 'migrations' directory.
 
     E.g. Django generated migration file.
@@ -124,12 +125,7 @@ def is_in_migrations_dir(file: str) -> bool:
     Returns:
         True if file inside 'migrations' directory, False if no.
     """
-    path_parts = Path(file).parts
-
-    if (len(path_parts) > 1) and (path_parts[-2] == "migrations"):
-        return True
-
-    return False
+    return (len(file.parts) > 1) and (file.parts[-2] == "migrations")
 
 
 def print_filtered_files(

@@ -1,7 +1,6 @@
 import io
 import subprocess
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import Mock, mock_open, patch
@@ -107,39 +106,40 @@ class TestModule(unittest.TestCase):
                 cm.records[0].getMessage(), "Error running git ls-file"
             )
 
-    @patch(
-        "git_files_filter.open",
-        new=mock_open(read_data="#!/usr/bin/env bash\n"),
-    )
-    @patch("pathlib.Path.is_file", new=Mock(return_value=True))
     def test_is_bash_file_true(self) -> None:
-        self.assertIs(is_bash_file(""), True)
+        file_mock = Mock()
+        file_mock.is_file.return_value = True
+        file_mock.open = mock_open(read_data="#!/usr/bin/env bash\n")
 
-    @patch("git_files_filter.open", new=mock_open(read_data="\n"))
+        self.assertIs(is_bash_file(file_mock), True)
+
     def test_is_bash_file_false_file(self) -> None:
-        self.assertIs(is_bash_file(""), False)
+        file_mock = Mock()
+        file_mock.is_file.return_value = True
+        file_mock.open = mock_open(read_data="\n")
+
+        self.assertIs(is_bash_file(file_mock), False)
 
     def test_is_bash_file_false_dir(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            self.assertIs(is_bash_file(tmpdirname), False)
+        self.assertIs(is_bash_file(Path("")), False)
 
     def test_is_in_migrations_dir_true(self) -> None:
         self.assertIs(
             is_in_migrations_dir(
-                "mysite/productivity/migrations/0001_initial.py"
+                Path("mysite/productivity/migrations/0001_initial.py")
             ),
             True,
         )
 
     def test_is_in_migrations_dir_false_dir_path(self) -> None:
         self.assertIs(
-            is_in_migrations_dir("src/git_files_filter.py"),
+            is_in_migrations_dir(Path("src/git_files_filter.py")),
             False,
         )
 
     def test_is_in_migrations_dir_false_root_path(self) -> None:
         self.assertIs(
-            is_in_migrations_dir("git_files_filter.py"),
+            is_in_migrations_dir(Path("git_files_filter.py")),
             False,
         )
 

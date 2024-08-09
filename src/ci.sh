@@ -2,8 +2,8 @@
 
 echo_red_text() {
     local text="$1"
-    declare -r RED_CODE=31
-    declare -r RESET_CODE=0
+    local -r RED_CODE=31
+    local -r RESET_CODE=0
 
     echo -e "\e[${RED_CODE}m$text\e[${RESET_CODE}m"
 }
@@ -315,6 +315,7 @@ run_ci_python_test() {
     echo "Running $choice"
     echo '##################################################'
 
+    local options_raw
     options_raw="$(python "$(update_path 'src/unittest_options.py')")"
     mapfile -t options <<<"${options_raw//$'\r'/}"
 

@@ -328,7 +328,8 @@ run_ci_python_test() {
             ;;
         'coverage_py')
             if env "$(get_first_env_var './.env' 'PYTHONPATH')" \
-                coverage run --branch -m unittest "${options[@]}"; then
+                coverage run --rcfile="$(update_path 'config/.coveragerc')" \
+                -m unittest "${options[@]}"; then
                 coverage html
             else
                 is_error=1
@@ -387,7 +388,8 @@ run_ci_python_test_django() {
             fi
             ;;
         'coverage_py')
-            if coverage run --branch --source='.' ./manage.py test; then
+            if coverage run --rcfile="$(update_path 'config/.coveragerc')" \
+                --source='.' ./manage.py test; then
                 coverage html
             else
                 is_error=1

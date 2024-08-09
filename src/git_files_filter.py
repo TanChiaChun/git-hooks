@@ -113,19 +113,11 @@ def is_in_migrations_dir(file: str) -> bool:
     return False
 
 
-def print_filtered_files() -> None:
+def print_filtered_files(language_choice: LanguageChoice) -> None:
     """Print filtered Git files."""
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "language_choice",
-        choices=[name for name, member in LanguageChoice.__members__.items()],
-    )
-    args = parser.parse_args()
-    language_choice = args.language_choice
-
     files = get_git_files()
     filtered_files = []
-    for language in LanguageChoice[language_choice].value:
+    for language in language_choice.value:
         filtered_files.extend(filter_git_files(files, language))
 
     for file in filtered_files:
@@ -136,8 +128,16 @@ def main() -> None:
     """Main function."""
     if "BATS_TMPDIR" in os.environ:
         print(f"{os.environ['BATS_TMPDIR']}/test")
-    else:
-        print_filtered_files()
+        return
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "language_choice",
+        choices=[name for name, member in LanguageChoice.__members__.items()],
+    )
+    args = parser.parse_args()
+
+    print_filtered_files(LanguageChoice[args.language_choice])
 
 
 if __name__ == "__main__":

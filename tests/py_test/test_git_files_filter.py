@@ -33,6 +33,10 @@ class TestModule(unittest.TestCase):
             "mysite/productivity/migrations/0001_initial.py",
         ]
 
+    @patch(
+        "git_files_filter.is_bash_file",
+        new=Mock(side_effect=lambda x: x == Path("src/pre-commit")),
+    )
     def test_filter_git_files_bash(self) -> None:
         expected = [
             "src/bash.sh",
@@ -143,6 +147,10 @@ class TestModule(unittest.TestCase):
             False,
         )
 
+    @patch(
+        "git_files_filter.is_bash_file",
+        new=Mock(side_effect=lambda x: x == Path("src/pre-commit")),
+    )
     @patch.object(sys, "argv", new=["", "BASH"])
     @patch("sys.stdout", new_callable=io.StringIO)
     def test_main_bash(self, mock_stdout: io.StringIO) -> None:
@@ -156,6 +164,10 @@ class TestModule(unittest.TestCase):
             "\n".join(["src/bash.sh", "src/pre-commit", ""]),
         )
 
+    @patch(
+        "git_files_filter.is_bash_file",
+        new=Mock(side_effect=lambda x: x == Path("src/pre-commit")),
+    )
     @patch.object(sys, "argv", new=["", "BASH_BOTH"])
     @patch("sys.stdout", new_callable=io.StringIO)
     def test_main_bash_both(self, mock_stdout: io.StringIO) -> None:

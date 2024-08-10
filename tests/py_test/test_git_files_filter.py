@@ -7,7 +7,9 @@ from unittest.mock import Mock, mock_open, patch
 
 from git_files_filter import (
     Language,
+    LanguageChoice,
     filter_git_files,
+    get_file_language,
     get_git_files,
     is_bash_file,
     is_in_migrations_dir,
@@ -15,75 +17,85 @@ from git_files_filter import (
 )
 
 
+class TestGetFileLanguage(unittest.TestCase):
+    @patch("git_files_filter.is_bash_file", new=Mock(return_value=False))
+    def test_none(self) -> None:
+        self.assertIs(get_file_language(Path("file")), None)
+
+    def test_sh(self) -> None:
+        self.assertIs(get_file_language(Path("file.sh")), Language.BASH)
+
+    def test_bats(self) -> None:
+        self.assertIs(get_file_language(Path("file.bats")), Language.BASH_TEST)
+
+    def test_md(self) -> None:
+        self.assertIs(get_file_language(Path("file.md")), Language.MARKDOWN)
+
+    def test_py_test_file(self) -> None:
+        self.assertIs(
+            get_file_language(Path("test_file.py")), Language.PYTHON_TEST
+        )
+
+    def test_py_test_dir(self) -> None:
+        self.assertIs(
+            get_file_language(Path("test", "file.py")), Language.PYTHON_TEST
+        )
+
+    def test_py(self) -> None:
+        self.assertIs(get_file_language(Path("file.py")), Language.PYTHON)
+
+    def test_py_migrations(self) -> None:
+        self.assertIs(get_file_language(Path("migrations", "file.py")), None)
+
+    @patch("git_files_filter.is_bash_file", new=Mock(return_value=True))
+    def test_bash(self) -> None:
+        self.assertIs(get_file_language(Path("file")), Language.BASH)
+
+
 class TestModule(unittest.TestCase):
     def setUp(self) -> None:
         self.files = [
-            ".env",
-            ".gitignore",
-            ".vscode/settings.json",
-            "LICENSE",
-            "README.md",
-            "src/bash.sh",
-            "src/git_files_filter.py",
-            "src/pre-commit",
-            "tests/py_test/__init__.py",
-            "tests/py_test/test_git_files_filter.py",
-            "tests/test_bash.bats",
-            "tests/test_pre-commit.bats",
-            "mysite/productivity/migrations/0001_initial.py",
+            Path(".env"),
+            Path(".gitignore"),
+            Path(".vscode/settings.json"),
+            Path("LICENSE"),
+            Path("README.md"),
+            Path("src/bash.sh"),
+            Path("src/git_files_filter.py"),
+            Path("src/pre-commit"),
+            Path("tests/py_test/__init__.py"),
+            Path("tests/py_test/test_git_files_filter.py"),
+            Path("tests/test_bash.bats"),
+            Path("tests/test_pre-commit.bats"),
+            Path("mysite/productivity/migrations/0001_initial.py"),
         ]
-
-    @patch(
-        "git_files_filter.is_bash_file",
-        new=Mock(side_effect=lambda x: x == Path("src/pre-commit")),
-    )
-    def test_filter_git_files_bash(self) -> None:
-        expected = [
-            "src/bash.sh",
-            "src/pre-commit",
-        ]
-        self.assertListEqual(
-            expected, filter_git_files(self.files, Language.BASH)
-        )
-
-    def test_filter_git_files_bash_test(self) -> None:
-        expected = [
-            "tests/test_bash.bats",
-            "tests/test_pre-commit.bats",
-        ]
-        self.assertListEqual(
-            expected, filter_git_files(self.files, Language.BASH_TEST)
-        )
 
     def test_filter_git_files_python(self) -> None:
+        expected = [Path("src/git_files_filter.py")]
+        self.assertListEqual(
+            expected, filter_git_files(self.files, LanguageChoice.PYTHON)
+        )
+
+    def test_filter_git_files_python_both(self) -> None:
         expected = [
-            "src/git_files_filter.py",
-            "tests/py_test/__init__.py",
+            Path("src/git_files_filter.py"),
+            Path("tests/py_test/__init__.py"),
+            Path("tests/py_test/test_git_files_filter.py"),
         ]
         self.assertListEqual(
-            expected, filter_git_files(self.files, Language.PYTHON)
-        )
-
-    def test_filter_git_files_python_test(self) -> None:
-        expected = ["tests/py_test/test_git_files_filter.py"]
-        self.assertListEqual(
-            expected, filter_git_files(self.files, Language.PYTHON_TEST)
-        )
-
-    def test_filter_git_files_markdown(self) -> None:
-        expected = ["README.md"]
-        self.assertListEqual(
-            expected, filter_git_files(self.files, Language.MARKDOWN)
+            expected, filter_git_files(self.files, LanguageChoice.PYTHON_BOTH)
         )
 
     def test_get_git_files(self) -> None:
-        completed_process_mock = Mock(stdout="\n".join(self.files) + "\n")
+        completed_process_mock = Mock(
+            stdout="\n".join([str(file) for file in self.files]) + "\n"
+        )
         with patch(
             "subprocess.run", new=Mock(return_value=completed_process_mock)
         ):
             git_files = get_git_files()
 
-        self.assertListEqual(git_files, [Path(file) for file in self.files])
+        self.assertListEqual(git_files, self.files)
 
     @patch("subprocess.run", new=Mock(side_effect=FileNotFoundError))
     def test_get_git_files_git_not_found(self) -> None:
@@ -162,31 +174,6 @@ class TestModule(unittest.TestCase):
         self.assertEqual(
             mock_stdout.getvalue(),
             "\n".join(["src/bash.sh", "src/pre-commit", ""]),
-        )
-
-    @patch(
-        "git_files_filter.is_bash_file",
-        new=Mock(side_effect=lambda x: x == Path("src/pre-commit")),
-    )
-    @patch.object(sys, "argv", new=["", "BASH_BOTH"])
-    @patch("sys.stdout", new_callable=io.StringIO)
-    def test_main_bash_both(self, mock_stdout: io.StringIO) -> None:
-        with patch(
-            "git_files_filter.get_git_files", new=Mock(return_value=self.files)
-        ):
-            main()
-
-        self.assertEqual(
-            mock_stdout.getvalue(),
-            "\n".join(
-                [
-                    "src/bash.sh",
-                    "src/pre-commit",
-                    "tests/test_bash.bats",
-                    "tests/test_pre-commit.bats",
-                    "",
-                ]
-            ),
         )
 
     @patch.dict("os.environ", values={"BATS_TMPDIR": ""})

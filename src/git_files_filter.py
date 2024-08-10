@@ -3,23 +3,23 @@
 import argparse
 import logging
 import os
-import re
 import subprocess
 import sys
-from enum import Enum
+from enum import Enum, auto
 from pathlib import Path
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 
 class Language(Enum):
-    """Languages with their file extensions."""
+    """Languages."""
 
-    BASH = r".+\.sh$"
-    BASH_TEST = r".+\.bats$"
-    PYTHON = r"(?!test).+\.py$"
-    PYTHON_TEST = r"test.+\.py$"
-    MARKDOWN = r".+\.md$"
+    BASH = auto()
+    BASH_TEST = auto()
+    PYTHON = auto()
+    PYTHON_TEST = auto()
+    MARKDOWN = auto()
 
 
 class LanguageChoice(Enum):
@@ -34,37 +34,59 @@ class LanguageChoice(Enum):
     MARKDOWN = [Language.MARKDOWN]
 
 
-def filter_git_files(files: list[str], language: Language) -> list[str]:
-    """Filter git files by language.
+def filter_git_files(
+    git_files: list[Path], language_choice: LanguageChoice
+) -> list[Path]:
+    """Filter git files by Language choice.
 
     Args:
-        files:
+        git_files:
             List of git files.
-        language:
-            Language enum.
+        language_choice:
+            `LanguageChoice` Enum.
 
     Returns:
         List of filtered files.
     """
-    filtered_files = [
-        file for file in files if re.match(language.value, Path(file).name)
+    return [
+        file
+        for file in git_files
+        if get_file_language(file) in language_choice.value
     ]
 
-    if language is Language.BASH:
-        files_no_extension = [
-            file for file in files if "." not in Path(file).name
-        ]
-        filtered_files.extend(
-            [file for file in files_no_extension if is_bash_file(Path(file))]
-        )
-    elif language is Language.PYTHON:
-        filtered_files = [
-            file
-            for file in filtered_files
-            if not is_in_migrations_dir(Path(file))
-        ]
 
-    return filtered_files
+def get_file_language(file: Path) -> Optional[Language]:
+    """Determine Language of file.
+
+    Args:
+        file:
+            File path.
+
+    Returns:
+        `Language` enum if match, `None` otherwise.
+    """
+    file_language = None
+
+    if file.suffix:
+        match file.suffix:
+            case ".sh":
+                file_language = Language.BASH
+            case ".bats":
+                file_language = Language.BASH_TEST
+            case ".md":
+                file_language = Language.MARKDOWN
+            case ".py":
+                if file.name.startswith("test") or file.parts[0].startswith(
+                    "test"
+                ):
+                    file_language = Language.PYTHON_TEST
+                elif not is_in_migrations_dir(file):
+                    file_language = Language.PYTHON
+    else:
+        if is_bash_file(file):
+            file_language = Language.BASH
+
+    return file_language
 
 
 def get_git_files() -> list[Path]:
@@ -128,26 +150,6 @@ def is_in_migrations_dir(file: Path) -> bool:
     return (len(file.parts) > 1) and (file.parts[-2] == "migrations")
 
 
-def print_filtered_files(
-    git_files: list[Path], language_choice: LanguageChoice
-) -> None:
-    """Print filtered Git files.
-
-    Args:
-        git_files:
-            List of git files.
-        language_choice:
-            `LanguageChoice` Enum.
-    """
-    files = [str(file) for file in git_files]
-    filtered_files = []
-    for language in language_choice.value:
-        filtered_files.extend(filter_git_files(files, language))
-
-    for file in filtered_files:
-        print(file)
-
-
 def main() -> None:
     """Main function."""
     if "BATS_TMPDIR" in os.environ:
@@ -168,7 +170,10 @@ def main() -> None:
     except (FileNotFoundError, subprocess.CalledProcessError):
         sys.exit(1)
 
-    print_filtered_files(git_files, LanguageChoice[args.language_choice])
+    for file in filter_git_files(
+        git_files, LanguageChoice[args.language_choice]
+    ):
+        print(str(file))
 
 
 if __name__ == "__main__":

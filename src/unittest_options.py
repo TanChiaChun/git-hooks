@@ -44,14 +44,12 @@ def get_unittest_options() -> list[str]:
         return ["-v", f"{test_path}/test.py"]
 
     settings_path = Path(".vscode", "settings.json")
-    options = ["discover"]
     try:
         vscode_options = get_vscode_options(settings_path)
     except (FileNotFoundError, json.JSONDecodeError):
         vscode_options = ["-v", "-s", "./tests", "-p", "test*.py"]
-    options.extend(vscode_options)
 
-    return options
+    return ["discover"] + vscode_options
 
 
 def main() -> None:

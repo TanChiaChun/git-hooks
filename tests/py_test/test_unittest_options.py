@@ -1,6 +1,5 @@
 import io
 import json
-import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import Mock, mock_open, patch
@@ -22,17 +21,16 @@ class TestModule(unittest.TestCase):
         self.assertListEqual(get_vscode_options(path_mock), self.options)
 
     def test_get_vscode_options_file_not_found_error(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            settings_path = Path(tmpdirname, "file")
-            with self.assertRaises(FileNotFoundError), self.assertLogs(
-                "unittest_options", "WARNING"
-            ) as cm:
-                get_vscode_options(settings_path)
+        path_mock = Mock()
+        path_mock.open.side_effect = FileNotFoundError
+        path_mock.resolve.return_value = Path("file")
 
-                self.assertEqual(
-                    cm.records[0].getMessage(),
-                    f"{settings_path.resolve().as_posix()} not found.",
-                )
+        with self.assertRaises(FileNotFoundError), self.assertLogs(
+            "unittest_options", "WARNING"
+        ) as cm:
+            get_vscode_options(path_mock)
+
+            self.assertEqual(cm.records[0].getMessage(), "file not found.")
 
     def test_get_vscode_options_json_decode_error(self) -> None:
         path_mock = Mock()

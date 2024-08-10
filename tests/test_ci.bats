@@ -395,7 +395,6 @@ EOF
 }
 
 @test "run_ci_shfmt_fail()" {
-
     cat <<"EOF" >"$test_file"
 #!/usr/bin/env bash
 

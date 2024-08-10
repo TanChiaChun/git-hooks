@@ -23,15 +23,15 @@ class TestModule(unittest.TestCase):
 
     def test_get_vscode_options_file_not_found_error(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdirname:
-            p = Path(tmpdirname, "file")
+            settings_path = Path(tmpdirname, "file")
             with self.assertRaises(FileNotFoundError), self.assertLogs(
                 "unittest_options", "WARNING"
             ) as cm:
-                get_vscode_options(p)
+                get_vscode_options(settings_path)
 
                 self.assertEqual(
                     cm.records[0].getMessage(),
-                    f"{p.resolve().as_posix()} not found.",
+                    f"{settings_path.resolve().as_posix()} not found.",
                 )
 
     def test_get_vscode_options_json_decode_error(self) -> None:

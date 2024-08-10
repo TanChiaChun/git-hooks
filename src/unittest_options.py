@@ -12,11 +12,11 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
-def get_vscode_options(p: Path) -> list[str]:
+def get_vscode_options(settings_path: Path) -> list[str]:
     """Read from Visual Studio Code settings.json.
 
     Args:
-        p:
+        settings_path:
             Path to settings.json.
 
     Returns:
@@ -31,19 +31,21 @@ def get_vscode_options(p: Path) -> list[str]:
             python.testing.unittestArgs key not found.
     """
     try:
-        with p.open(encoding="utf8") as f:
+        with settings_path.open(encoding="utf8") as f:
             try:
-                j = json.load(f)
+                settings = json.load(f)
             except json.JSONDecodeError:
-                logger.warning("Error decoding %s.", p.resolve().as_posix())
+                logger.warning(
+                    "Error decoding %s.", settings_path.resolve().as_posix()
+                )
                 raise
 
     except FileNotFoundError:
-        logger.warning("%s not found.", p.resolve().as_posix())
+        logger.warning("%s not found.", settings_path.resolve().as_posix())
         raise
 
     try:
-        options: list[str] = j["python.testing.unittestArgs"]
+        options: list[str] = settings["python.testing.unittestArgs"]
     except KeyError:
         logger.warning("python.testing.unittestArgs key not found.")
         raise

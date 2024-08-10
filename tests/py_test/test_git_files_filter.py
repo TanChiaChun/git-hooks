@@ -182,6 +182,17 @@ class TestModule(unittest.TestCase):
         main()
         self.assertEqual(mock_stdout.getvalue(), "/test\n")
 
+    @patch(
+        "git_files_filter.get_git_files",
+        new=Mock(
+            side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
+        ),
+    )
+    @patch.object(sys, "argv", new=["", "BASH"])
+    def test_main_called_process_error(self) -> None:
+        with self.assertRaises(SystemExit):
+            main()
+
 
 if __name__ == "__main__":
     unittest.main()

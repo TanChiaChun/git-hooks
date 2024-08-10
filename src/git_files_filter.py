@@ -1,21 +1,25 @@
 """Run git ls-files & filter based on language."""
 
 import argparse
+import logging
 import os
-import re
 import subprocess
-from enum import Enum
+import sys
+from enum import Enum, auto
 from pathlib import Path
+from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 
 class Language(Enum):
-    """Languages with their file extensions."""
+    """Languages."""
 
-    BASH = r".+\.sh$"
-    BASH_TEST = r".+\.bats$"
-    PYTHON = r"(?!test).+\.py$"
-    PYTHON_TEST = r"test.+\.py$"
-    MARKDOWN = r".+\.md$"
+    BASH = auto()
+    BASH_TEST = auto()
+    PYTHON = auto()
+    PYTHON_TEST = auto()
+    MARKDOWN = auto()
 
 
 class LanguageChoice(Enum):
@@ -30,50 +34,89 @@ class LanguageChoice(Enum):
     MARKDOWN = [Language.MARKDOWN]
 
 
-def filter_git_files(files: list[str], language: Language) -> list[str]:
-    """Filter git files by language.
+def filter_git_files(
+    git_files: list[Path], language_choice: LanguageChoice
+) -> list[Path]:
+    """Filter git files by Language choice.
 
     Args:
-        files:
+        git_files:
             List of git files.
-        language:
-            Language enum.
+        language_choice:
+            `LanguageChoice` Enum.
 
     Returns:
         List of filtered files.
     """
-    filtered_files = [
-        file for file in files if re.match(language.value, Path(file).name)
+    return [
+        file
+        for file in git_files
+        if get_file_language(file) in language_choice.value
     ]
 
-    if language is Language.BASH:
-        files_no_extension = [
-            file for file in files if "." not in Path(file).name
-        ]
-        filtered_files.extend(
-            [file for file in files_no_extension if is_bash_file(file)]
-        )
-    elif language is Language.PYTHON:
-        filtered_files = [
-            file for file in filtered_files if not is_in_migrations_dir(file)
-        ]
 
-    return filtered_files
+def get_file_language(file: Path) -> Optional[Language]:
+    """Determine Language of file.
+
+    Args:
+        file:
+            File path.
+
+    Returns:
+        `Language` enum if match, `None` otherwise.
+    """
+    file_language = None
+
+    if file.suffix:
+        match file.suffix:
+            case ".sh":
+                file_language = Language.BASH
+            case ".bats":
+                file_language = Language.BASH_TEST
+            case ".md":
+                file_language = Language.MARKDOWN
+            case ".py":
+                if file.name.startswith("test") or file.parts[0].startswith(
+                    "test"
+                ):
+                    file_language = Language.PYTHON_TEST
+                elif not is_in_migrations_dir(file):
+                    file_language = Language.PYTHON
+    else:
+        if is_bash_file(file):
+            file_language = Language.BASH
+
+    return file_language
 
 
-def get_git_files() -> list[str]:
+def get_git_files() -> list[Path]:
     """Run git ls-files & return list of files.
 
     Returns:
         List of files.
+
+    Raises:
+        FileNotFoundError:
+            `git` not found.
+
+        subprocess.CalledProcessError:
+            Error running `git ls-file`.
     """
-    p = subprocess.run(
-        ["git", "ls-files"], capture_output=True, check=True, text=True
-    )
-    return p.stdout.splitlines()
+    try:
+        p = subprocess.run(
+            ["git", "ls-files"], capture_output=True, check=True, text=True
+        )
+    except FileNotFoundError:
+        logger.error("git not found")
+        raise
+    except subprocess.CalledProcessError:
+        logger.error("Error running git ls-file")
+        raise
+
+    return [Path(file) for file in p.stdout.splitlines()]
 
 
-def is_bash_file(file: str) -> bool:
+def is_bash_file(file: Path) -> bool:
     """Read first line of file, return True if bash is present.
 
     Args:
@@ -83,17 +126,16 @@ def is_bash_file(file: str) -> bool:
     Returns:
         True if bash is present in first line of file, False if no.
     """
-    if Path(file).is_file():
-        with open(file, encoding="utf8") as f:
+    if file.is_file():
+        with file.open(encoding="utf8") as f:
             first_line = f.readline()
 
-        if "bash" in first_line:
-            return True
+        return "bash" in first_line
 
     return False
 
 
-def is_in_migrations_dir(file: str) -> bool:
+def is_in_migrations_dir(file: Path) -> bool:
     """Check if file is inside a 'migrations' directory.
 
     E.g. Django generated migration file.
@@ -105,39 +147,33 @@ def is_in_migrations_dir(file: str) -> bool:
     Returns:
         True if file inside 'migrations' directory, False if no.
     """
-    path_parts = Path(file).parts
-
-    if (len(path_parts) > 1) and (path_parts[-2] == "migrations"):
-        return True
-
-    return False
-
-
-def print_filtered_files() -> None:
-    """Print filtered Git files."""
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "language_choice",
-        choices=[name for name, member in LanguageChoice.__members__.items()],
-    )
-    args = parser.parse_args()
-    language_choice = args.language_choice
-
-    files = get_git_files()
-    filtered_files = []
-    for language in LanguageChoice[language_choice].value:
-        filtered_files.extend(filter_git_files(files, language))
-
-    for file in filtered_files:
-        print(file)
+    return (len(file.parts) > 1) and (file.parts[-2] == "migrations")
 
 
 def main() -> None:
     """Main function."""
     if "BATS_TMPDIR" in os.environ:
         print(f"{os.environ['BATS_TMPDIR']}/test")
-    else:
-        print_filtered_files()
+        return
+
+    logging.basicConfig()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "language_choice",
+        choices=[name for name, member in LanguageChoice.__members__.items()],
+    )
+    args = parser.parse_args()
+
+    try:
+        git_files = get_git_files()
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        sys.exit(1)
+
+    for file in filter_git_files(
+        git_files, LanguageChoice[args.language_choice]
+    ):
+        print(file.as_posix())
 
 
 if __name__ == "__main__":

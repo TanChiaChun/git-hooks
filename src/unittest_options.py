@@ -5,15 +5,18 @@
 """
 
 import json
+import logging
 import os
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
 
-def get_vscode_options(p: Path) -> list[str]:
+
+def get_vscode_options(settings_path: Path) -> list[str]:
     """Read from Visual Studio Code settings.json.
 
     Args:
-        p:
+        settings_path:
             Path to settings.json.
 
     Returns:
@@ -24,10 +27,29 @@ def get_vscode_options(p: Path) -> list[str]:
             settings.json not found.
         json.JSONDecodeError:
             Error decoding settings.json.
+        KeyError:
+            python.testing.unittestArgs key not found.
     """
-    with open(p, encoding="utf8") as f:
-        j = json.load(f)
-    options: list[str] = j["python.testing.unittestArgs"]
+    try:
+        with settings_path.open(encoding="utf8") as f:
+            try:
+                settings = json.load(f)
+            except json.JSONDecodeError:
+                logger.warning(
+                    "Error decoding %s.", settings_path.resolve().as_posix()
+                )
+                raise
+
+    except FileNotFoundError:
+        logger.warning("%s not found.", settings_path.resolve().as_posix())
+        raise
+
+    try:
+        options: list[str] = settings["python.testing.unittestArgs"]
+    except KeyError:
+        logger.warning("python.testing.unittestArgs key not found.")
+        raise
+
     return options
 
 
@@ -43,19 +65,18 @@ def get_unittest_options() -> list[str]:
 
         return ["-v", f"{test_path}/test.py"]
 
-    settings_path = Path(".vscode", "settings.json")
-    options = ["discover"]
     try:
-        vscode_options = get_vscode_options(settings_path)
-    except (FileNotFoundError, json.JSONDecodeError):
+        vscode_options = get_vscode_options(Path(".vscode", "settings.json"))
+    except (FileNotFoundError, json.JSONDecodeError, KeyError):
         vscode_options = ["-v", "-s", "./tests", "-p", "test*.py"]
-    options.extend(vscode_options)
 
-    return options
+    return ["discover"] + vscode_options
 
 
 def main() -> None:
     """Main function."""
+    logging.basicConfig()
+
     for option in get_unittest_options():
         print(option)
 

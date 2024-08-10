@@ -1,6 +1,5 @@
 import io
 import json
-import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import Mock, mock_open, patch
@@ -16,51 +15,64 @@ class TestModule(unittest.TestCase):
         )
 
     def test_get_vscode_options(self) -> None:
-        with patch(
-            "unittest_options.open",
-            new=mock_open(read_data=self.settings_data),
-        ):
-            self.assertListEqual(get_vscode_options(Path("")), self.options)
+        path_mock = Mock()
+        path_mock.open = mock_open(read_data=self.settings_data)
+
+        self.assertListEqual(get_vscode_options(path_mock), self.options)
 
     def test_get_vscode_options_file_not_found_error(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            with self.assertRaises(FileNotFoundError):
-                get_vscode_options(Path(tmpdirname, "file"))
+        path_mock = Mock()
+        path_mock.open.side_effect = FileNotFoundError
+        path_mock.resolve.return_value = Path("file")
 
-    @patch("unittest_options.open", new=mock_open(read_data=""))
+        with self.assertRaises(FileNotFoundError), self.assertLogs(
+            "unittest_options", "WARNING"
+        ) as cm:
+            get_vscode_options(path_mock)
+
+            self.assertEqual(cm.records[0].getMessage(), "file not found.")
+
     def test_get_vscode_options_json_decode_error(self) -> None:
-        with self.assertRaises(json.JSONDecodeError):
-            get_vscode_options(Path(""))
+        path_mock = Mock()
+        path_mock.open = mock_open(read_data="")
+        path_mock.resolve.return_value = Path("file")
+
+        with self.assertRaises(json.JSONDecodeError), self.assertLogs(
+            "unittest_options", "WARNING"
+        ) as cm:
+            get_vscode_options(path_mock)
+
+            self.assertEqual(cm.records[0].getMessage(), "Error decoding file.")
+
+    def test_get_vscode_options_key_error(self) -> None:
+        path_mock = Mock()
+        path_mock.open = mock_open(read_data=json.dumps({"key": "value"}))
+
+        with self.assertRaises(KeyError), self.assertLogs(
+            "unittest_options", "WARNING"
+        ) as cm:
+            get_vscode_options(path_mock)
+
+            self.assertEqual(
+                cm.records[0].getMessage(),
+                "python.testing.unittestArgs key not found.",
+            )
 
     def test_get_unittest_options(self) -> None:
         with patch(
-            "unittest_options.open",
+            "pathlib.Path.open",
             new=mock_open(read_data=self.settings_data),
         ):
-            expected = ["discover"]
-            expected.extend(self.options)
+            expected = ["discover"] + self.options
             self.assertListEqual(get_unittest_options(), expected)
 
     @patch.dict("os.environ", values={"BATS_TEST_FILENAME": ""})
     def test_get_unittest_options_bats(self) -> None:
         self.assertListEqual(get_unittest_options(), ["-v", "./test.py"])
 
-    @patch("unittest_options.open", new=Mock(side_effect=FileNotFoundError))
+    @patch("pathlib.Path.open", new=Mock(side_effect=FileNotFoundError))
     def test_get_unittest_options_file_not_found_error(self) -> None:
-        self.assertListEqual(
-            get_unittest_options(),
-            ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
-        )
-
-    @patch(
-        "json.load",
-        new=Mock(side_effect=json.JSONDecodeError("Expecting value", "", 0)),
-    )
-    def test_get_unittest_options_json_decode_error(self) -> None:
-        with patch(
-            "unittest_options.open",
-            new=mock_open(read_data=self.settings_data),
-        ):
+        with self.assertLogs("unittest_options", "WARNING"):
             self.assertListEqual(
                 get_unittest_options(),
                 ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
@@ -69,7 +81,7 @@ class TestModule(unittest.TestCase):
     @patch("sys.stdout", new_callable=io.StringIO)
     def test_main(self, mock_stdout: io.StringIO) -> None:
         with patch(
-            "unittest_options.open",
+            "pathlib.Path.open",
             new=mock_open(read_data=self.settings_data),
         ):
             main()

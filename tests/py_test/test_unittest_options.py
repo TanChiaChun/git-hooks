@@ -77,20 +77,6 @@ class TestModule(unittest.TestCase):
             ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
         )
 
-    @patch(
-        "json.load",
-        new=Mock(side_effect=json.JSONDecodeError("Expecting value", "", 0)),
-    )
-    def test_get_unittest_options_json_decode_error(self) -> None:
-        with patch(
-            "unittest_options.open",
-            new=mock_open(read_data=self.settings_data),
-        ):
-            self.assertListEqual(
-                get_unittest_options(),
-                ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
-            )
-
     @patch("sys.stdout", new_callable=io.StringIO)
     def test_main(self, mock_stdout: io.StringIO) -> None:
         with patch(

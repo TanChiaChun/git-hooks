@@ -72,10 +72,11 @@ class TestModule(unittest.TestCase):
 
     @patch("pathlib.Path.open", new=Mock(side_effect=FileNotFoundError))
     def test_get_unittest_options_file_not_found_error(self) -> None:
-        self.assertListEqual(
-            get_unittest_options(),
-            ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
-        )
+        with self.assertLogs("unittest_options", "WARNING"):
+            self.assertListEqual(
+                get_unittest_options(),
+                ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
+            )
 
     @patch("sys.stdout", new_callable=io.StringIO)
     def test_main(self, mock_stdout: io.StringIO) -> None:

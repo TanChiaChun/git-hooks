@@ -23,15 +23,28 @@ class TestModule(unittest.TestCase):
 
     def test_get_vscode_options_file_not_found_error(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with self.assertRaises(FileNotFoundError):
-                get_vscode_options(Path(tmpdirname, "file"))
+            p = Path(tmpdirname, "file")
+            with self.assertRaises(FileNotFoundError), self.assertLogs(
+                "unittest_options", "WARNING"
+            ) as cm:
+                get_vscode_options(p)
+
+                self.assertEqual(
+                    cm.records[0].getMessage(),
+                    f"{p.resolve().as_posix()} not found.",
+                )
 
     def test_get_vscode_options_json_decode_error(self) -> None:
         path_mock = Mock()
         path_mock.open = mock_open(read_data="")
+        path_mock.resolve.return_value = Path("file")
 
-        with self.assertRaises(json.JSONDecodeError):
+        with self.assertRaises(json.JSONDecodeError), self.assertLogs(
+            "unittest_options", "WARNING"
+        ) as cm:
             get_vscode_options(path_mock)
+
+            self.assertEqual(cm.records[0].getMessage(), "Error decoding file.")
 
     def test_get_unittest_options(self) -> None:
         with patch(

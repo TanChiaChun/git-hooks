@@ -5,8 +5,11 @@
 """
 
 import json
+import logging
 import os
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 def get_vscode_options(p: Path) -> list[str]:
@@ -25,8 +28,18 @@ def get_vscode_options(p: Path) -> list[str]:
         json.JSONDecodeError:
             Error decoding settings.json.
     """
-    with p.open(encoding="utf8") as f:
-        j = json.load(f)
+    try:
+        with p.open(encoding="utf8") as f:
+            try:
+                j = json.load(f)
+            except json.JSONDecodeError:
+                logger.warning("Error decoding %s.", p.resolve().as_posix())
+                raise
+
+    except FileNotFoundError:
+        logger.warning("%s not found.", p.resolve().as_posix())
+        raise
+
     options: list[str] = j["python.testing.unittestArgs"]
     return options
 
@@ -53,6 +66,8 @@ def get_unittest_options() -> list[str]:
 
 def main() -> None:
     """Main function."""
+    logging.basicConfig()
+
     for option in get_unittest_options():
         print(option)
 

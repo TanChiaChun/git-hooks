@@ -50,6 +50,7 @@ class TestGetFileLanguage(unittest.TestCase):
     @patch("git_files_filter.is_bash_file", new=Mock(return_value=True))
     def test_bash(self) -> None:
         self.assertIs(get_file_language(Path("file")), Language.BASH)
+        self.assertIs(get_file_language(Path(".file")), Language.BASH)
 
 
 class TestModule(unittest.TestCase):

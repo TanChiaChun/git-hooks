@@ -27,6 +27,8 @@ def get_vscode_options(p: Path) -> list[str]:
             settings.json not found.
         json.JSONDecodeError:
             Error decoding settings.json.
+        KeyError:
+            python.testing.unittestArgs key not found.
     """
     try:
         with p.open(encoding="utf8") as f:
@@ -40,7 +42,12 @@ def get_vscode_options(p: Path) -> list[str]:
         logger.warning("%s not found.", p.resolve().as_posix())
         raise
 
-    options: list[str] = j["python.testing.unittestArgs"]
+    try:
+        options: list[str] = j["python.testing.unittestArgs"]
+    except KeyError:
+        logger.warning("python.testing.unittestArgs key not found.")
+        raise
+
     return options
 
 
@@ -58,7 +65,7 @@ def get_unittest_options() -> list[str]:
 
     try:
         vscode_options = get_vscode_options(Path(".vscode", "settings.json"))
-    except (FileNotFoundError, json.JSONDecodeError):
+    except (FileNotFoundError, json.JSONDecodeError, KeyError):
         vscode_options = ["-v", "-s", "./tests", "-p", "test*.py"]
 
     return ["discover"] + vscode_options

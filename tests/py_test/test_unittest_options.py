@@ -46,6 +46,20 @@ class TestModule(unittest.TestCase):
 
             self.assertEqual(cm.records[0].getMessage(), "Error decoding file.")
 
+    def test_get_vscode_options_key_error(self) -> None:
+        path_mock = Mock()
+        path_mock.open = mock_open(read_data=json.dumps({"key": "value"}))
+
+        with self.assertRaises(KeyError), self.assertLogs(
+            "unittest_options", "WARNING"
+        ) as cm:
+            get_vscode_options(path_mock)
+
+            self.assertEqual(
+                cm.records[0].getMessage(),
+                "python.testing.unittestArgs key not found.",
+            )
+
     def test_get_unittest_options(self) -> None:
         with patch(
             "pathlib.Path.open",

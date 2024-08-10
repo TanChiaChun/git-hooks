@@ -63,8 +63,7 @@ class TestModule(unittest.TestCase):
             "pathlib.Path.open",
             new=mock_open(read_data=self.settings_data),
         ):
-            expected = ["discover"]
-            expected.extend(self.options)
+            expected = ["discover"] + self.options
             self.assertListEqual(get_unittest_options(), expected)
 
     @patch.dict("os.environ", values={"BATS_TEST_FILENAME": ""})

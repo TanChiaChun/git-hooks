@@ -461,7 +461,7 @@ EOF
     [ "$output" == 'Path should not start with . or /' ]
 }
 
-teardown_file() {
+teardown() {
     if [[ -f "$test_file" ]]; then
         rm "$test_file"
     fi

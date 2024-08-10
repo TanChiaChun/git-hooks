@@ -173,7 +173,7 @@ def main() -> None:
     for file in filter_git_files(
         git_files, LanguageChoice[args.language_choice]
     ):
-        print(str(file))
+        print(file.as_posix())
 
 
 if __name__ == "__main__":

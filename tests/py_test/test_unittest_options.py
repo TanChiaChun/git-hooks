@@ -16,25 +16,26 @@ class TestModule(unittest.TestCase):
         )
 
     def test_get_vscode_options(self) -> None:
-        with patch(
-            "unittest_options.open",
-            new=mock_open(read_data=self.settings_data),
-        ):
-            self.assertListEqual(get_vscode_options(Path("")), self.options)
+        path_mock = Mock()
+        path_mock.open = mock_open(read_data=self.settings_data)
+
+        self.assertListEqual(get_vscode_options(path_mock), self.options)
 
     def test_get_vscode_options_file_not_found_error(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdirname:
             with self.assertRaises(FileNotFoundError):
                 get_vscode_options(Path(tmpdirname, "file"))
 
-    @patch("unittest_options.open", new=mock_open(read_data=""))
     def test_get_vscode_options_json_decode_error(self) -> None:
+        path_mock = Mock()
+        path_mock.open = mock_open(read_data="")
+
         with self.assertRaises(json.JSONDecodeError):
-            get_vscode_options(Path(""))
+            get_vscode_options(path_mock)
 
     def test_get_unittest_options(self) -> None:
         with patch(
-            "unittest_options.open",
+            "pathlib.Path.open",
             new=mock_open(read_data=self.settings_data),
         ):
             expected = ["discover"]
@@ -45,7 +46,7 @@ class TestModule(unittest.TestCase):
     def test_get_unittest_options_bats(self) -> None:
         self.assertListEqual(get_unittest_options(), ["-v", "./test.py"])
 
-    @patch("unittest_options.open", new=Mock(side_effect=FileNotFoundError))
+    @patch("pathlib.Path.open", new=Mock(side_effect=FileNotFoundError))
     def test_get_unittest_options_file_not_found_error(self) -> None:
         self.assertListEqual(
             get_unittest_options(),
@@ -69,7 +70,7 @@ class TestModule(unittest.TestCase):
     @patch("sys.stdout", new_callable=io.StringIO)
     def test_main(self, mock_stdout: io.StringIO) -> None:
         with patch(
-            "unittest_options.open",
+            "pathlib.Path.open",
             new=mock_open(read_data=self.settings_data),
         ):
             main()

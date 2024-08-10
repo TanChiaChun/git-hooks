@@ -25,7 +25,7 @@ def get_vscode_options(p: Path) -> list[str]:
         json.JSONDecodeError:
             Error decoding settings.json.
     """
-    with open(p, encoding="utf8") as f:
+    with p.open(encoding="utf8") as f:
         j = json.load(f)
     options: list[str] = j["python.testing.unittestArgs"]
     return options
@@ -43,9 +43,8 @@ def get_unittest_options() -> list[str]:
 
         return ["-v", f"{test_path}/test.py"]
 
-    settings_path = Path(".vscode", "settings.json")
     try:
-        vscode_options = get_vscode_options(settings_path)
+        vscode_options = get_vscode_options(Path(".vscode", "settings.json"))
     except (FileNotFoundError, json.JSONDecodeError):
         vscode_options = ["-v", "-s", "./tests", "-p", "test*.py"]
 

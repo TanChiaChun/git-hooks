@@ -11,9 +11,8 @@ setup() {
     local env_file="./.env"
     local env_value='./src/'
 
-    local env_line="PYTHONPATH=$env_value"
     cd "$BATS_TMPDIR"
-    echo "$env_line" >"$env_file"
+    echo "PYTHONPATH=$env_value" >"$env_file"
     run get_pythonpath_value
     rm "$env_file"
     cd "$OLDPWD"
@@ -37,9 +36,8 @@ setup() {
     local env_file="./.env"
     local env_value='./src/'
 
-    local env_line="PYTHONPATH=$env_value:./dir"
     cd "$BATS_TMPDIR"
-    echo "$env_line" >"$env_file"
+    echo "PYTHONPATH=$env_value:./dir" >"$env_file"
     run get_pythonpath_value
     rm "$env_file"
     cd "$OLDPWD"
@@ -51,9 +49,8 @@ setup() {
     local env_file="./.env"
     local env_value='./src/'
 
-    local env_line="PYTHONPATH=$env_value;./dir"
     cd "$BATS_TMPDIR"
-    echo "$env_line" >"$env_file"
+    echo "PYTHONPATH=$env_value;./dir" >"$env_file"
     run get_pythonpath_value
     rm "$env_file"
     cd "$OLDPWD"

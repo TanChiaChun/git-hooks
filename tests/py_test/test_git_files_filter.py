@@ -48,7 +48,7 @@ class TestGetFileLanguage(unittest.TestCase):
         self.assertIs(get_file_language(Path("migrations", "file.py")), None)
 
     @patch("git_files_filter.is_bash_file", new=Mock(return_value=True))
-    def test_bash(self) -> None:
+    def test_no_suffix_bash(self) -> None:
         self.assertIs(get_file_language(Path("file")), Language.BASH)
         self.assertIs(get_file_language(Path(".file")), Language.BASH)
 

@@ -53,6 +53,47 @@ class TestGetFileLanguage(unittest.TestCase):
         self.assertIs(get_file_language(Path(".file")), Language.BASH)
 
 
+class TestIsBashFile(unittest.TestCase):
+    def test_true(self) -> None:
+        file_mock = Mock()
+        file_mock.is_file.return_value = True
+        file_mock.open = mock_open(read_data="#!/usr/bin/env bash\n")
+
+        self.assertIs(is_bash_file(file_mock), True)
+
+    def test_false_file(self) -> None:
+        file_mock = Mock()
+        file_mock.is_file.return_value = True
+        file_mock.open = mock_open(read_data="\n")
+
+        self.assertIs(is_bash_file(file_mock), False)
+
+    def test_false_dir(self) -> None:
+        self.assertIs(is_bash_file(Path("")), False)
+
+
+class TestIsInMigrationsDir(unittest.TestCase):
+    def test_true(self) -> None:
+        self.assertIs(
+            is_in_migrations_dir(
+                Path("mysite/productivity/migrations/0001_initial.py")
+            ),
+            True,
+        )
+
+    def test_false_dir_path(self) -> None:
+        self.assertIs(
+            is_in_migrations_dir(Path("src/git_files_filter.py")),
+            False,
+        )
+
+    def test_false_root_path(self) -> None:
+        self.assertIs(
+            is_in_migrations_dir(Path("git_files_filter.py")),
+            False,
+        )
+
+
 class TestModule(unittest.TestCase):
     def setUp(self) -> None:
         self.files = [
@@ -122,43 +163,6 @@ class TestModule(unittest.TestCase):
             self.assertEqual(
                 cm.records[0].getMessage(), "Error running git ls-file"
             )
-
-    def test_is_bash_file_true(self) -> None:
-        file_mock = Mock()
-        file_mock.is_file.return_value = True
-        file_mock.open = mock_open(read_data="#!/usr/bin/env bash\n")
-
-        self.assertIs(is_bash_file(file_mock), True)
-
-    def test_is_bash_file_false_file(self) -> None:
-        file_mock = Mock()
-        file_mock.is_file.return_value = True
-        file_mock.open = mock_open(read_data="\n")
-
-        self.assertIs(is_bash_file(file_mock), False)
-
-    def test_is_bash_file_false_dir(self) -> None:
-        self.assertIs(is_bash_file(Path("")), False)
-
-    def test_is_in_migrations_dir_true(self) -> None:
-        self.assertIs(
-            is_in_migrations_dir(
-                Path("mysite/productivity/migrations/0001_initial.py")
-            ),
-            True,
-        )
-
-    def test_is_in_migrations_dir_false_dir_path(self) -> None:
-        self.assertIs(
-            is_in_migrations_dir(Path("src/git_files_filter.py")),
-            False,
-        )
-
-    def test_is_in_migrations_dir_false_root_path(self) -> None:
-        self.assertIs(
-            is_in_migrations_dir(Path("git_files_filter.py")),
-            False,
-        )
 
     @patch(
         "git_files_filter.is_bash_file",

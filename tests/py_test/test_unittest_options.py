@@ -25,10 +25,9 @@ class TestModule(unittest.TestCase):
         path_mock.open.side_effect = FileNotFoundError
         path_mock.resolve.return_value = Path("file")
 
-        with self.assertRaises(FileNotFoundError), self.assertLogs(
-            "unittest_options", "WARNING"
-        ) as cm:
-            get_vscode_options(path_mock)
+        with self.assertLogs("unittest_options", "WARNING") as cm:
+            with self.assertRaises(FileNotFoundError):
+                get_vscode_options(path_mock)
 
             self.assertEqual(cm.records[0].getMessage(), "file not found.")
 
@@ -37,10 +36,9 @@ class TestModule(unittest.TestCase):
         path_mock.open = mock_open(read_data="")
         path_mock.resolve.return_value = Path("file")
 
-        with self.assertRaises(json.JSONDecodeError), self.assertLogs(
-            "unittest_options", "WARNING"
-        ) as cm:
-            get_vscode_options(path_mock)
+        with self.assertLogs("unittest_options", "WARNING") as cm:
+            with self.assertRaises(json.JSONDecodeError):
+                get_vscode_options(path_mock)
 
             self.assertEqual(cm.records[0].getMessage(), "Error decoding file.")
 
@@ -48,10 +46,9 @@ class TestModule(unittest.TestCase):
         path_mock = Mock()
         path_mock.open = mock_open(read_data=json.dumps({"key": "value"}))
 
-        with self.assertRaises(KeyError), self.assertLogs(
-            "unittest_options", "WARNING"
-        ) as cm:
-            get_vscode_options(path_mock)
+        with self.assertLogs("unittest_options", "WARNING") as cm:
+            with self.assertRaises(KeyError):
+                get_vscode_options(path_mock)
 
             self.assertEqual(
                 cm.records[0].getMessage(),

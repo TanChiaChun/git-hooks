@@ -24,7 +24,7 @@ jobs:
           mypy --version
           isort --version
       - name: Install Bash (macOS)
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ inputs.os == 'macos-latest' }}
         run: |
           brew update
           brew install bash

@@ -1,0 +1,42 @@
+name: Markdown
+on:
+  workflow_call:
+    inputs:
+      os:
+        type: string
+jobs:
+  markdown:
+    runs-on: ${{ inputs.os }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Add npm local bin directory to GitHub Path (non-Windows)
+        if: ${{ inputs.os != 'windows-latest' }}
+        run: echo "$PWD/node_modules/.bin" >> $GITHUB_PATH
+      - name: Add npm local bin directory to GitHub Path (Windows)
+        if: ${{ inputs.os == 'windows-latest' }}
+        run: >
+          "$PWD/node_modules/.bin"
+          | Out-File -FilePath $env:GITHUB_PATH -Append
+      - name: Install markdownlint
+        run: |
+          npm install markdownlint-cli
+          markdownlint --version
+      - name: Install Bash (macOS)
+        if: ${{ inputs.os == 'macos-latest' }}
+        run: |
+          brew update
+          brew install bash
+      - name: Get Bash version
+        run: bash --version
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Get Python version
+        run: python --version
+      - name: Run markdownlint
+        shell: bash
+        run: |
+          source './src/ci.sh'
+          run_ci_markdown

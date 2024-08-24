@@ -7,6 +7,8 @@ on:
 jobs:
   bash:
     runs-on: ${{ inputs.os }}
+    env:
+      CI_SCRIPT_PATH: './src/ci.sh'
     steps:
       - name: Set Git autocrlf (Windows)
         if: ${{ inputs.os == 'windows-latest' }}
@@ -72,15 +74,15 @@ jobs:
       - name: Run shfmt
         shell: bash
         run: |
-          source './src/ci.sh'
+          source "$CI_SCRIPT_PATH"
           run_ci_bash_shfmt
       - name: Run ShellCheck
         shell: bash
         run: |
-          source './src/ci.sh'
+          source "$CI_SCRIPT_PATH"
           run_ci_bash_shellcheck
       - name: Run Bats
         shell: bash
         run: |
-          source './src/ci.sh'
+          source "$CI_SCRIPT_PATH"
           run_ci_bash_bats

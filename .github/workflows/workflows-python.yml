@@ -7,6 +7,8 @@ on:
 jobs:
   python:
     runs-on: ${{ inputs.os }}
+    env:
+      CI_SCRIPT_PATH: './src/ci.sh'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -33,25 +35,25 @@ jobs:
       - name: Run Black
         shell: bash
         run: |
-          source './src/ci.sh'
+          source "$CI_SCRIPT_PATH"
           run_ci_python_black
       - name: Run Pylint
         shell: bash
         run: |
-          source './src/ci.sh'
+          source "$CI_SCRIPT_PATH"
           run_ci_python_pylint
       - name: Run mypy
         shell: bash
         run: |
-          source './src/ci.sh'
+          source "$CI_SCRIPT_PATH"
           run_ci_python_mypy
       - name: Run isort
         shell: bash
         run: |
-          source './src/ci.sh'
+          source "$CI_SCRIPT_PATH"
           run_ci_python_isort
       - name: Run unittest
         shell: bash
         run: |
-          source './src/ci.sh'
+          source "$CI_SCRIPT_PATH"
           run_ci_python_test_unittest

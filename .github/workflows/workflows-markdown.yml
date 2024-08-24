@@ -7,6 +7,8 @@ on:
 jobs:
   markdown:
     runs-on: ${{ inputs.os }}
+    env:
+      CI_SCRIPT_PATH: './src/ci.sh'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -38,5 +40,5 @@ jobs:
       - name: Run markdownlint
         shell: bash
         run: |
-          source './src/ci.sh'
+          source "$CI_SCRIPT_PATH"
           run_ci_markdown

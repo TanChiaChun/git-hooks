@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -25,6 +26,7 @@ jobs:
           pylint --version
           mypy --version
           isort --version
+
       - name: Install Bash (macOS)
         if: ${{ inputs.os == 'macos-latest' }}
         run: |
@@ -32,6 +34,7 @@ jobs:
           brew install bash
       - name: Get Bash version
         run: bash --version
+
       - name: Run Black
         shell: bash
         run: |

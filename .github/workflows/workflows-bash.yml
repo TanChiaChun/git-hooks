@@ -15,6 +15,7 @@ jobs:
         run: git config --global core.autocrlf input
       - name: Check out repository code
         uses: actions/checkout@v4
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -24,6 +25,7 @@ jobs:
         run: |
           go install mvdan.cc/sh/v3/cmd/shfmt@latest
           shfmt --version
+
       - name: Install ShellCheck (macOS)
         if: ${{ inputs.os == 'macos-latest' }}
         run: |
@@ -34,6 +36,7 @@ jobs:
         run: choco install shellcheck
       - name: Get ShellCheck version
         run: shellcheck --version
+
       - name: Add npm local bin directory to GitHub Path (non-Windows)
         if: ${{ inputs.os != 'windows-latest' }}
         run: echo "$PWD/node_modules/.bin" >> $GITHUB_PATH
@@ -46,6 +49,7 @@ jobs:
         run: |
           npm install bats
           bats --version
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -60,10 +64,12 @@ jobs:
           mypy --version
           isort --version
           coverage --version
+
       - name: Install markdownlint
         run: |
           npm install markdownlint-cli
           markdownlint --version
+
       - name: Install Bash (macOS)
         if: ${{ inputs.os == 'macos-latest' }}
         run: |
@@ -71,6 +77,7 @@ jobs:
           brew install bash
       - name: Get Bash version
         run: bash --version
+
       - name: Run shfmt
         shell: bash
         run: |

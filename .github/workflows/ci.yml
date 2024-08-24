@@ -5,20 +5,23 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-    uses: TanChiaChun/git-hooks/.github/workflows/workflows-python.yml@main
+    uses: TanChiaChun/git-hooks/.github/workflows/workflows-python.yml@reuse-workflow
     with:
       os: ${{ matrix.os }}
+      submodules: false
   bash:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-    uses: TanChiaChun/git-hooks/.github/workflows/workflows-bash.yml@main
+    uses: TanChiaChun/git-hooks/.github/workflows/workflows-bash.yml@reuse-workflow
     with:
       os: ${{ matrix.os }}
+      submodules: false
   markdown:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-    uses: TanChiaChun/git-hooks/.github/workflows/workflows-markdown.yml@main
+    uses: TanChiaChun/git-hooks/.github/workflows/workflows-markdown.yml@reuse-workflow
     with:
       os: ${{ matrix.os }}
+      submodules: false

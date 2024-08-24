@@ -10,7 +10,8 @@ jobs:
   bash:
     runs-on: ${{ inputs.os }}
     env:
-      CI_SCRIPT_PATH: './src/ci.sh'
+      CI_SCRIPT_PATH: ${{ inputs.submodules && './git-hooks/src/ci.sh' ||
+        './src/ci.sh' }}
     steps:
       - name: Set Git autocrlf (Windows)
         if: ${{ inputs.os == 'windows-latest' }}

@@ -8,6 +8,7 @@ jobs:
     uses: TanChiaChun/git-hooks/.github/workflows/workflows-python.yml@main
     with:
       os: ${{ matrix.os }}
+      submodules: false
   bash:
     strategy:
       matrix:
@@ -15,6 +16,7 @@ jobs:
     uses: TanChiaChun/git-hooks/.github/workflows/workflows-bash.yml@main
     with:
       os: ${{ matrix.os }}
+      submodules: false
   markdown:
     strategy:
       matrix:
@@ -22,3 +24,4 @@ jobs:
     uses: TanChiaChun/git-hooks/.github/workflows/workflows-markdown.yml@main
     with:
       os: ${{ matrix.os }}
+      submodules: false

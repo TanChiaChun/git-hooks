@@ -4,6 +4,8 @@ on:
     inputs:
       os:
         type: string
+      submodules:
+        type: boolean
 jobs:
   markdown:
     runs-on: ${{ inputs.os }}
@@ -12,6 +14,8 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+        with:
+          submodules: ${{ inputs.submodules }}
 
       - name: Add npm local bin directory to GitHub Path (non-Windows)
         if: ${{ inputs.os != 'windows-latest' }}

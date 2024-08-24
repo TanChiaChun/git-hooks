@@ -4,6 +4,8 @@ on:
     inputs:
       os:
         type: string
+      submodules:
+        type: boolean
 jobs:
   bash:
     runs-on: ${{ inputs.os }}
@@ -15,6 +17,8 @@ jobs:
         run: git config --global core.autocrlf input
       - name: Check out repository code
         uses: actions/checkout@v4
+        with:
+          submodules: ${{ inputs.submodules }}
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -57,6 +61,7 @@ jobs:
       - name: Get Python version
         run: python --version
       - name: Install packages
+        if: ${{ !inputs.submodules }}
         run: |
           pip install --requirement './requirements-dev.txt'
           black --version

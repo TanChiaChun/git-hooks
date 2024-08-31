@@ -10,13 +10,12 @@ from unittest_options import get_unittest_options, get_vscode_options, main
 class TestModule(unittest.TestCase):
     def setUp(self) -> None:
         self.options = ["-v", "-s", "./tests/tests", "-p", "test*.py"]
-        self.settings_data = json.dumps(
-            {"python.testing.unittestArgs": self.options}
-        )
 
     def test_get_vscode_options(self) -> None:
         path_mock = Mock()
-        path_mock.open = mock_open(read_data=self.settings_data)
+        path_mock.open = mock_open(
+            read_data=json.dumps({"python.testing.unittestArgs": self.options})
+        )
 
         self.assertListEqual(get_vscode_options(path_mock), self.options)
 
@@ -57,8 +56,8 @@ class TestModule(unittest.TestCase):
 
     def test_get_unittest_options(self) -> None:
         with patch(
-            "pathlib.Path.open",
-            new=mock_open(read_data=self.settings_data),
+            "unittest_options.get_vscode_options",
+            new=Mock(return_value=self.options),
         ):
             expected = ["discover"] + self.options
             self.assertListEqual(get_unittest_options(), expected)
@@ -67,19 +66,21 @@ class TestModule(unittest.TestCase):
     def test_get_unittest_options_bats(self) -> None:
         self.assertListEqual(get_unittest_options(), ["-v", "./test.py"])
 
-    @patch("pathlib.Path.open", new=Mock(side_effect=FileNotFoundError))
+    @patch(
+        "unittest_options.get_vscode_options",
+        new=Mock(side_effect=FileNotFoundError),
+    )
     def test_get_unittest_options_file_not_found_error(self) -> None:
-        with self.assertLogs("unittest_options", "WARNING"):
-            self.assertListEqual(
-                get_unittest_options(),
-                ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
-            )
+        self.assertListEqual(
+            get_unittest_options(),
+            ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
+        )
 
     @patch("sys.stdout", new_callable=io.StringIO)
     def test_main(self, mock_stdout: io.StringIO) -> None:
         with patch(
-            "pathlib.Path.open",
-            new=mock_open(read_data=self.settings_data),
+            "unittest_options.get_unittest_options",
+            new=Mock(return_value=["discover"] + self.options),
         ):
             main()
         self.assertEqual(

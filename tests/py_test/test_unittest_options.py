@@ -7,11 +7,13 @@ from unittest.mock import Mock, mock_open, patch
 from unittest_options import get_unittest_options, get_vscode_options, main
 
 
-class TestModule(unittest.TestCase):
+class BaseFixtureTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.options = ["-v", "-s", "./tests/tests", "-p", "test*.py"]
 
-    def test_get_vscode_options(self) -> None:
+
+class TestGetVscodeOptions(BaseFixtureTestCase):
+    def test_pass(self) -> None:
         path_mock = Mock()
         path_mock.open = mock_open(
             read_data=json.dumps({"python.testing.unittestArgs": self.options})
@@ -19,7 +21,7 @@ class TestModule(unittest.TestCase):
 
         self.assertListEqual(get_vscode_options(path_mock), self.options)
 
-    def test_get_vscode_options_file_not_found_error(self) -> None:
+    def test_file_not_found_error(self) -> None:
         path_mock = Mock()
         path_mock.open.side_effect = FileNotFoundError
         path_mock.resolve.return_value = Path("file")
@@ -30,7 +32,7 @@ class TestModule(unittest.TestCase):
 
             self.assertEqual(cm.records[0].getMessage(), "file not found.")
 
-    def test_get_vscode_options_json_decode_error(self) -> None:
+    def test_json_decode_error(self) -> None:
         path_mock = Mock()
         path_mock.open = mock_open(read_data="")
         path_mock.resolve.return_value = Path("file")
@@ -41,7 +43,7 @@ class TestModule(unittest.TestCase):
 
             self.assertEqual(cm.records[0].getMessage(), "Error decoding file.")
 
-    def test_get_vscode_options_key_error(self) -> None:
+    def test_key_error(self) -> None:
         path_mock = Mock()
         path_mock.open = mock_open(read_data=json.dumps({"key": "value"}))
 
@@ -54,7 +56,9 @@ class TestModule(unittest.TestCase):
                 "python.testing.unittestArgs key not found.",
             )
 
-    def test_get_unittest_options(self) -> None:
+
+class TestGetUnittestOptions(BaseFixtureTestCase):
+    def test_pass(self) -> None:
         with patch(
             "unittest_options.get_vscode_options",
             new=Mock(return_value=self.options),
@@ -63,19 +67,21 @@ class TestModule(unittest.TestCase):
             self.assertListEqual(get_unittest_options(), expected)
 
     @patch.dict("os.environ", values={"BATS_TEST_FILENAME": ""})
-    def test_get_unittest_options_bats(self) -> None:
+    def test_bats(self) -> None:
         self.assertListEqual(get_unittest_options(), ["-v", "./test.py"])
 
     @patch(
         "unittest_options.get_vscode_options",
         new=Mock(side_effect=FileNotFoundError),
     )
-    def test_get_unittest_options_file_not_found_error(self) -> None:
+    def test_file_not_found_error(self) -> None:
         self.assertListEqual(
             get_unittest_options(),
             ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
         )
 
+
+class TestModule(BaseFixtureTestCase):
     @patch("sys.stdout", new_callable=io.StringIO)
     def test_main(self, mock_stdout: io.StringIO) -> None:
         with patch(

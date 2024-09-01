@@ -115,7 +115,7 @@ class TestModule(unittest.TestCase):
     def test_filter_git_files_python(self) -> None:
         expected = [Path("src/git_files_filter.py")]
         self.assertListEqual(
-            expected, filter_git_files(self.files, LanguageChoice.PYTHON)
+            filter_git_files(self.files, LanguageChoice.PYTHON), expected
         )
 
     def test_filter_git_files_python_both(self) -> None:
@@ -125,7 +125,7 @@ class TestModule(unittest.TestCase):
             Path("tests/py_test/test_git_files_filter.py"),
         ]
         self.assertListEqual(
-            expected, filter_git_files(self.files, LanguageChoice.PYTHON_BOTH)
+            filter_git_files(self.files, LanguageChoice.PYTHON_BOTH), expected
         )
 
     def test_get_git_files(self) -> None:

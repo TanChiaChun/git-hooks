@@ -135,9 +135,7 @@ class TestModule(unittest.TestCase):
         with patch(
             "subprocess.run", new=Mock(return_value=completed_process_mock)
         ):
-            git_files = get_git_files()
-
-        self.assertListEqual(git_files, self.files)
+            self.assertListEqual(get_git_files(), self.files)
 
     @patch("subprocess.run", new=Mock(side_effect=FileNotFoundError))
     def test_get_git_files_git_not_found(self) -> None:

@@ -17,6 +17,59 @@ from git_files_filter import (
 )
 
 
+class BaseFixtureTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.files = [
+            Path(".env"),
+            Path(".gitignore"),
+            Path(".vscode/settings.json"),
+            Path("LICENSE"),
+            Path("README.md"),
+            Path("src/bash.sh"),
+            Path("src/git_files_filter.py"),
+            Path("src/pre-commit"),
+            Path("tests/py_test/__init__.py"),
+            Path("tests/py_test/test_git_files_filter.py"),
+            Path("tests/test_bash.bats"),
+            Path("tests/test_pre-commit.bats"),
+            Path("mysite/productivity/migrations/0001_initial.py"),
+        ]
+
+
+class TestGetGitFiles(BaseFixtureTestCase):
+    def test_pass(self) -> None:
+        completed_process_mock = Mock(
+            stdout="\n".join([str(file) for file in self.files]) + "\n"
+        )
+        with patch(
+            "subprocess.run", new=Mock(return_value=completed_process_mock)
+        ):
+            self.assertListEqual(get_git_files(), self.files)
+
+    @patch("subprocess.run", new=Mock(side_effect=FileNotFoundError))
+    def test_git_not_found(self) -> None:
+        with self.assertLogs(logger="git_files_filter", level="ERROR") as cm:
+            with self.assertRaises(FileNotFoundError):
+                get_git_files()
+
+            self.assertEqual(cm.records[0].getMessage(), "git not found")
+
+    @patch(
+        "subprocess.run",
+        new=Mock(
+            side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
+        ),
+    )
+    def test_called_process_error(self) -> None:
+        with self.assertLogs(logger="git_files_filter", level="ERROR") as cm:
+            with self.assertRaises(subprocess.CalledProcessError):
+                get_git_files()
+
+            self.assertEqual(
+                cm.records[0].getMessage(), "Error running git ls-file"
+            )
+
+
 class TestGetFileLanguage(unittest.TestCase):
     @patch("git_files_filter.is_bash_file", new=Mock(return_value=False))
     def test_none(self) -> None:
@@ -94,81 +147,14 @@ class TestIsInMigrationsDir(unittest.TestCase):
         )
 
 
-class TestModule(unittest.TestCase):
-    def setUp(self) -> None:
-        self.files = [
-            Path(".env"),
-            Path(".gitignore"),
-            Path(".vscode/settings.json"),
-            Path("LICENSE"),
-            Path("README.md"),
-            Path("src/bash.sh"),
-            Path("src/git_files_filter.py"),
-            Path("src/pre-commit"),
-            Path("tests/py_test/__init__.py"),
-            Path("tests/py_test/test_git_files_filter.py"),
-            Path("tests/test_bash.bats"),
-            Path("tests/test_pre-commit.bats"),
-            Path("mysite/productivity/migrations/0001_initial.py"),
-        ]
-
-    def test_filter_git_files_python(self) -> None:
-        expected = [Path("src/git_files_filter.py")]
-        self.assertListEqual(
-            expected, filter_git_files(self.files, LanguageChoice.PYTHON)
-        )
-
-    def test_filter_git_files_python_both(self) -> None:
-        expected = [
-            Path("src/git_files_filter.py"),
-            Path("tests/py_test/__init__.py"),
-            Path("tests/py_test/test_git_files_filter.py"),
-        ]
-        self.assertListEqual(
-            expected, filter_git_files(self.files, LanguageChoice.PYTHON_BOTH)
-        )
-
-    def test_get_git_files(self) -> None:
-        completed_process_mock = Mock(
-            stdout="\n".join([str(file) for file in self.files]) + "\n"
-        )
-        with patch(
-            "subprocess.run", new=Mock(return_value=completed_process_mock)
-        ):
-            git_files = get_git_files()
-
-        self.assertListEqual(git_files, self.files)
-
-    @patch("subprocess.run", new=Mock(side_effect=FileNotFoundError))
-    def test_get_git_files_git_not_found(self) -> None:
-        with self.assertLogs(logger="git_files_filter", level="ERROR") as cm:
-            with self.assertRaises(FileNotFoundError):
-                get_git_files()
-
-            self.assertEqual(cm.records[0].getMessage(), "git not found")
-
-    @patch(
-        "subprocess.run",
-        new=Mock(
-            side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
-        ),
-    )
-    def test_get_git_files_called_process_error(self) -> None:
-        with self.assertLogs(logger="git_files_filter", level="ERROR") as cm:
-            with self.assertRaises(subprocess.CalledProcessError):
-                get_git_files()
-
-            self.assertEqual(
-                cm.records[0].getMessage(), "Error running git ls-file"
-            )
-
+class TestMain(BaseFixtureTestCase):
     @patch(
         "git_files_filter.is_bash_file",
         new=Mock(side_effect=lambda x: x == Path("src/pre-commit")),
     )
     @patch.object(sys, "argv", new=["", "BASH"])
     @patch("sys.stdout", new_callable=io.StringIO)
-    def test_main_bash(self, mock_stdout: io.StringIO) -> None:
+    def test_bash(self, mock_stdout: io.StringIO) -> None:
         with patch(
             "git_files_filter.get_git_files", new=Mock(return_value=self.files)
         ):
@@ -181,7 +167,7 @@ class TestModule(unittest.TestCase):
 
     @patch.dict("os.environ", values={"BATS_TMPDIR": ""})
     @patch("sys.stdout", new_callable=io.StringIO)
-    def test_main_bats(self, mock_stdout: io.StringIO) -> None:
+    def test_bats(self, mock_stdout: io.StringIO) -> None:
         main()
         self.assertEqual(mock_stdout.getvalue(), "/test\n")
 
@@ -192,9 +178,27 @@ class TestModule(unittest.TestCase):
         ),
     )
     @patch.object(sys, "argv", new=["", "BASH"])
-    def test_main_called_process_error(self) -> None:
+    def test_called_process_error(self) -> None:
         with self.assertRaises(SystemExit):
             main()
+
+
+class TestModule(BaseFixtureTestCase):
+    def test_filter_git_files_python(self) -> None:
+        expected = [Path("src/git_files_filter.py")]
+        self.assertListEqual(
+            filter_git_files(self.files, LanguageChoice.PYTHON), expected
+        )
+
+    def test_filter_git_files_python_both(self) -> None:
+        expected = [
+            Path("src/git_files_filter.py"),
+            Path("tests/py_test/__init__.py"),
+            Path("tests/py_test/test_git_files_filter.py"),
+        ]
+        self.assertListEqual(
+            filter_git_files(self.files, LanguageChoice.PYTHON_BOTH), expected
+        )
 
 
 if __name__ == "__main__":

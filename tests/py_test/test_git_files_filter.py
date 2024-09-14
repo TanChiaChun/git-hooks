@@ -1,4 +1,5 @@
 import io
+import logging
 import subprocess
 import sys
 import unittest
@@ -13,6 +14,7 @@ from git_files_filter import (
     get_git_files,
     is_bash_file,
     is_in_migrations_dir,
+    logger,
     main,
 )
 
@@ -48,7 +50,7 @@ class TestGetGitFiles(BaseFixtureTestCase):
 
     @patch("subprocess.run", new=Mock(side_effect=FileNotFoundError))
     def test_git_not_found(self) -> None:
-        with self.assertLogs(logger="git_files_filter", level="ERROR") as cm:
+        with self.assertLogs(logger=logger, level=logging.ERROR) as cm:
             with self.assertRaises(FileNotFoundError):
                 get_git_files()
 
@@ -61,7 +63,7 @@ class TestGetGitFiles(BaseFixtureTestCase):
         ),
     )
     def test_called_process_error(self) -> None:
-        with self.assertLogs(logger="git_files_filter", level="ERROR") as cm:
+        with self.assertLogs(logger=logger, level=logging.ERROR) as cm:
             with self.assertRaises(subprocess.CalledProcessError):
                 get_git_files()
 

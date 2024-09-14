@@ -1,10 +1,16 @@
 import io
 import json
+import logging
 import unittest
 from pathlib import Path
 from unittest.mock import Mock, mock_open, patch
 
-from unittest_options import get_unittest_options, get_vscode_options, main
+from unittest_options import (
+    get_unittest_options,
+    get_vscode_options,
+    logger,
+    main,
+)
 
 
 class BaseFixtureTestCase(unittest.TestCase):
@@ -26,7 +32,7 @@ class TestGetVscodeOptions(BaseFixtureTestCase):
         mock_path.open.side_effect = FileNotFoundError
         mock_path.resolve.return_value = Path("file")
 
-        with self.assertLogs("unittest_options", "WARNING") as cm:
+        with self.assertLogs(logger=logger, level=logging.WARNING) as cm:
             with self.assertRaises(FileNotFoundError):
                 get_vscode_options(mock_path)
 
@@ -37,7 +43,7 @@ class TestGetVscodeOptions(BaseFixtureTestCase):
         mock_path.open = mock_open(read_data="")
         mock_path.resolve.return_value = Path("file")
 
-        with self.assertLogs("unittest_options", "WARNING") as cm:
+        with self.assertLogs(logger=logger, level=logging.WARNING) as cm:
             with self.assertRaises(json.JSONDecodeError):
                 get_vscode_options(mock_path)
 
@@ -47,7 +53,7 @@ class TestGetVscodeOptions(BaseFixtureTestCase):
         mock_path = Mock()
         mock_path.open = mock_open(read_data=json.dumps({"key": "value"}))
 
-        with self.assertLogs("unittest_options", "WARNING") as cm:
+        with self.assertLogs(logger=logger, level=logging.WARNING) as cm:
             with self.assertRaises(KeyError):
                 get_vscode_options(mock_path)
 

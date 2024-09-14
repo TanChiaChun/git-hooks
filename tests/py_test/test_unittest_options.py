@@ -14,42 +14,42 @@ class BaseFixtureTestCase(unittest.TestCase):
 
 class TestGetVscodeOptions(BaseFixtureTestCase):
     def test_pass(self) -> None:
-        path_mock = Mock()
-        path_mock.open = mock_open(
+        mock_path = Mock()
+        mock_path.open = mock_open(
             read_data=json.dumps({"python.testing.unittestArgs": self.options})
         )
 
-        self.assertListEqual(get_vscode_options(path_mock), self.options)
+        self.assertListEqual(get_vscode_options(mock_path), self.options)
 
     def test_file_not_found_error(self) -> None:
-        path_mock = Mock()
-        path_mock.open.side_effect = FileNotFoundError
-        path_mock.resolve.return_value = Path("file")
+        mock_path = Mock()
+        mock_path.open.side_effect = FileNotFoundError
+        mock_path.resolve.return_value = Path("file")
 
         with self.assertLogs("unittest_options", "WARNING") as cm:
             with self.assertRaises(FileNotFoundError):
-                get_vscode_options(path_mock)
+                get_vscode_options(mock_path)
 
             self.assertEqual(cm.records[0].getMessage(), "file not found.")
 
     def test_json_decode_error(self) -> None:
-        path_mock = Mock()
-        path_mock.open = mock_open(read_data="")
-        path_mock.resolve.return_value = Path("file")
+        mock_path = Mock()
+        mock_path.open = mock_open(read_data="")
+        mock_path.resolve.return_value = Path("file")
 
         with self.assertLogs("unittest_options", "WARNING") as cm:
             with self.assertRaises(json.JSONDecodeError):
-                get_vscode_options(path_mock)
+                get_vscode_options(mock_path)
 
             self.assertEqual(cm.records[0].getMessage(), "Error decoding file.")
 
     def test_key_error(self) -> None:
-        path_mock = Mock()
-        path_mock.open = mock_open(read_data=json.dumps({"key": "value"}))
+        mock_path = Mock()
+        mock_path.open = mock_open(read_data=json.dumps({"key": "value"}))
 
         with self.assertLogs("unittest_options", "WARNING") as cm:
             with self.assertRaises(KeyError):
-                get_vscode_options(path_mock)
+                get_vscode_options(mock_path)
 
             self.assertEqual(
                 cm.records[0].getMessage(),

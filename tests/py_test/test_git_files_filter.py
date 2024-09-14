@@ -38,11 +38,11 @@ class BaseFixtureTestCase(unittest.TestCase):
 
 class TestGetGitFiles(BaseFixtureTestCase):
     def test_pass(self) -> None:
-        completed_process_mock = Mock(
+        mock_completed_process = Mock(
             stdout="\n".join([str(file) for file in self.files]) + "\n"
         )
         with patch(
-            "subprocess.run", new=Mock(return_value=completed_process_mock)
+            "subprocess.run", new=Mock(return_value=mock_completed_process)
         ):
             self.assertListEqual(get_git_files(), self.files)
 
@@ -108,18 +108,18 @@ class TestGetFileLanguage(unittest.TestCase):
 
 class TestIsBashFile(unittest.TestCase):
     def test_true(self) -> None:
-        file_mock = Mock()
-        file_mock.is_file.return_value = True
-        file_mock.open = mock_open(read_data="#!/usr/bin/env bash\n")
+        mock_file = Mock()
+        mock_file.is_file.return_value = True
+        mock_file.open = mock_open(read_data="#!/usr/bin/env bash\n")
 
-        self.assertIs(is_bash_file(file_mock), True)
+        self.assertIs(is_bash_file(mock_file), True)
 
     def test_false_file(self) -> None:
-        file_mock = Mock()
-        file_mock.is_file.return_value = True
-        file_mock.open = mock_open(read_data="\n")
+        mock_file = Mock()
+        mock_file.is_file.return_value = True
+        mock_file.open = mock_open(read_data="\n")
 
-        self.assertIs(is_bash_file(file_mock), False)
+        self.assertIs(is_bash_file(mock_file), False)
 
     def test_false_dir(self) -> None:
         self.assertIs(is_bash_file(Path("")), False)

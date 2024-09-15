@@ -56,14 +56,13 @@ class TestGetGitFiles(BaseFixtureTestCase):
 
             self.assertEqual(cm.records[0].getMessage(), "git not found")
 
-    @patch(
-        "subprocess.run",
-        new=Mock(
-            side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
-        ),
-    )
     def test_called_process_error(self) -> None:
-        with self.assertLogs(logger=logger, level=logging.ERROR) as cm:
+        mock_process = Mock(
+            side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
+        )
+        with patch("subprocess.run", new=mock_process), self.assertLogs(
+            logger=logger, level=logging.ERROR
+        ) as cm:
             with self.assertRaises(subprocess.CalledProcessError):
                 get_git_files()
 
@@ -150,16 +149,15 @@ class TestIsInMigrationsDir(unittest.TestCase):
 
 
 class TestMain(BaseFixtureTestCase):
-    @patch(
-        "git_files_filter.is_bash_file",
-        new=Mock(side_effect=lambda x: x == Path("src/pre-commit")),
-    )
     @patch.object(sys, "argv", new=["", "BASH"])
     @patch("sys.stdout", new_callable=io.StringIO)
     def test_bash(self, mock_stdout: io.StringIO) -> None:
+        mock_is_bash_file = Mock(
+            side_effect=lambda x: x == Path("src/pre-commit")
+        )
         with patch(
             "git_files_filter.get_git_files", new=Mock(return_value=self.files)
-        ):
+        ), patch("git_files_filter.is_bash_file", new=mock_is_bash_file):
             main()
 
         self.assertEqual(
@@ -173,16 +171,14 @@ class TestMain(BaseFixtureTestCase):
         main()
         self.assertEqual(mock_stdout.getvalue(), "/test\n")
 
-    @patch(
-        "git_files_filter.get_git_files",
-        new=Mock(
-            side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
-        ),
-    )
     @patch.object(sys, "argv", new=["", "BASH"])
     def test_called_process_error(self) -> None:
-        with self.assertRaises(SystemExit):
-            main()
+        mock_get_git_files = Mock(
+            side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
+        )
+        with patch("git_files_filter.get_git_files", new=mock_get_git_files):
+            with self.assertRaises(SystemExit):
+                main()
 
 
 class TestModule(BaseFixtureTestCase):

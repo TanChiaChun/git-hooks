@@ -76,15 +76,15 @@ class TestGetUnittestOptions(BaseFixtureTestCase):
     def test_bats(self) -> None:
         self.assertListEqual(get_unittest_options(), ["-v", "./test.py"])
 
-    @patch(
-        "unittest_options.get_vscode_options",
-        new=Mock(side_effect=FileNotFoundError),
-    )
     def test_file_not_found_error(self) -> None:
-        self.assertListEqual(
-            get_unittest_options(),
-            ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
-        )
+        with patch(
+            "unittest_options.get_vscode_options",
+            new=Mock(side_effect=FileNotFoundError),
+        ):
+            self.assertListEqual(
+                get_unittest_options(),
+                ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
+            )
 
 
 class TestModule(BaseFixtureTestCase):

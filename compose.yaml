@@ -1,0 +1,4 @@
+services:
+  python:
+    build:
+      dockerfile: ./docker/python.Dockerfile

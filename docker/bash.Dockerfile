@@ -6,6 +6,7 @@ RUN apt-get update \
         shellcheck \
         bats \
     && rm --force --recursive /var/lib/apt/lists/*
+RUN ln --symbolic /usr/bin/python3 /usr/bin/python
 
 USER node
 

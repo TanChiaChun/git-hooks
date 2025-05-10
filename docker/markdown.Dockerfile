@@ -1,4 +1,6 @@
 FROM node
 
-COPY ../ /root/git-hooks/
-WORKDIR /root/git-hooks/
+USER node
+
+COPY --chown=node ../ /home/node/git-hooks/
+WORKDIR /home/node/git-hooks/

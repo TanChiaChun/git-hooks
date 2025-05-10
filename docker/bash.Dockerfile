@@ -21,3 +21,6 @@ WORKDIR /home/node/git-hooks/
 
 RUN python -m venv ./venv \
     && ./venv/bin/pip install --requirement ./requirements-dev.txt
+
+SHELL ["/bin/bash", "-o", "errexit", "-o", "pipefail", "-c"]
+CMD source './src/ci.sh' && run_ci_bash

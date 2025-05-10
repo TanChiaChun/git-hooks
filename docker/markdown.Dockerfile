@@ -10,3 +10,7 @@ RUN npm install --global markdownlint-cli
 
 COPY --chown=node ../ /home/node/git-hooks/
 WORKDIR /home/node/git-hooks/
+
+SHELL ["/bin/bash", "-c"]
+CMD source './src/ci.sh' \
+    && run_ci_markdown

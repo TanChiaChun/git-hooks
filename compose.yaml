@@ -2,3 +2,6 @@ services:
   python:
     build:
       dockerfile: ./docker/python.Dockerfile
+  markdown:
+    build:
+      dockerfile: ./docker/markdown.Dockerfile

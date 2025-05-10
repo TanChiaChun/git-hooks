@@ -1,7 +1,12 @@
 FROM python
 
-COPY ../ /root/git-hooks/
-WORKDIR /root/git-hooks/
+RUN useradd --create-home --shell /bin/bash python
+USER python
+
+ENV PATH="/home/python/.local/bin:$PATH"
+
+COPY --chown=python ../ /home/python/git-hooks/
+WORKDIR /home/python/git-hooks/
 
 RUN pip install --requirement './requirements-dev.txt'
 

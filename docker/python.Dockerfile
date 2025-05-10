@@ -6,6 +6,7 @@ USER python
 COPY --chown=python ../requirements-dev.txt /home/python/git-hooks/
 WORKDIR /home/python/git-hooks/
 RUN pip install --requirement './requirements-dev.txt' \
+    && rm --force --recursive "$(pip cache dir)" \
     && mkdir --parents venv/bin
 ENV PATH="/home/python/.local/bin:$PATH"
 

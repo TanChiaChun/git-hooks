@@ -1,0 +1,10 @@
+services:
+  python:
+    build:
+      dockerfile: ./docker/python.Dockerfile
+  bash:
+    build:
+      dockerfile: ./docker/bash.Dockerfile
+  markdown:
+    build:
+      dockerfile: ./docker/markdown.Dockerfile

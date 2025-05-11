@@ -3,6 +3,8 @@ FROM python
 ARG REPO_NAME=repo
 ARG GIT_HOOKS_REQUIREMENTS_SRC=git-hooks/requirements*.txt
 ARG GIT_HOOKS_REQUIREMENTS_DEST=/home/python/$REPO_NAME/git-hooks/
+ARG CI_SCRIPT_PATH=./git-hooks/src/ci.sh
+ENV CI_SCRIPT_PATH=$CI_SCRIPT_PATH
 
 RUN useradd --create-home --shell /bin/bash python
 USER python
@@ -18,4 +20,4 @@ ENV PATH="/home/python/.local/bin:$PATH"
 COPY --chown=python . /home/python/$REPO_NAME/
 
 SHELL ["/bin/bash", "-o", "errexit", "-o", "pipefail", "-c"]
-CMD source './src/ci.sh' && run_ci_python
+CMD source "$CI_SCRIPT_PATH" && run_ci_python

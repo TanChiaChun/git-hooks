@@ -4,6 +4,8 @@ services:
       dockerfile: ./docker/python.Dockerfile
       args:
         REPO_NAME: git-hooks
+        GIT_HOOKS_REQUIREMENTS_SRC: requirements*.txt
+        GIT_HOOKS_REQUIREMENTS_DEST: /home/python/git-hooks/
   bash:
     build:
       dockerfile: ./docker/bash.Dockerfile

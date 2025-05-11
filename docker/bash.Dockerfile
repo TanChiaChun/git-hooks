@@ -20,7 +20,7 @@ RUN npm install --global markdownlint-cli \
 COPY --chown=node requirements-dev.txt /home/node/git-hooks/
 WORKDIR /home/node/git-hooks/
 RUN python -m venv ./venv \
-    && ./venv/bin/pip install --requirement ./requirements-dev.txt \
+    && ./venv/bin/pip install --requirement './requirements-dev.txt' \
     && rm --force --recursive "$(./venv/bin/pip cache dir)"
 
 COPY --chown=node . /home/node/git-hooks/

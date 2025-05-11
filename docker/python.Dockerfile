@@ -3,7 +3,7 @@ FROM python
 RUN useradd --create-home --shell /bin/bash python
 USER python
 
-COPY --chown=python requirements-dev.txt /home/python/git-hooks/
+COPY --chown=python requirements*.txt /home/python/git-hooks/
 WORKDIR /home/python/git-hooks/
 RUN pip install --requirement './requirements-dev.txt' \
     && rm --force --recursive "$(pip cache dir)" \

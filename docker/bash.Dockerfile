@@ -17,13 +17,13 @@ ENV PATH="/home/node/.npm-global/bin:$PATH"
 RUN npm install --global markdownlint-cli \
     && npm cache clean --force
 
-COPY --chown=node ../requirements-dev.txt /home/node/git-hooks/
+COPY --chown=node requirements-dev.txt /home/node/git-hooks/
 WORKDIR /home/node/git-hooks/
 RUN python -m venv ./venv \
     && ./venv/bin/pip install --requirement ./requirements-dev.txt \
     && rm --force --recursive "$(pip cache dir)"
 
-COPY --chown=node ../ /home/node/git-hooks/
+COPY --chown=node . /home/node/git-hooks/
 
 SHELL ["/bin/bash", "-o", "errexit", "-o", "pipefail", "-c"]
 CMD source './src/ci.sh' && run_ci_bash

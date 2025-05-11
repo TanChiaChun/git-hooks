@@ -2,6 +2,8 @@ services:
   python:
     build:
       dockerfile: ./docker/python.Dockerfile
+      args:
+        REPO_NAME: git-hooks
   bash:
     build:
       dockerfile: ./docker/bash.Dockerfile

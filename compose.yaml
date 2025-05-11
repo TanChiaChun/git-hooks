@@ -9,7 +9,7 @@ services:
         CI_SCRIPT_PATH: ./src/ci.sh
   bash:
     build:
-      dockerfile: ./docker/bash.Dockerfile
+      dockerfile: ./docker/bash-git-hooks.Dockerfile
   markdown:
     build:
       dockerfile: ./docker/markdown.Dockerfile

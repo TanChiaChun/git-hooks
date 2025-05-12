@@ -9,3 +9,6 @@ RUN apt-get update \
 
 RUN useradd --create-home --shell /bin/bash python
 USER python
+
+COPY --chown=python . /home/python/repo/
+WORKDIR /home/python/repo/

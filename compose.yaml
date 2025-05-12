@@ -2,9 +2,17 @@ services:
   python:
     build:
       dockerfile: ./docker/python.Dockerfile
+      args:
+        REPO_NAME: git-hooks
+        GIT_HOOKS_REQUIREMENTS_SRC: requirements*.txt
+        GIT_HOOKS_REQUIREMENTS_DEST: /home/python/git-hooks/
+        CI_SCRIPT_PATH: ./src/ci.sh
   bash:
     build:
-      dockerfile: ./docker/bash.Dockerfile
+      dockerfile: ./docker/bash-git-hooks.Dockerfile
   markdown:
     build:
       dockerfile: ./docker/markdown.Dockerfile
+      args:
+        REPO_NAME: git-hooks
+        CI_SCRIPT_PATH: ./src/ci.sh

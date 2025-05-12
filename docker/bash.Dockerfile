@@ -6,3 +6,6 @@ RUN apt-get update \
         shellcheck \
         bats \
     && rm --force --recursive /var/lib/apt/lists/*
+
+RUN useradd --create-home --shell /bin/bash python
+USER python

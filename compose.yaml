@@ -13,3 +13,6 @@ services:
   markdown:
     build:
       dockerfile: ./docker/markdown.Dockerfile
+      args:
+        REPO_NAME: git-hooks
+        CI_SCRIPT_PATH: ./src/ci.sh

@@ -12,3 +12,6 @@ USER python
 
 COPY --chown=python . /home/python/repo/
 WORKDIR /home/python/repo/
+
+SHELL ["/bin/bash", "-o", "errexit", "-o", "pipefail", "-c"]
+CMD source './git-hooks/src/ci.sh' && run_ci_bash

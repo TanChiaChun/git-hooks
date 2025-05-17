@@ -9,7 +9,7 @@ RUN ln --symbolic /usr/bin/python3 /usr/bin/python
 USER node
 
 ENV npm_config_prefix=/home/node/.npm-global
-ENV PATH="/home/node/.npm-global/bin:$PATH"
+ENV PATH="$npm_config_prefix/bin:$PATH"
 RUN npm install --global markdownlint-cli \
     && npm cache clean --force
 

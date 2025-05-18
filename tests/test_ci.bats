@@ -54,6 +54,7 @@ EOF
 
     run set_git_hooks_working_dir
     [ "$status" -eq 0 ]
+    [[ "$output" == "Set git-hooks working directory to '"*"/git-hooks'" ]]
     [[ "$git_hooks_working_dir" == *'/git-hooks' ]]
 }
 

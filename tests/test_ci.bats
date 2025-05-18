@@ -65,6 +65,8 @@ EOF
     rm -r './git-hooks'
     cd "$OLDPWD"
     [ "$status" -eq 0 ]
+    [[ "$output" == "Set git-hooks working directory to '"*"/git-hooks'" ]]
+    [[ "$git_hooks_working_dir" == *'/git-hooks' ]]
 }
 
 @test "set_git_hooks_working_dir_fail()" {

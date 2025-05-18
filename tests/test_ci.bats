@@ -77,6 +77,17 @@ EOF
     [ "$output" == 'Unsupported git-hooks working directory' ]
 }
 
+@test "source_sh_script_dir()" {
+    run source_sh_script_dir 'helper.sh'
+    [ "$status" -eq 0 ]
+}
+
+@test "source_sh_script_dir_not_found()" {
+    run source_sh_script_dir 'invalid.sh'
+    [ "$status" -eq 1 ]
+    [[ "$output" == *" not found" ]]
+}
+
 @test "update_path()" {
     run update_path 'path'
     [ "$status" -eq 0 ]

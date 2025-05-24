@@ -49,8 +49,9 @@ setup() {
 
 @test "project_venv()" {
     cd "$BATS_TMPDIR"
-    create_project_venv
-    activate_project_venv_bash
+    python -m venv './venv'
+    # shellcheck source=/dev/null
+    source "$(get_venv_bin_path '.')/activate"
 
     local venv_bin_path
     venv_bin_path="$(get_venv_bin_path '.')"

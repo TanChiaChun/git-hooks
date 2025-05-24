@@ -38,39 +38,6 @@ class BaseFixtureTestCase(unittest.TestCase):
         ]
 
 
-class TestGetGitFiles(BaseFixtureTestCase):
-    def test_pass(self) -> None:
-        mock_completed_process = Mock(
-            stdout="\n".join([str(file) for file in self.files]) + "\n"
-        )
-        with patch(
-            "subprocess.run", new=Mock(return_value=mock_completed_process)
-        ):
-            self.assertListEqual(get_git_files(), self.files)
-
-    @patch("subprocess.run", new=Mock(side_effect=FileNotFoundError))
-    def test_git_not_found(self) -> None:
-        with self.assertLogs(logger=logger, level=logging.ERROR) as cm:
-            with self.assertRaises(FileNotFoundError):
-                get_git_files()
-
-            self.assertEqual(cm.records[0].getMessage(), "git not found")
-
-    def test_called_process_error(self) -> None:
-        mock_process = Mock(
-            side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
-        )
-        with patch("subprocess.run", new=mock_process), self.assertLogs(
-            logger=logger, level=logging.ERROR
-        ) as cm:
-            with self.assertRaises(subprocess.CalledProcessError):
-                get_git_files()
-
-            self.assertEqual(
-                cm.records[0].getMessage(), "Error running git ls-file"
-            )
-
-
 class TestGetFileLanguage(unittest.TestCase):
     @patch("git_files_filter.is_bash_file", new=Mock(return_value=False))
     def test_none(self) -> None:
@@ -105,6 +72,39 @@ class TestGetFileLanguage(unittest.TestCase):
     def test_no_suffix_bash(self) -> None:
         self.assertIs(get_file_language(Path("file")), Language.BASH)
         self.assertIs(get_file_language(Path(".file")), Language.BASH)
+
+
+class TestGetGitFiles(BaseFixtureTestCase):
+    def test_pass(self) -> None:
+        mock_completed_process = Mock(
+            stdout="\n".join([str(file) for file in self.files]) + "\n"
+        )
+        with patch(
+            "subprocess.run", new=Mock(return_value=mock_completed_process)
+        ):
+            self.assertListEqual(get_git_files(), self.files)
+
+    @patch("subprocess.run", new=Mock(side_effect=FileNotFoundError))
+    def test_git_not_found(self) -> None:
+        with self.assertLogs(logger=logger, level=logging.ERROR) as cm:
+            with self.assertRaises(FileNotFoundError):
+                get_git_files()
+
+            self.assertEqual(cm.records[0].getMessage(), "git not found")
+
+    def test_called_process_error(self) -> None:
+        mock_process = Mock(
+            side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
+        )
+        with patch("subprocess.run", new=mock_process), self.assertLogs(
+            logger=logger, level=logging.ERROR
+        ) as cm:
+            with self.assertRaises(subprocess.CalledProcessError):
+                get_git_files()
+
+            self.assertEqual(
+                cm.records[0].getMessage(), "Error running git ls-file"
+            )
 
 
 class TestIsBashFile(unittest.TestCase):

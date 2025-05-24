@@ -6,7 +6,9 @@ setup() {
 }
 
 teardown() {
-    rm "$env_file"
+    if [[ -f "$env_file" ]]; then
+        rm "$env_file"
+    fi
     cd "$OLDPWD" || exit 1
 }
 

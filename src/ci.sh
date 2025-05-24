@@ -447,7 +447,7 @@ source_sh_script_dir() {
 update_path() {
     local filepath="$1"
 
-    if [[ "$filepath" == '.'* ]] || [[ "$filepath" == '/'* ]]; then
+    if [[ ("$filepath" == '.'*) || ("$filepath" == '/'*) ]]; then
         echo 'Path should not start with . or /'
         exit 1
     fi

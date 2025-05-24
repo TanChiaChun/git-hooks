@@ -54,6 +54,7 @@ EOF
 
     run set_git_hooks_working_dir
     [ "$status" -eq 0 ]
+    [[ "$output" == "Set git-hooks working directory to '"*"/git-hooks'" ]]
     [[ "$git_hooks_working_dir" == *'/git-hooks' ]]
 }
 
@@ -64,6 +65,8 @@ EOF
     rm -r './git-hooks'
     cd "$OLDPWD"
     [ "$status" -eq 0 ]
+    [[ "$output" == "Set git-hooks working directory to '"*"/git-hooks'" ]]
+    [[ "$git_hooks_working_dir" == *'/git-hooks' ]]
 }
 
 @test "set_git_hooks_working_dir_fail()" {
@@ -72,6 +75,17 @@ EOF
     cd "$OLDPWD"
     [ "$status" -eq 1 ]
     [ "$output" == 'Unsupported git-hooks working directory' ]
+}
+
+@test "source_sh_script_dir()" {
+    run source_sh_script_dir 'helper.sh'
+    [ "$status" -eq 0 ]
+}
+
+@test "source_sh_script_dir_not_found()" {
+    run source_sh_script_dir 'invalid.sh'
+    [ "$status" -eq 1 ]
+    [[ "$output" == *" not found" ]]
 }
 
 @test "update_path()" {

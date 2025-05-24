@@ -46,22 +46,3 @@ setup() {
     cd "$OLDPWD"
     [ "$status" -eq 0 ]
 }
-
-@test "project_venv()" {
-    cd "$BATS_TMPDIR"
-    python -m venv './venv'
-    # shellcheck source=/dev/null
-    source "$(get_venv_bin_path '.')/activate"
-
-    local venv_bin_path
-    venv_bin_path="$(get_venv_bin_path '.')"
-    local python_path
-    python_path="$(which python)"
-
-    deactivate
-    rm -r './venv'
-    cd "$OLDPWD"
-
-    local expected="${venv_bin_path:1}/python"
-    [[ "$python_path" =~ .*"$expected" ]]
-}

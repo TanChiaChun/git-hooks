@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # shellcheck source=/dev/null
-source ~/'.bashrc'
+source "$HOME/.bashrc"
 source "${0%/*}/ci.sh"
 
 get_git_branch() {

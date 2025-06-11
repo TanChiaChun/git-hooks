@@ -41,7 +41,7 @@ has_python_files() {
         'PYTHON_BOTH')"
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
-    if [[ "${files[*]}" == '' ]]; then
+    if [[ -z "${files[*]}" ]]; then
         return 1
     fi
 }
@@ -97,7 +97,7 @@ run_ci() {
     files_raw="$(python "$(update_path 'src/git_files_filter.py')" "$language")"
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
-    if [[ "${files[*]}" == '' ]]; then
+    if [[ -z "${files[*]}" ]]; then
         echo "$choice no files"
         return
     fi

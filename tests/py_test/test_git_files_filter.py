@@ -39,28 +39,20 @@ class BaseFixtureTestCase(unittest.TestCase):
 
 
 class TestGetFileLanguage(unittest.TestCase):
-    @patch("git_files_filter.is_bash_file", new=Mock(return_value=False))
-    def test_none(self) -> None:
-        self.assertIs(get_file_language(Path("file")), None)
-
-    def test_sh(self) -> None:
-        self.assertIs(get_file_language(Path("file.sh")), Language.BASH)
-
     def test_bats(self) -> None:
         self.assertIs(get_file_language(Path("file.bats")), Language.BASH_TEST)
 
     def test_md(self) -> None:
         self.assertIs(get_file_language(Path("file.md")), Language.MARKDOWN)
 
-    def test_py_test_file(self) -> None:
-        self.assertIs(
-            get_file_language(Path("test_file.py")), Language.PYTHON_TEST
-        )
+    @patch("git_files_filter.is_bash_file", new=Mock(return_value=True))
+    def test_no_suffix_bash(self) -> None:
+        self.assertIs(get_file_language(Path("file")), Language.BASH)
+        self.assertIs(get_file_language(Path(".file")), Language.BASH)
 
-    def test_py_test_dir(self) -> None:
-        self.assertIs(
-            get_file_language(Path("test", "file.py")), Language.PYTHON_TEST
-        )
+    @patch("git_files_filter.is_bash_file", new=Mock(return_value=False))
+    def test_none(self) -> None:
+        self.assertIs(get_file_language(Path("file")), None)
 
     def test_py(self) -> None:
         self.assertIs(get_file_language(Path("file.py")), Language.PYTHON)
@@ -68,10 +60,18 @@ class TestGetFileLanguage(unittest.TestCase):
     def test_py_migrations(self) -> None:
         self.assertIs(get_file_language(Path("migrations", "file.py")), None)
 
-    @patch("git_files_filter.is_bash_file", new=Mock(return_value=True))
-    def test_no_suffix_bash(self) -> None:
-        self.assertIs(get_file_language(Path("file")), Language.BASH)
-        self.assertIs(get_file_language(Path(".file")), Language.BASH)
+    def test_py_test_dir(self) -> None:
+        self.assertIs(
+            get_file_language(Path("test", "file.py")), Language.PYTHON_TEST
+        )
+
+    def test_py_test_file(self) -> None:
+        self.assertIs(
+            get_file_language(Path("test_file.py")), Language.PYTHON_TEST
+        )
+
+    def test_sh(self) -> None:
+        self.assertIs(get_file_language(Path("file.sh")), Language.BASH)
 
 
 class TestGetGitFiles(BaseFixtureTestCase):
@@ -83,14 +83,6 @@ class TestGetGitFiles(BaseFixtureTestCase):
             "subprocess.run", new=Mock(return_value=mock_completed_process)
         ):
             self.assertListEqual(get_git_files(), self.files)
-
-    @patch("subprocess.run", new=Mock(side_effect=FileNotFoundError))
-    def test_git_not_found(self) -> None:
-        with self.assertLogs(logger=logger, level=logging.ERROR) as cm:
-            with self.assertRaises(FileNotFoundError):
-                get_git_files()
-
-            self.assertEqual(cm.records[0].getMessage(), "git not found")
 
     def test_called_process_error(self) -> None:
         mock_process = Mock(
@@ -106,6 +98,14 @@ class TestGetGitFiles(BaseFixtureTestCase):
                 cm.records[0].getMessage(), "Error running git ls-file"
             )
 
+    @patch("subprocess.run", new=Mock(side_effect=FileNotFoundError))
+    def test_git_not_found(self) -> None:
+        with self.assertLogs(logger=logger, level=logging.ERROR) as cm:
+            with self.assertRaises(FileNotFoundError):
+                get_git_files()
+
+            self.assertEqual(cm.records[0].getMessage(), "git not found")
+
 
 class TestIsBashFile(unittest.TestCase):
     def test_true(self) -> None:
@@ -115,15 +115,15 @@ class TestIsBashFile(unittest.TestCase):
 
         self.assertIs(is_bash_file(mock_file), True)
 
+    def test_false_dir(self) -> None:
+        self.assertIs(is_bash_file(Path("")), False)
+
     def test_false_file(self) -> None:
         mock_file = Mock()
         mock_file.is_file.return_value = True
         mock_file.open = mock_open(read_data="\n")
 
         self.assertIs(is_bash_file(mock_file), False)
-
-    def test_false_dir(self) -> None:
-        self.assertIs(is_bash_file(Path("")), False)
 
 
 class TestIsInMigrationsDir(unittest.TestCase):

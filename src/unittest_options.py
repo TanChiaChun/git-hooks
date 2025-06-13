@@ -12,6 +12,26 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
+def get_unittest_options() -> list[str]:
+    """Return list of unittest options.
+
+    - For BATS Test, return 1 module test.py.
+    - If error reading Visual Studio Code settings.json, return a set of default
+    options.
+    """
+    if "BATS_TEST_FILENAME" in os.environ:
+        test_path = Path(os.environ["BATS_TEST_FILENAME"]).parent
+
+        return ["-v", f"{test_path}/test.py"]
+
+    try:
+        vscode_options = get_vscode_options(Path(".vscode", "settings.json"))
+    except (FileNotFoundError, json.JSONDecodeError, KeyError):
+        vscode_options = ["-v", "-s", "./tests", "-p", "test*.py"]
+
+    return ["discover"] + vscode_options
+
+
 def get_vscode_options(settings_path: Path) -> list[str]:
     """Read from Visual Studio Code settings.json.
 
@@ -51,26 +71,6 @@ def get_vscode_options(settings_path: Path) -> list[str]:
         raise
 
     return options
-
-
-def get_unittest_options() -> list[str]:
-    """Return list of unittest options.
-
-    - For BATS Test, return 1 module test.py.
-    - If error reading Visual Studio Code settings.json, return a set of default
-    options.
-    """
-    if "BATS_TEST_FILENAME" in os.environ:
-        test_path = Path(os.environ["BATS_TEST_FILENAME"]).parent
-
-        return ["-v", f"{test_path}/test.py"]
-
-    try:
-        vscode_options = get_vscode_options(Path(".vscode", "settings.json"))
-    except (FileNotFoundError, json.JSONDecodeError, KeyError):
-        vscode_options = ["-v", "-s", "./tests", "-p", "test*.py"]
-
-    return ["discover"] + vscode_options
 
 
 def main() -> None:

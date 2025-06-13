@@ -18,6 +18,30 @@ class BaseFixtureTestCase(unittest.TestCase):
         self.options = ["-v", "-s", "./tests/tests", "-p", "test*.py"]
 
 
+class TestGetUnittestOptions(BaseFixtureTestCase):
+    def test_pass(self) -> None:
+        with patch(
+            "unittest_options.get_vscode_options",
+            new=Mock(return_value=self.options),
+        ):
+            expected = ["discover"] + self.options
+            self.assertListEqual(get_unittest_options(), expected)
+
+    @patch.dict("os.environ", values={"BATS_TEST_FILENAME": ""})
+    def test_bats(self) -> None:
+        self.assertListEqual(get_unittest_options(), ["-v", "./test.py"])
+
+    def test_file_not_found_error(self) -> None:
+        with patch(
+            "unittest_options.get_vscode_options",
+            new=Mock(side_effect=FileNotFoundError),
+        ):
+            self.assertListEqual(
+                get_unittest_options(),
+                ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
+            )
+
+
 class TestGetVscodeOptions(BaseFixtureTestCase):
     def test_pass(self) -> None:
         mock_path = Mock()
@@ -60,30 +84,6 @@ class TestGetVscodeOptions(BaseFixtureTestCase):
             self.assertEqual(
                 cm.records[0].getMessage(),
                 "python.testing.unittestArgs key not found.",
-            )
-
-
-class TestGetUnittestOptions(BaseFixtureTestCase):
-    def test_pass(self) -> None:
-        with patch(
-            "unittest_options.get_vscode_options",
-            new=Mock(return_value=self.options),
-        ):
-            expected = ["discover"] + self.options
-            self.assertListEqual(get_unittest_options(), expected)
-
-    @patch.dict("os.environ", values={"BATS_TEST_FILENAME": ""})
-    def test_bats(self) -> None:
-        self.assertListEqual(get_unittest_options(), ["-v", "./test.py"])
-
-    def test_file_not_found_error(self) -> None:
-        with patch(
-            "unittest_options.get_vscode_options",
-            new=Mock(side_effect=FileNotFoundError),
-        ):
-            self.assertListEqual(
-                get_unittest_options(),
-                ["discover", "-v", "-s", "./tests", "-p", "test*.py"],
             )
 
 

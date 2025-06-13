@@ -12,103 +12,103 @@ teardown() {
 
 @test "shfmt_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_bash/shfmt_pass.sample" "$test_file"
-    run run_ci 'shfmt'
+    run run_ci_files 'shfmt'
     [ "$status" -eq 0 ]
 }
 
 @test "shfmt_fail()" {
     cp "$BATS_TEST_DIRNAME/sample_bash/shfmt_fail.sample" "$test_file"
-    run run_ci 'shfmt'
+    run run_ci_files 'shfmt'
     [ "$status" -ne 0 ]
 }
 
 @test "shellcheck_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_bash/shellcheck_pass.sample" "$test_file"
-    run run_ci 'shellcheck'
+    run run_ci_files 'shellcheck'
     [ "$status" -eq 0 ]
 }
 
 @test "shellcheck_fail()" {
     cp "$BATS_TEST_DIRNAME/sample_bash/shellcheck_fail.sample" "$test_file"
-    run run_ci 'shellcheck'
+    run run_ci_files 'shellcheck'
     [ "$status" -ne 0 ]
 }
 
 @test "bats_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_bash/test_pass.bats.sample" "$test_file"
-    run run_ci 'bats'
+    run run_ci_files 'bats'
     [ "$status" -eq 0 ]
 }
 
 @test "bats_fail()" {
     cp "$BATS_TEST_DIRNAME/sample_bash/test_fail.bats.sample" "$test_file"
-    run run_ci 'bats'
+    run run_ci_files 'bats'
     [ "$status" -ne 0 ]
 }
 
 @test "black_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_python/black_pass.sample" "$test_file"
-    run run_ci 'black'
+    run run_ci_files 'black'
     [ "$status" -eq 0 ]
 }
 
 @test "black_fail()" {
     cp "$BATS_TEST_DIRNAME/sample_python/black_fail.sample" "$test_file"
-    run run_ci 'black'
+    run run_ci_files 'black'
     [ "$status" -ne 0 ]
 }
 
 @test "pylint_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_python/pylint_pass.sample" "$test_file"
-    run run_ci 'pylint'
+    run run_ci_files 'pylint'
     [ "$status" -eq 0 ]
 }
 
 @test "pylint_fail()" {
     cp "$BATS_TEST_DIRNAME/sample_python/pylint_fail.sample" "$test_file"
-    run run_ci 'pylint'
+    run run_ci_files 'pylint'
     [ "$status" -ne 0 ]
 }
 
 @test "mypy_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_python/mypy_pass.sample" "$test_file"
-    run run_ci 'mypy'
+    run run_ci_files 'mypy'
     [ "$status" -eq 0 ]
 }
 
 @test "mypy_fail()" {
     cp "$BATS_TEST_DIRNAME/sample_python/mypy_fail.sample" "$test_file"
-    run run_ci 'mypy'
+    run run_ci_files 'mypy'
     [ "$status" -ne 0 ]
 }
 
 @test "isort_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_python/isort_pass.sample" "$test_file"
-    run run_ci 'isort'
+    run run_ci_files 'isort'
     [ "$status" -eq 0 ]
 }
 
 @test "isort_fail()" {
     cp "$BATS_TEST_DIRNAME/sample_python/isort_fail.sample" "$test_file"
-    run run_ci 'isort'
+    run run_ci_files 'isort'
     [ "$status" -ne 0 ]
 }
 
 @test "markdown_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_markdown/markdown_pass.sample" "$test_file"
-    run run_ci 'markdown'
+    run run_ci_files 'markdown'
     [ "$status" -eq 0 ]
 
 }
 
 @test "markdown_fail()" {
     cp "$BATS_TEST_DIRNAME/sample_markdown/markdown_fail.sample" "$test_file"
-    run run_ci 'markdown'
+    run run_ci_files 'markdown'
     [ "$status" -ne 0 ]
 }
 
 @test "invalid_choice()" {
-    run run_ci 'invalid'
+    run run_ci_files 'invalid'
     [ "$status" -eq 1 ]
     [ "$output" == 'Invalid CI choice' ]
 }

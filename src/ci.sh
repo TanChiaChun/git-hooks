@@ -47,7 +47,7 @@ has_python_files() {
     fi
 }
 
-run_ci() {
+run_ci_files() {
     local choice="$1"
 
     case "$choice" in
@@ -233,29 +233,29 @@ run_ci_bash() {
 }
 
 run_ci_bash_bats() {
-    run_ci 'bats'
+    run_ci_files 'bats'
 }
 
 run_ci_bash_shellcheck() {
-    run_ci 'shellcheck'
+    run_ci_files 'shellcheck'
 }
 
 run_ci_bash_shfmt() {
-    run_ci 'shfmt'
-    run_ci 'shfmt_test'
+    run_ci_files 'shfmt'
+    run_ci_files 'shfmt_test'
 }
 
 run_ci_bash_shfmt_write() {
-    run_ci 'shfmt_write'
-    run_ci 'shfmt_write_test'
+    run_ci_files 'shfmt_write'
+    run_ci_files 'shfmt_write_test'
 }
 
 run_ci_markdown() {
-    run_ci 'markdown'
+    run_ci_files 'markdown'
 }
 
 run_ci_markdown_write() {
-    run_ci 'markdown_write'
+    run_ci_files 'markdown_write'
 }
 
 run_ci_python() {
@@ -284,28 +284,28 @@ run_ci_python() {
 }
 
 run_ci_python_black() {
-    run_ci 'black'
+    run_ci_files 'black'
 }
 
 run_ci_python_black_write() {
-    run_ci 'black_write'
+    run_ci_files 'black_write'
 }
 
 run_ci_python_isort() {
-    run_ci 'isort'
+    run_ci_files 'isort'
 }
 
 run_ci_python_isort_write() {
-    run_ci 'isort_write'
+    run_ci_files 'isort_write'
 }
 
 run_ci_python_mypy() {
-    run_ci 'mypy'
+    run_ci_files 'mypy'
 }
 
 run_ci_python_pylint() {
-    run_ci 'pylint'
-    run_ci 'pylint_test'
+    run_ci_files 'pylint'
+    run_ci_files 'pylint_test'
 }
 
 run_ci_python_test() {

@@ -36,9 +36,10 @@ handle_ci_fail() {
 }
 
 has_python_files() {
+    local script_path
+    script_path="$(update_path 'src/git_files_filter.py')"
     local files_raw
-    files_raw="$(python "$(update_path 'src/git_files_filter.py')" \
-        'PYTHON_BOTH')"
+    files_raw="$(python "$script_path" 'PYTHON_BOTH')"
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
     if [[ -z "${files[*]}" ]]; then
@@ -93,8 +94,10 @@ run_ci() {
             ;;
     esac
 
+    local script_path
+    script_path="$(update_path 'src/git_files_filter.py')"
     local files_raw
-    files_raw="$(python "$(update_path 'src/git_files_filter.py')" "$language")"
+    files_raw="$(python "$script_path" "$language")"
     mapfile -t files <<<"${files_raw//$'\r'/}"
 
     if [[ -z "${files[*]}" ]]; then
@@ -148,68 +151,81 @@ run_ci() {
             done
             ;;
         'black')
-            if ! black --check --diff --config \
-                "$(update_path 'config/pyproject.toml')" "${files[@]}"; then
-                is_error=1
-            fi
-            ;;
-        'black_write')
-            if ! black --config "$(update_path 'config/pyproject.toml')" \
+            local config_path
+            config_path="$(update_path 'config/pyproject.toml')"
+            if ! black --check --diff --config "$config_path" \
                 "${files[@]}"; then
                 is_error=1
             fi
             ;;
+        'black_write')
+            local config_path
+            config_path="$(update_path 'config/pyproject.toml')"
+            if ! black --config "$config_path" "${files[@]}"; then
+                is_error=1
+            fi
+            ;;
         'pylint')
+            local name_value
+            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
+            local config_path
+            config_path="$(update_path 'config/pylintrc.toml')"
             for file in "${files[@]}"; do
-                if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" pylint \
-                    --rcfile "$(update_path 'config/pylintrc.toml')" \
-                    "$file"; then
+                if ! env "$name_value" \
+                    pylint --rcfile "$config_path" "$file"; then
                     is_error=1
                 fi
             done
             ;;
         'pylint_test')
+            local name_value
+            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
+            local config_path
+            config_path="$(update_path 'config/pylintrc_test.toml')"
             for file in "${files[@]}"; do
-                if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" pylint \
-                    --rcfile "$(update_path 'config/pylintrc_test.toml')" \
-                    "$file"; then
+                if ! env "$name_value" \
+                    pylint --rcfile "$config_path" "$file"; then
                     is_error=1
                 fi
             done
             ;;
         'mypy')
-            if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \
-                mypy --config-file "$(update_path 'config/mypy.ini')" \
-                "${files[@]}"; then
+            local name_value
+            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
+            local config_path
+            config_path="$(update_path 'config/mypy.ini')"
+            if ! env "$name_value" \
+                mypy --config-file "$config_path" "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'isort')
+            local config_path
+            config_path="$(update_path 'config/.isort.cfg')"
             if ! isort --src-path "$(get_pythonpath_value)" --diff \
-                --check-only \
-                --settings-path "$(update_path 'config/.isort.cfg')" \
-                "${files[@]}"; then
+                --check-only --settings-path "$config_path" "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'isort_write')
+            local config_path
+            config_path="$(update_path 'config/.isort.cfg')"
             if ! isort --src-path "$(get_pythonpath_value)" \
-                --settings-path "$(update_path 'config/.isort.cfg')" \
-                "${files[@]}"; then
+                --settings-path "$config_path" "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'markdown')
-            if ! markdownlint --config \
-                "$(update_path 'config/.markdownlint.jsonc')" \
-                "${files[@]}"; then
+            local config_path
+            config_path="$(update_path 'config/.markdownlint.jsonc')"
+            if ! markdownlint --config "$config_path" "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'markdown_write')
-            if ! markdownlint --config \
-                "$(update_path 'config/.markdownlint.jsonc')" --fix \
-                "${files[@]}"; then
+            local config_path
+            config_path="$(update_path 'config/.markdownlint.jsonc')"
+            if ! markdownlint --config "$config_path" --fix "${files[@]}"; then
                 is_error=1
             fi
             ;;
@@ -315,21 +331,29 @@ run_ci_python_test() {
     echo "Running $choice"
     echo '##################################################'
 
+    local script_path
+    script_path="$(update_path 'src/unittest_options.py')"
     local options_raw
-    options_raw="$(python "$(update_path 'src/unittest_options.py')")"
+    options_raw="$(python "$script_path")"
     mapfile -t options <<<"${options_raw//$'\r'/}"
 
     local is_error=0
     case "$choice" in
         'unittest')
-            if ! env "$(get_first_env_var './.env' 'PYTHONPATH')" \
+            local name_value
+            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
+            if ! env "$name_value" \
                 python -m unittest "${options[@]}"; then
                 is_error=1
             fi
             ;;
         'coverage_py')
-            if env "$(get_first_env_var './.env' 'PYTHONPATH')" \
-                coverage run --rcfile="$(update_path 'config/.coveragerc')" \
+            local name_value
+            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
+            local config_path
+            config_path="$(update_path 'config/.coveragerc')"
+            if env "$name_value" \
+                coverage run --rcfile="$config_path" \
                 -m unittest "${options[@]}"; then
                 coverage html
             else

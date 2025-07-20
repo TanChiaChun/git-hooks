@@ -13,7 +13,7 @@ COPY --chown=python requirements*.txt /home/python/$REPO_NAME/
 COPY --chown=python $GIT_HOOKS_REQUIREMENTS_SRC $GIT_HOOKS_REQUIREMENTS_DEST
 WORKDIR /home/python/$REPO_NAME/
 RUN pip install --no-cache-dir --requirement './requirements-dev.txt' \
-    && mkdir --parents venv/bin
+    && mkdir --parents .venv/bin
 ENV PATH="/home/python/.local/bin:$PATH"
 
 COPY --chown=python . /home/python/$REPO_NAME/

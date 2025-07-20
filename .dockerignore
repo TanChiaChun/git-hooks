@@ -1,5 +1,5 @@
 .mypy_cache/
 htmlcov/
-venv/
+.venv/
 **/*.pyc
 .coverage

@@ -24,31 +24,6 @@ EOF
     # always output 1 file when run from Bats.
 }
 
-@test "prepend_venv_bin_to_path_github_actions()" {
-    # shellcheck disable=SC2030
-    export GITHUB_ACTIONS='true'
-    run prepend_venv_bin_to_path
-    export -n GITHUB_ACTIONS
-    [ "$status" -eq 0 ]
-    [ "$output" == \
-        'Skip prepend venv bin to Path as running from GitHub Actions' ]
-}
-
-@test "prepend_venv_bin_to_path_not_found()" {
-    local test_dir="$BATS_TMPDIR/venv"
-
-    mkdir "$test_dir"
-    cd "$test_dir"
-    # shellcheck disable=SC2031
-    export GITHUB_ACTIONS='false'
-    run prepend_venv_bin_to_path
-    export -n GITHUB_ACTIONS
-    cd "$OLDPWD"
-    rm -r "$test_dir"
-    [ "$status" -eq 1 ]
-    [ "$output" == 'Cannot find venv binary directory' ]
-}
-
 @test "set_git_hooks_working_dir_current_repo()" {
     declare -g git_hooks_working_dir # To clear shellcheck SC2154
 

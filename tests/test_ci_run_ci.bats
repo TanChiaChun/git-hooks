@@ -2,7 +2,6 @@ setup() {
     load '../src/ci.sh'
 
     export test_file="$BATS_TMPDIR/test"
-    prepend_venv_bin_to_path
 }
 
 teardown() {

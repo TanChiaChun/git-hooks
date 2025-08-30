@@ -1,0 +1,19 @@
+[project]
+name = "git-hooks"
+requires-python = ">=3.11"
+dependencies = [
+    "black (>=0.0.0)",
+    "coverage (>=0.0.0)",
+    "isort (>=0.0.0)",
+    "mypy (>=0.0.0)",
+    "pylint (>=0.0.0)"
+]
+
+
+[tool.poetry]
+package-mode = false
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

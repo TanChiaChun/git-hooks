@@ -47,22 +47,6 @@ has_python_files() {
     fi
 }
 
-prepend_venv_bin_to_path() {
-    if [[ "$GITHUB_ACTIONS" == 'true' ]]; then
-        echo 'Skip prepend venv bin to Path as running from GitHub Actions'
-        return
-    fi
-
-    local venv_bin_path
-    venv_bin_path="$(get_venv_bin_path "$PWD")"
-    if [[ -z "$venv_bin_path" ]]; then
-        echo 'Cannot find venv binary directory'
-        return 1
-    fi
-
-    PATH="$venv_bin_path:$PATH"
-}
-
 run_ci() {
     local choice="$1"
 
@@ -153,15 +137,16 @@ run_ci() {
         'black')
             local config_path
             config_path="$(update_path 'config/pyproject.toml')"
-            if ! black --check --diff --config "$config_path" \
-                "${files[@]}"; then
+            if ! poetry run \
+                black --check --diff --config "$config_path" "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'black_write')
             local config_path
             config_path="$(update_path 'config/pyproject.toml')"
-            if ! black --config "$config_path" "${files[@]}"; then
+            if ! poetry run \
+                black --config "$config_path" "${files[@]}"; then
                 is_error=1
             fi
             ;;
@@ -172,6 +157,7 @@ run_ci() {
             config_path="$(update_path 'config/pylintrc.toml')"
             for file in "${files[@]}"; do
                 if ! env "$name_value" \
+                    poetry run \
                     pylint --rcfile "$config_path" "$file"; then
                     is_error=1
                 fi
@@ -184,6 +170,7 @@ run_ci() {
             config_path="$(update_path 'config/pylintrc_test.toml')"
             for file in "${files[@]}"; do
                 if ! env "$name_value" \
+                    poetry run \
                     pylint --rcfile "$config_path" "$file"; then
                     is_error=1
                 fi
@@ -195,6 +182,7 @@ run_ci() {
             local config_path
             config_path="$(update_path 'config/mypy.ini')"
             if ! env "$name_value" \
+                poetry run \
                 mypy --config-file "$config_path" "${files[@]}"; then
                 is_error=1
             fi
@@ -202,15 +190,17 @@ run_ci() {
         'isort')
             local config_path
             config_path="$(update_path 'config/.isort.cfg')"
-            if ! isort --src-path "$(get_pythonpath_value)" --diff \
-                --check-only --settings-path "$config_path" "${files[@]}"; then
+            if ! poetry run \
+                isort --src-path "$(get_pythonpath_value)" --diff --check-only \
+                --settings-path "$config_path" "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'isort_write')
             local config_path
             config_path="$(update_path 'config/.isort.cfg')"
-            if ! isort --src-path "$(get_pythonpath_value)" \
+            if ! poetry run \
+                isort --src-path "$(get_pythonpath_value)" \
                 --settings-path "$config_path" "${files[@]}"; then
                 is_error=1
             fi
@@ -270,7 +260,6 @@ run_ci_markdown_write() {
 
 run_ci_python() {
     if [[ -d './.venv' ]]; then
-        prepend_venv_bin_to_path
         if (is_django_project); then
             set_django_env_var
         fi
@@ -343,6 +332,7 @@ run_ci_python_test() {
             local name_value
             name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
             if ! env "$name_value" \
+                poetry run \
                 python -m unittest "${options[@]}"; then
                 is_error=1
             fi
@@ -353,9 +343,11 @@ run_ci_python_test() {
             local config_path
             config_path="$(update_path 'config/.coveragerc')"
             if env "$name_value" \
+                poetry run \
                 coverage run --rcfile="$config_path" \
                 -m unittest "${options[@]}"; then
-                coverage html
+                poetry run \
+                    coverage html
             else
                 is_error=1
             fi
@@ -408,14 +400,17 @@ run_ci_python_test_django() {
     local is_error=0
     case "$choice" in
         'django')
-            if ! python ./manage.py test; then
+            if ! poetry run \
+                python ./manage.py test; then
                 is_error=1
             fi
             ;;
         'coverage_py')
-            if coverage run --rcfile="$(update_path 'config/.coveragerc')" \
+            if poetry run \
+                coverage run --rcfile="$(update_path 'config/.coveragerc')" \
                 --source='.' ./manage.py test; then
-                coverage html
+                poetry run \
+                    coverage html
             else
                 is_error=1
             fi

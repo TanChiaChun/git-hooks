@@ -61,15 +61,20 @@ jobs:
           python-version: '3.x'
       - name: Get Python version
         run: python --version
+      - name: Set up Poetry
+        if: ${{ !inputs.submodules }}
+        run: |
+          pipx install poetry
+          poetry --version
       - name: Install packages
         if: ${{ !inputs.submodules }}
         run: |
-          pip install --requirement './requirements-dev.txt'
-          black --version
-          pylint --version
-          mypy --version
-          isort --version
-          coverage --version
+          poetry sync
+          poetry run black --version
+          poetry run pylint --version
+          poetry run mypy --version
+          poetry run isort --version
+          poetry run coverage --version
 
       - name: Install markdownlint
         if: ${{ !inputs.submodules }}

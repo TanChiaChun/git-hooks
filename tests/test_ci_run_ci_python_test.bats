@@ -2,7 +2,6 @@ setup() {
     load '../src/ci.sh'
 
     export py_test_file="${BATS_TEST_FILENAME%/*}/test.py"
-    prepend_venv_bin_to_path
 }
 
 teardown() {

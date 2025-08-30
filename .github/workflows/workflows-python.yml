@@ -24,13 +24,17 @@ jobs:
           python-version: '3.x'
       - name: Get Python version
         run: python --version
+      - name: Set up Poetry
+        run: |
+          pipx install poetry
+          poetry --version
       - name: Install packages
         run: |
-          pip install --requirement './requirements-dev.txt'
-          black --version
-          pylint --version
-          mypy --version
-          isort --version
+          poetry sync
+          poetry run black --version
+          poetry run pylint --version
+          poetry run mypy --version
+          poetry run isort --version
 
       - name: Install Bash (macOS)
         if: ${{ inputs.os == 'macos-latest' }}

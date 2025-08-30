@@ -1,20 +1,24 @@
 FROM python
 
 ARG REPO_NAME=repo
-ARG GIT_HOOKS_REQUIREMENTS_SRC=git-hooks/requirements*.txt
-ARG GIT_HOOKS_REQUIREMENTS_DEST=/home/python/$REPO_NAME/git-hooks/
 ARG CI_SCRIPT_PATH=./git-hooks/src/ci.sh
 ENV CI_SCRIPT_PATH=$CI_SCRIPT_PATH
+
+RUN apt-get update \
+    && apt-get install --no-install-recommends --yes \
+        pipx \
+    && rm --force --recursive /var/lib/apt/lists/*
 
 RUN useradd --create-home --shell /bin/bash python
 USER python
 
-COPY --chown=python requirements*.txt /home/python/$REPO_NAME/
-COPY --chown=python $GIT_HOOKS_REQUIREMENTS_SRC $GIT_HOOKS_REQUIREMENTS_DEST
-WORKDIR /home/python/$REPO_NAME/
-RUN pip install --no-cache-dir --requirement './requirements-dev.txt' \
-    && mkdir --parents .venv/bin
+RUN pipx install poetry
 ENV PATH="/home/python/.local/bin:$PATH"
+
+COPY --chown=python poetry.toml /home/python/$REPO_NAME/
+COPY --chown=python pyproject.toml /home/python/$REPO_NAME/
+WORKDIR /home/python/$REPO_NAME/
+RUN poetry sync
 
 COPY --chown=python . /home/python/$REPO_NAME/
 

@@ -57,8 +57,7 @@ class TestGetVscodeOptions(BaseFixtureTestCase):
         mock_path.resolve.return_value = Path("file")
 
         with self.assertLogs(logger=logger, level=logging.WARNING) as cm:
-            with self.assertRaises(FileNotFoundError):
-                get_vscode_options(mock_path)
+            self.assertRaises(FileNotFoundError, get_vscode_options, mock_path)
 
             self.assertEqual(cm.records[0].getMessage(), "file not found.")
 
@@ -68,8 +67,9 @@ class TestGetVscodeOptions(BaseFixtureTestCase):
         mock_path.resolve.return_value = Path("file")
 
         with self.assertLogs(logger=logger, level=logging.WARNING) as cm:
-            with self.assertRaises(json.JSONDecodeError):
-                get_vscode_options(mock_path)
+            self.assertRaises(
+                json.JSONDecodeError, get_vscode_options, mock_path
+            )
 
             self.assertEqual(cm.records[0].getMessage(), "Error decoding file.")
 
@@ -78,8 +78,7 @@ class TestGetVscodeOptions(BaseFixtureTestCase):
         mock_path.open = mock_open(read_data=json.dumps({"key": "value"}))
 
         with self.assertLogs(logger=logger, level=logging.WARNING) as cm:
-            with self.assertRaises(KeyError):
-                get_vscode_options(mock_path)
+            self.assertRaises(KeyError, get_vscode_options, mock_path)
 
             self.assertEqual(
                 cm.records[0].getMessage(),

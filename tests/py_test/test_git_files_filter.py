@@ -91,8 +91,7 @@ class TestGetGitFiles(BaseFixtureTestCase):
         with patch("subprocess.run", new=mock_process), self.assertLogs(
             logger=logger, level=logging.ERROR
         ) as cm:
-            with self.assertRaises(subprocess.CalledProcessError):
-                get_git_files()
+            self.assertRaises(subprocess.CalledProcessError, get_git_files)
 
             self.assertEqual(
                 cm.records[0].getMessage(), "Error running git ls-file"
@@ -101,8 +100,7 @@ class TestGetGitFiles(BaseFixtureTestCase):
     @patch("subprocess.run", new=Mock(side_effect=FileNotFoundError))
     def test_git_not_found(self) -> None:
         with self.assertLogs(logger=logger, level=logging.ERROR) as cm:
-            with self.assertRaises(FileNotFoundError):
-                get_git_files()
+            self.assertRaises(FileNotFoundError, get_git_files)
 
             self.assertEqual(cm.records[0].getMessage(), "git not found")
 
@@ -177,8 +175,7 @@ class TestMain(BaseFixtureTestCase):
             side_effect=subprocess.CalledProcessError(1, ["git", "ls-file"])
         )
         with patch("git_files_filter.get_git_files", new=mock_get_git_files):
-            with self.assertRaises(SystemExit):
-                main()
+            self.assertRaises(SystemExit, main)
 
 
 class TestModule(BaseFixtureTestCase):

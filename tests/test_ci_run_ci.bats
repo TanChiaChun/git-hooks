@@ -35,17 +35,13 @@ teardown() {
 }
 
 @test "bats_pass()" {
-    local bats_pass_file="$BATS_TEST_DIRNAME/test_pass.bats.sample"
-
-    cp "$bats_pass_file" "$test_file"
+    cp "$BATS_TEST_DIRNAME/sample_bash/test_pass.bats.sample" "$test_file"
     run run_ci 'bats'
     [ "$status" -eq 0 ]
 }
 
 @test "bats_fail()" {
-    local bats_fail_file="$BATS_TEST_DIRNAME/test_fail.bats.sample"
-
-    cp "$bats_fail_file" "$test_file"
+    cp "$BATS_TEST_DIRNAME/sample_bash/test_fail.bats.sample" "$test_file"
     run run_ci 'bats'
     [ "$status" -ne 0 ]
 }

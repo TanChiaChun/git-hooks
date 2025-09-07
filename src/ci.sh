@@ -275,10 +275,10 @@ run_ci_python() {
         fi
     else
         if (has_python_files); then
-            echo "python files found, but venv not created"
+            echo 'python files found, but venv not created'
             return 1
         else
-            echo "python no files"
+            echo 'python no files'
         fi
     fi
 }

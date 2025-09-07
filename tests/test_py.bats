@@ -37,7 +37,7 @@ setup() {
 }
 
 @test "is_django_project_true()" {
-    local env_file="./.env"
+    local env_file='./.env'
 
     cd "$BATS_TMPDIR"
     echo 'MY_DJANGO_PROJECT=./mysite' >"$env_file"

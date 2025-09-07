@@ -22,35 +22,13 @@ teardown() {
 }
 
 @test "unittest_pass()" {
-    cat <<"EOF" >"$py_test_file"
-import unittest
-
-
-class TestModule(unittest.TestCase):
-    def test_main(self) -> None:
-        self.assertEqual(0, 0)
-
-
-if __name__ == "__main__":
-    unittest.main()
-EOF
+    cp "$BATS_TEST_DIRNAME/sample_python/unittest_pass.sample" "$py_test_file"
     run run_ci_python_test 'unittest'
     [ "$status" -eq 0 ]
 }
 
 @test "unittest_fail()" {
-    cat <<"EOF" >"$py_test_file"
-import unittest
-
-
-class TestModule(unittest.TestCase):
-    def test_main(self) -> None:
-        self.assertEqual(0, 1)
-
-
-if __name__ == "__main__":
-    unittest.main()
-EOF
+    cp "$BATS_TEST_DIRNAME/sample_python/unittest_fail.sample" "$py_test_file"
     run run_ci_python_test 'unittest'
     [ "$status" -ne 0 ]
 }
@@ -63,18 +41,7 @@ EOF
         rm -r './htmlcov'
     fi
 
-    cat <<"EOF" >"$py_test_file"
-import unittest
-
-
-class TestModule(unittest.TestCase):
-    def test_main(self) -> None:
-        self.assertEqual(0, 0)
-
-
-if __name__ == "__main__":
-    unittest.main()
-EOF
+    cp "$BATS_TEST_DIRNAME/sample_python/unittest_pass.sample" "$py_test_file"
     run run_ci_python_test 'coverage_py'
     local is_exist_index_html='false'
     if [[ -f './htmlcov/index.html' ]]; then
@@ -87,18 +54,7 @@ EOF
 }
 
 @test "coverage_py_fail()" {
-    cat <<"EOF" >"$py_test_file"
-import unittest
-
-
-class TestModule(unittest.TestCase):
-    def test_main(self) -> None:
-        self.assertEqual(0, 1)
-
-
-if __name__ == "__main__":
-    unittest.main()
-EOF
+    cp "$BATS_TEST_DIRNAME/sample_python/unittest_fail.sample" "$py_test_file"
     run run_ci_python_test 'coverage_py'
     rm './.coverage'
     [ "$status" -ne 0 ]

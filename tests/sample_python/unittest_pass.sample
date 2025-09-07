@@ -1,0 +1,10 @@
+import unittest
+
+
+class TestModule(unittest.TestCase):
+    def test_main(self) -> None:
+        self.assertEqual(0, 0)
+
+
+if __name__ == "__main__":
+    unittest.main()

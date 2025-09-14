@@ -14,7 +14,7 @@ RUN ln --symbolic /usr/bin/python3 /usr/bin/python
 
 USER node
 
-RUN pipx install poetry
+RUN pipx install --pip-args=--no-cache-dir poetry
 ENV PATH="/home/node/.local/bin:$PATH"
 
 ENV npm_config_prefix=/home/node/.npm-global
@@ -25,7 +25,7 @@ RUN npm install --global markdownlint-cli \
 COPY --chown=node poetry.toml /home/node/git-hooks/
 COPY --chown=node pyproject.toml /home/node/git-hooks/
 WORKDIR /home/node/git-hooks/
-RUN poetry sync
+RUN poetry sync --no-cache
 
 COPY --chown=node . /home/node/git-hooks/
 

@@ -12,13 +12,13 @@ RUN apt-get update \
 RUN useradd --create-home --shell /bin/bash python
 USER python
 
-RUN pipx install poetry
+RUN pipx install --pip-args=--no-cache-dir poetry
 ENV PATH="/home/python/.local/bin:$PATH"
 
 COPY --chown=python poetry.toml /home/python/$REPO_NAME/
 COPY --chown=python pyproject.toml /home/python/$REPO_NAME/
 WORKDIR /home/python/$REPO_NAME/
-RUN poetry sync
+RUN poetry sync --no-cache
 
 COPY --chown=python . /home/python/$REPO_NAME/
 

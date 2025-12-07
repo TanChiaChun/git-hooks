@@ -8,13 +8,12 @@ RUN ln --symbolic /usr/bin/python3 /usr/bin/python
 
 USER node
 
-ENV npm_config_prefix=/home/node/.npm-global
-ENV PATH="$npm_config_prefix/bin:$PATH"
-RUN npm install --global markdownlint-cli \
+ENV PATH="/home/node/git-hooks/node_modules/.bin:$PATH"
+WORKDIR /home/node/$REPO_NAME/
+RUN npm install markdownlint-cli \
     && npm cache clean --force
 
 COPY --chown=node . /home/node/$REPO_NAME/
-WORKDIR /home/node/$REPO_NAME/
 
 SHELL ["/bin/bash", "-o", "errexit", "-o", "pipefail", "-c"]
 CMD source "$CI_SCRIPT_PATH" && run_ci_markdown

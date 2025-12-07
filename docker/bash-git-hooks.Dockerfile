@@ -17,9 +17,9 @@ USER node
 RUN pipx install --pip-args=--no-cache-dir poetry
 ENV PATH="/home/node/.local/bin:$PATH"
 
-ENV npm_config_prefix=/home/node/.npm-global
-ENV PATH="$npm_config_prefix/bin:$PATH"
-RUN npm install --global markdownlint-cli \
+ENV PATH="/home/node/git-hooks/node_modules/.bin:$PATH"
+WORKDIR /home/node/git-hooks/
+RUN npm install markdownlint-cli \
     && npm cache clean --force
 
 COPY --chown=node pyproject.toml poetry.toml /home/node/git-hooks/

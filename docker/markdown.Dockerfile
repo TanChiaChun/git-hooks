@@ -13,7 +13,7 @@ WORKDIR /home/node/$REPO_NAME/
 RUN npm install markdownlint-cli \
     && npm cache clean --force
 
-COPY --chown=node . /home/node/$REPO_NAME/
+COPY --chown=node --exclude=package.json . /home/node/$REPO_NAME/
 
 SHELL ["/bin/bash", "-o", "errexit", "-o", "pipefail", "-c"]
 CMD source "$CI_SCRIPT_PATH" && run_ci_markdown

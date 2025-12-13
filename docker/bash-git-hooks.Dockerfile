@@ -1,4 +1,4 @@
-FROM node
+FROM node:lts
 
 RUN apt-get update \
     && apt-get install --no-install-recommends --yes \
@@ -18,15 +18,17 @@ RUN pipx install --pip-args=--no-cache-dir poetry
 ENV PATH="/home/node/.local/bin:$PATH"
 
 ENV PATH="/home/node/git-hooks/node_modules/.bin:$PATH"
+COPY --chown=node package.json /home/node/git-hooks/
 WORKDIR /home/node/git-hooks/
-RUN npm install markdownlint-cli \
+RUN npm install \
+    && npm install markdownlint-cli \
     && npm cache clean --force
 
 COPY --chown=node pyproject.toml poetry.toml /home/node/git-hooks/
 WORKDIR /home/node/git-hooks/
 RUN poetry sync --no-cache
 
-COPY --chown=node . /home/node/git-hooks/
+COPY --chown=node --exclude=package.json . /home/node/git-hooks/
 
 SHELL ["/bin/bash", "-o", "errexit", "-o", "pipefail", "-c"]
 CMD source './src/ci.sh' && run_ci_bash

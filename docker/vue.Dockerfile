@@ -4,7 +4,7 @@ USER node
 
 COPY --chown=node package.json package-lock.json /home/node/repo/
 WORKDIR /home/node/repo/
-RUN npm install \
+RUN npm ci \
     && npm cache clean --force
 
 COPY --chown=node . /home/node/repo/

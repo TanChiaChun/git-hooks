@@ -15,7 +15,9 @@ USER python
 RUN pipx install --pip-args=--no-cache-dir poetry
 ENV PATH="/home/python/.local/bin:$PATH"
 
-COPY --chown=python pyproject.toml poetry.toml /home/python/$REPO_NAME/
+COPY --chown=python \
+    pyproject.toml poetry.toml poetry.lock \
+    /home/python/$REPO_NAME/
 WORKDIR /home/python/$REPO_NAME/
 RUN poetry sync --no-cache
 

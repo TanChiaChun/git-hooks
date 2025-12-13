@@ -226,6 +226,31 @@ run_ci_files() {
     fi
 }
 
+run_ci_project() {
+    local choice="$1"
+
+    echo '##################################################'
+    echo "Running $choice"
+    echo '##################################################'
+
+    local is_error=0
+    case "$choice" in
+        'vue-tsc')
+            if ! npx vue-tsc --build; then
+                is_error=1
+            fi
+            ;;
+        *)
+            echo 'Invalid CI choice'
+            return 1
+            ;;
+    esac
+
+    if [[ "$is_error" -eq 1 ]]; then
+        handle_ci_fail "$choice"
+    fi
+}
+
 run_ci_bash() {
     run_ci_bash_shfmt
     run_ci_bash_shellcheck
@@ -248,6 +273,14 @@ run_ci_bash_shfmt() {
 run_ci_bash_shfmt_write() {
     run_ci_files 'shfmt_write'
     run_ci_files 'shfmt_write_test'
+}
+
+run_ci_javascript_vue() {
+    run_ci_javascript_vue_tsc
+}
+
+run_ci_javascript_vue_tsc() {
+    run_ci_project 'vue-tsc'
 }
 
 run_ci_markdown() {

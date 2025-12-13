@@ -22,8 +22,7 @@ ENV PATH="$npm_config_prefix/bin:$PATH"
 RUN npm install --global markdownlint-cli \
     && npm cache clean --force
 
-COPY --chown=node poetry.toml /home/node/git-hooks/
-COPY --chown=node pyproject.toml /home/node/git-hooks/
+COPY --chown=node pyproject.toml poetry.toml /home/node/git-hooks/
 WORKDIR /home/node/git-hooks/
 RUN poetry sync --no-cache
 

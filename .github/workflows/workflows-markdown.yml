@@ -27,6 +27,7 @@ jobs:
           "$PWD/node_modules/.bin"
           | Out-File -FilePath $env:GITHUB_PATH -Append
       - name: Install markdownlint
+        shell: bash
         run: |
           rm -f package.json
           npm install markdownlint-cli

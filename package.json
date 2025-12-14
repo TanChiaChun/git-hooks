@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@vue/tsconfig": "*",
+    "prettier": "*",
     "vue": "*",
     "vue-tsc": "*"
   }

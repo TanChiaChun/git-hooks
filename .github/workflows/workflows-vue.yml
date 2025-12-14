@@ -37,3 +37,9 @@ jobs:
         run: |
           source './git-hooks/src/ci.sh'
           run_ci_javascript_vue_tsc
+
+      - name: Run Prettier
+        shell: bash
+        run: |
+          source './git-hooks/src/ci.sh'
+          run_ci_javascript_vue_prettier

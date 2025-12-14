@@ -235,6 +235,18 @@ run_ci_project() {
 
     local is_error=0
     case "$choice" in
+        'prettier')
+            config_path="$(update_path 'config/.prettierrc.json')"
+            if ! npx prettier --check --config "$config_path" './src'; then
+                is_error=1
+            fi
+            ;;
+        'prettier_write')
+            config_path="$(update_path 'config/.prettierrc.json')"
+            if ! npx prettier --config "$config_path" --write './src'; then
+                is_error=1
+            fi
+            ;;
         'vue-tsc')
             if ! npx vue-tsc --build; then
                 is_error=1
@@ -277,6 +289,15 @@ run_ci_bash_shfmt_write() {
 
 run_ci_javascript_vue() {
     run_ci_javascript_vue_tsc
+    run_ci_javascript_vue_prettier
+}
+
+run_ci_javascript_vue_prettier() {
+    run_ci_project 'prettier'
+}
+
+run_ci_javascript_vue_prettier_write() {
+    run_ci_project 'prettier_write'
 }
 
 run_ci_javascript_vue_tsc() {

@@ -12,6 +12,34 @@ teardown() {
     rm -r "$tmp_dir"
 }
 
+@test "prettier_ts_pass" {
+    mkdir 'src'
+    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_ts_pass.sample" './src/main.ts'
+    run run_ci_project 'prettier'
+    [ "$status" -eq 0 ]
+}
+
+@test "prettier_ts_fail" {
+    mkdir 'src'
+    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_ts_fail.sample" './src/main.ts'
+    run run_ci_project 'prettier'
+    [ "$status" -ne 0 ]
+}
+
+@test "prettier_vue_pass" {
+    mkdir 'src'
+    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_vue_pass.sample" './src/App.vue'
+    run run_ci_project 'prettier'
+    [ "$status" -eq 0 ]
+}
+
+@test "prettier_vue_fail" {
+    mkdir 'src'
+    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_vue_fail.sample" './src/App.vue'
+    run run_ci_project 'prettier'
+    [ "$status" -ne 0 ]
+}
+
 @test "vue-tsc_ts_pass" {
     cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_ts_pass.sample" 'main.ts'
     run run_ci_project 'vue-tsc'

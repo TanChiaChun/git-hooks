@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@vue/tsconfig": "*",
+    "vue": "*",
     "vue-tsc": "*"
   }
 }

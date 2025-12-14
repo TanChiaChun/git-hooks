@@ -1,9 +1,4 @@
 {
-  "files": [
-    "main.ts"
-  ],
-  "compilerOptions": {
-    "strict": true,
-    "noEmit": true
-  }
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["main.ts", "App.vue"]
 }

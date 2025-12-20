@@ -3,7 +3,7 @@ setup() {
 
     export tmp_dir="$BATS_TEST_DIRNAME/tmpdir"
     mkdir "$tmp_dir"
-    cp "$BATS_TEST_DIRNAME/sample_vue/tsconfig.json" "$tmp_dir"
+    cp "$BATS_TEST_DIRNAME/sample_vue/tsconfig.sample" "$tmp_dir/tsconfig.json"
     cd "$tmp_dir" || exit 1
 }
 

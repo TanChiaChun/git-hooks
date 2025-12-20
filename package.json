@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@vue/tsconfig": "*",
+    "eslint": "*",
+    "@eslint/js": "*",
     "prettier": "*",
     "vue": "*",
     "vue-tsc": "*"

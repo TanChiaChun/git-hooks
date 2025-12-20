@@ -235,6 +235,16 @@ run_ci_project() {
 
     local is_error=0
     case "$choice" in
+        'eslint')
+            if ! npx eslint .; then
+                is_error=1
+            fi
+            ;;
+        'eslint_write')
+            if ! npx eslint --fix .; then
+                is_error=1
+            fi
+            ;;
         'prettier')
             config_path="$(update_path 'config/.prettierrc.json')"
             if ! npx prettier --check --config "$config_path" './src'; then
@@ -290,6 +300,15 @@ run_ci_bash_shfmt_write() {
 run_ci_javascript_vue() {
     run_ci_javascript_vue_tsc
     run_ci_javascript_vue_prettier
+    run_ci_javascript_vue_eslint
+}
+
+run_ci_javascript_vue_eslint() {
+    run_ci_project 'eslint'
+}
+
+run_ci_javascript_vue_eslint_write() {
+    run_ci_project 'eslint_write'
 }
 
 run_ci_javascript_vue_prettier() {

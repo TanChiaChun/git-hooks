@@ -1,0 +1,8 @@
+function square(number) {
+  if (!number) {
+    return 0;
+  }
+  return number * number;
+}
+
+square(2);

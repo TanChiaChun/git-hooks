@@ -12,6 +12,20 @@ teardown() {
     rm -r "$tmp_dir"
 }
 
+@test "eslint_pass" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/eslint.config.sample" 'eslint.config.mjs'
+    cp "$BATS_TEST_DIRNAME/sample_vue/eslint_pass.sample" 'main.js'
+    run run_ci_project 'eslint'
+    [ "$status" -eq 0 ]
+}
+
+@test "eslint_fail" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/eslint.config.sample" 'eslint.config.mjs'
+    cp "$BATS_TEST_DIRNAME/sample_vue/eslint_fail.sample" 'main.js'
+    run run_ci_project 'eslint'
+    [ "$status" -ne 0 ]
+}
+
 @test "prettier_ts_pass" {
     mkdir 'src'
     cp "$BATS_TEST_DIRNAME/sample_vue/prettier_ts_pass.sample" './src/main.ts'

@@ -12,32 +12,32 @@ teardown() {
     rm -r "$tmp_dir"
 }
 
-@test "ts_pass" {
+@test "ts_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_ts_pass.sample" 'main.ts'
     run run_ci_project 'vue-tsc'
     [ "$status" -eq 0 ]
 }
 
-@test "ts_fail_assign" {
+@test "ts_fail_assign()" {
     cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_ts_fail_assign.sample" 'main.ts'
     run run_ci_project 'vue-tsc'
     [ "$status" -ne 0 ]
 }
 
-@test "ts_fail_parameter" {
+@test "ts_fail_parameter()" {
     cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_ts_fail_parameter.sample" \
         'main.ts'
     run run_ci_project 'vue-tsc'
     [ "$status" -ne 0 ]
 }
 
-@test "vue_pass" {
+@test "vue_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_vue_pass.sample" 'App.vue'
     run run_ci_project 'vue-tsc'
     [ "$status" -eq 0 ]
 }
 
-@test "vue_fail" {
+@test "vue_fail()" {
     cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_vue_fail.sample" 'App.vue'
     run run_ci_project 'vue-tsc'
     [ "$status" -ne 0 ]

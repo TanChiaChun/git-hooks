@@ -31,6 +31,13 @@ teardown() {
     [ "$status" -ne 0 ]
 }
 
+@test "ts_fail_wrong_return()" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_ts_fail_wrong_return.sample" \
+        'main.ts'
+    run run_ci_project 'vue-tsc'
+    [ "$status" -ne 0 ]
+}
+
 @test "vue_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_vue_pass.sample" 'App.vue'
     run run_ci_project 'vue-tsc'

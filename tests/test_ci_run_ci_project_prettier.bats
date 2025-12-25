@@ -17,8 +17,16 @@ teardown() {
     [ "$status" -eq 0 ]
 }
 
-@test "ts_fail" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_ts_fail.sample" 'main.ts'
+@test "ts_fail_single_quote" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_ts_fail_single_quote.sample" \
+        'main.ts'
+    run run_ci_project 'prettier'
+    [ "$status" -ne 0 ]
+}
+
+@test "ts_fail_tab_width" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_ts_fail_tab_width.sample" \
+        'main.ts'
     run run_ci_project 'prettier'
     [ "$status" -ne 0 ]
 }

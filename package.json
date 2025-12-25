@@ -3,7 +3,9 @@
     "@eslint/js": "*",
     "@vue/tsconfig": "*",
     "eslint": "*",
+    "jiti": "*",
     "prettier": "*",
+    "typescript-eslint": "*",
     "vue": "*",
     "vue-tsc": "*"
   }

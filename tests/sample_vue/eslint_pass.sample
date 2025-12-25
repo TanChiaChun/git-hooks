@@ -1,8 +1,5 @@
-function square(number) {
-  if (!number) {
-    return 0;
-  }
-  return number * number;
-}
+import path from "node:path"
+import { statSync } from "node:fs"
 
-square(2);
+path.basename("main.ts")
+statSync("main.ts")

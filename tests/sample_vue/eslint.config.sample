@@ -1,8 +1,10 @@
-import js from "@eslint/js";
+import baseConfig from "../../config/eslint.base.mts";
 import { defineConfig } from "eslint/config";
+import js from "@eslint/js";
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
+  baseConfig,
   {
     plugins: { js },
     extends: ["js/recommended"],

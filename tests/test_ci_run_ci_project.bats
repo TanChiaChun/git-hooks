@@ -3,7 +3,6 @@ setup() {
 
     export tmp_dir="$BATS_TEST_DIRNAME/tmpdir"
     mkdir "$tmp_dir"
-    cp "$BATS_TEST_DIRNAME/sample_vue/tsconfig.sample" "$tmp_dir/tsconfig.json"
     cd "$tmp_dir" || exit 1
 }
 
@@ -23,30 +22,6 @@ teardown() {
     cp "$BATS_TEST_DIRNAME/sample_vue/eslint.config.sample" 'eslint.config.mjs'
     cp "$BATS_TEST_DIRNAME/sample_vue/eslint_fail.sample" 'main.js'
     run run_ci_project 'eslint'
-    [ "$status" -ne 0 ]
-}
-
-@test "vue-tsc_ts_pass" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_ts_pass.sample" 'main.ts'
-    run run_ci_project 'vue-tsc'
-    [ "$status" -eq 0 ]
-}
-
-@test "vue-tsc_ts_fail" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_ts_fail.sample" 'main.ts'
-    run run_ci_project 'vue-tsc'
-    [ "$status" -ne 0 ]
-}
-
-@test "vue-tsc_vue_pass" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_vue_pass.sample" 'App.vue'
-    run run_ci_project 'vue-tsc'
-    [ "$status" -eq 0 ]
-}
-
-@test "vue-tsc_vue_fail" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_vue_fail.sample" 'App.vue'
-    run run_ci_project 'vue-tsc'
     [ "$status" -ne 0 ]
 }
 

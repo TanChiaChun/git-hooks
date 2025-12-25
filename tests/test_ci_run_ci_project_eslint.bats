@@ -18,9 +18,17 @@ teardown() {
     [ "$status" -eq 0 ]
 }
 
-@test "fail()" {
+@test "fail_implicit_return()" {
     cp "$BATS_TEST_DIRNAME/sample_vue/eslint.config.sample" 'eslint.config.mts'
-    cp "$BATS_TEST_DIRNAME/sample_vue/eslint_fail.sample" 'main.ts'
+    cp "$BATS_TEST_DIRNAME/sample_vue/eslint_fail_implicit_return.sample" \
+        'main.ts'
+    run run_ci_project 'eslint'
+    [ "$status" -ne 0 ]
+}
+
+@test "fail_import_sort()" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/eslint.config.sample" 'eslint.config.mts'
+    cp "$BATS_TEST_DIRNAME/sample_vue/eslint_fail_import_sort.sample" 'main.ts'
     run run_ci_project 'eslint'
     [ "$status" -ne 0 ]
 }

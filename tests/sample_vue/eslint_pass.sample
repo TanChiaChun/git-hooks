@@ -1,5 +1,10 @@
 import path from "node:path"
 import { statSync } from "node:fs"
 
+function square(n: number): number {
+  return n * n
+}
+
 path.basename("main.ts")
 statSync("main.ts")
+square(3)

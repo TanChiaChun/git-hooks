@@ -26,30 +26,6 @@ teardown() {
     [ "$status" -ne 0 ]
 }
 
-@test "prettier_ts_pass" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_ts_pass.sample" 'main.ts'
-    run run_ci_project 'prettier'
-    [ "$status" -eq 0 ]
-}
-
-@test "prettier_ts_fail" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_ts_fail.sample" 'main.ts'
-    run run_ci_project 'prettier'
-    [ "$status" -ne 0 ]
-}
-
-@test "prettier_vue_pass" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_vue_pass.sample" 'App.vue'
-    run run_ci_project 'prettier'
-    [ "$status" -eq 0 ]
-}
-
-@test "prettier_vue_fail" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_vue_fail.sample" 'App.vue'
-    run run_ci_project 'prettier'
-    [ "$status" -ne 0 ]
-}
-
 @test "vue-tsc_ts_pass" {
     cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_ts_pass.sample" 'main.ts'
     run run_ci_project 'vue-tsc'

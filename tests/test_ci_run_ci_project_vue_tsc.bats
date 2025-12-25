@@ -18,8 +18,15 @@ teardown() {
     [ "$status" -eq 0 ]
 }
 
-@test "ts_fail" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_ts_fail.sample" 'main.ts'
+@test "ts_fail_assign" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_ts_fail_assign.sample" 'main.ts'
+    run run_ci_project 'vue-tsc'
+    [ "$status" -ne 0 ]
+}
+
+@test "ts_fail_parameter" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/vue_tsc_ts_fail_parameter.sample" \
+        'main.ts'
     run run_ci_project 'vue-tsc'
     [ "$status" -ne 0 ]
 }

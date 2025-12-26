@@ -262,6 +262,11 @@ run_ci_project() {
                 is_error=1
             fi
             ;;
+        'vitest_coverage')
+            if ! npx vitest run --coverage; then
+                is_error=1
+            fi
+            ;;
         'vue-tsc')
             if ! npx vue-tsc --build; then
                 is_error=1
@@ -509,6 +514,10 @@ run_ci_vue_prettier_write() {
 
 run_ci_vue_vitest() {
     run_ci_project 'vitest'
+}
+
+run_ci_vue_vitest_coverage() {
+    run_ci_project 'vitest_coverage'
 }
 
 run_ci_vue_tsc() {

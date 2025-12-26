@@ -257,6 +257,11 @@ run_ci_project() {
                 is_error=1
             fi
             ;;
+        'vitest')
+            if ! npx vitest run; then
+                is_error=1
+            fi
+            ;;
         'vue-tsc')
             if ! npx vue-tsc --build; then
                 is_error=1
@@ -301,6 +306,7 @@ run_ci_javascript_vue() {
     run_ci_javascript_vue_tsc
     run_ci_javascript_vue_prettier
     run_ci_javascript_vue_eslint
+    run_ci_javascript_vue_vitest
 }
 
 run_ci_javascript_vue_eslint() {
@@ -317,6 +323,10 @@ run_ci_javascript_vue_prettier() {
 
 run_ci_javascript_vue_prettier_write() {
     run_ci_project 'prettier_write'
+}
+
+run_ci_javascript_vue_vitest() {
+    run_ci_project 'vitest'
 }
 
 run_ci_javascript_vue_tsc() {

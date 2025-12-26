@@ -6,6 +6,7 @@
     "jiti": "*",
     "prettier": "*",
     "typescript-eslint": "*",
+    "vitest": "*",
     "vue": "*",
     "vue-tsc": "*"
   }

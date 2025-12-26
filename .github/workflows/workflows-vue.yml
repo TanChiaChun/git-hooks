@@ -36,19 +36,19 @@ jobs:
         shell: bash
         run: |
           source './git-hooks/src/ci.sh'
-          run_ci_javascript_vue_tsc
+          run_ci_vue_tsc
       - name: Run Prettier
         shell: bash
         run: |
           source './git-hooks/src/ci.sh'
-          run_ci_javascript_vue_prettier
+          run_ci_vue_prettier
       - name: Run ESLint
         shell: bash
         run: |
           source './git-hooks/src/ci.sh'
-          run_ci_javascript_vue_eslint
+          run_ci_vue_eslint
       - name: Run Vitest
         shell: bash
         run: |
           source './git-hooks/src/ci.sh'
-          run_ci_javascript_vue_vitest
+          run_ci_vue_vitest

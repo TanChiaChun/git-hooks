@@ -302,34 +302,34 @@ run_ci_bash_shfmt_write() {
     run_ci_files 'shfmt_write_test'
 }
 
-run_ci_javascript_vue() {
-    run_ci_javascript_vue_tsc
-    run_ci_javascript_vue_prettier
-    run_ci_javascript_vue_eslint
-    run_ci_javascript_vue_vitest
+run_ci_vue() {
+    run_ci_vue_tsc
+    run_ci_vue_prettier
+    run_ci_vue_eslint
+    run_ci_vue_vitest
 }
 
-run_ci_javascript_vue_eslint() {
+run_ci_vue_eslint() {
     run_ci_project 'eslint'
 }
 
-run_ci_javascript_vue_eslint_write() {
+run_ci_vue_eslint_write() {
     run_ci_project 'eslint_write'
 }
 
-run_ci_javascript_vue_prettier() {
+run_ci_vue_prettier() {
     run_ci_project 'prettier'
 }
 
-run_ci_javascript_vue_prettier_write() {
+run_ci_vue_prettier_write() {
     run_ci_project 'prettier_write'
 }
 
-run_ci_javascript_vue_vitest() {
+run_ci_vue_vitest() {
     run_ci_project 'vitest'
 }
 
-run_ci_javascript_vue_tsc() {
+run_ci_vue_tsc() {
     run_ci_project 'vue-tsc'
 }
 

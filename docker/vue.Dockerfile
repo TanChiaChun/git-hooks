@@ -10,4 +10,4 @@ RUN npm ci \
 COPY --chown=node . /home/node/repo/
 
 SHELL ["/bin/bash", "-o", "errexit", "-o", "pipefail", "-c"]
-CMD source './git-hooks/src/ci.sh' && run_ci_javascript_vue
+CMD source './git-hooks/src/ci.sh' && run_ci_vue

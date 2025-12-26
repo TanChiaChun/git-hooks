@@ -26,7 +26,7 @@ main() {
     run_ci_bash
     run_ci_python
     if [[ -f './tsconfig.json' ]]; then
-        run_ci_javascript_vue
+        run_ci_vue
     fi
     run_ci_markdown
 }

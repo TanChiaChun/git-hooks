@@ -1,0 +1,5 @@
+import { statSync } from "node:fs"
+import path from "node:path"
+
+path.basename("main.ts")
+statSync("main.ts")

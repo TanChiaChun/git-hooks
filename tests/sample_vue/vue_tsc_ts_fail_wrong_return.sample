@@ -1,0 +1,3 @@
+function square(n: number): string {
+  return n * n
+}

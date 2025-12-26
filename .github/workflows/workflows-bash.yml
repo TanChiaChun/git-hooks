@@ -42,6 +42,20 @@ jobs:
       - name: Get ShellCheck version
         run: shellcheck --version
 
+      - name: Set up Node.js
+        if: ${{ !inputs.submodules }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+      - name: Get Node.js version
+        if: ${{ !inputs.submodules }}
+        run: node --version
+      - name: Install Node.js dependencies
+        if: ${{ !inputs.submodules }}
+        run: |
+          npm install
+          npm ls
+
       - name: Add npm local bin directory to GitHub Path (non-Windows)
         if: ${{ inputs.os != 'windows-latest' }}
         run: echo "$PWD/node_modules/.bin" >> $GITHUB_PATH
@@ -66,15 +80,11 @@ jobs:
         run: |
           pipx install poetry
           poetry --version
-      - name: Install packages
+      - name: Install Python dependencies
         if: ${{ !inputs.submodules }}
         run: |
           poetry sync
-          poetry run black --version
-          poetry run pylint --version
-          poetry run mypy --version
-          poetry run isort --version
-          poetry run coverage --version
+          poetry show
 
       - name: Install markdownlint
         if: ${{ !inputs.submodules }}

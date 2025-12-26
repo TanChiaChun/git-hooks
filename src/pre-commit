@@ -20,9 +20,14 @@ reject_commit_main_branch() {
 main() {
     set -o errexit
     set -o pipefail
+
     reject_commit_main_branch "$(get_git_branch)"
+
     run_ci_bash
     run_ci_python
+    if [[ -f './tsconfig.json' ]]; then
+        run_ci_vue
+    fi
     run_ci_markdown
 }
 

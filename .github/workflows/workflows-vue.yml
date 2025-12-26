@@ -1,0 +1,54 @@
+name: Vue
+on:
+  workflow_call:
+    inputs:
+      os:
+        type: string
+jobs:
+  vue:
+    runs-on: ${{ inputs.os }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+      - name: Get Node.js version
+        run: node --version
+      - name: Install Node.js dependencies
+        run: |
+          npm ci
+          npm ls
+
+      - name: Install Bash (macOS)
+        if: ${{ inputs.os == 'macos-latest' }}
+        run: |
+          brew update
+          brew install bash
+      - name: Get Bash version
+        run: bash --version
+
+      - name: Run vue-tsc
+        shell: bash
+        run: |
+          source './git-hooks/src/ci.sh'
+          run_ci_vue_tsc
+      - name: Run Prettier
+        shell: bash
+        run: |
+          source './git-hooks/src/ci.sh'
+          run_ci_vue_prettier
+      - name: Run ESLint
+        shell: bash
+        run: |
+          source './git-hooks/src/ci.sh'
+          run_ci_vue_eslint
+      - name: Run Vitest
+        shell: bash
+        run: |
+          source './git-hooks/src/ci.sh'
+          run_ci_vue_vitest

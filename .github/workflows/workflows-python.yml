@@ -28,13 +28,10 @@ jobs:
         run: |
           pipx install poetry
           poetry --version
-      - name: Install packages
+      - name: Install Python dependencies
         run: |
           poetry sync
-          poetry run black --version
-          poetry run pylint --version
-          poetry run mypy --version
-          poetry run isort --version
+          poetry show
 
       - name: Install Bash (macOS)
         if: ${{ inputs.os == 'macos-latest' }}

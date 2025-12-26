@@ -47,7 +47,7 @@ has_python_files() {
     fi
 }
 
-run_ci() {
+run_ci_files() {
     local choice="$1"
 
     case "$choice" in
@@ -226,6 +226,63 @@ run_ci() {
     fi
 }
 
+run_ci_project() {
+    local choice="$1"
+
+    echo '##################################################'
+    echo "Running $choice"
+    echo '##################################################'
+
+    local is_error=0
+    case "$choice" in
+        'eslint')
+            if ! npx eslint .; then
+                is_error=1
+            fi
+            ;;
+        'eslint_write')
+            if ! npx eslint --fix .; then
+                is_error=1
+            fi
+            ;;
+        'prettier')
+            config_path="$(update_path 'config/.prettierrc.json')"
+            if ! npx prettier --check --config "$config_path" .; then
+                is_error=1
+            fi
+            ;;
+        'prettier_write')
+            config_path="$(update_path 'config/.prettierrc.json')"
+            if ! npx prettier --config "$config_path" --write .; then
+                is_error=1
+            fi
+            ;;
+        'vitest')
+            if ! npx vitest run; then
+                is_error=1
+            fi
+            ;;
+        'vitest_coverage')
+            if ! npx vitest run --coverage; then
+                is_error=1
+            fi
+            ;;
+        'vue-tsc')
+            if ! npx vue-tsc --build; then
+                is_error=1
+            fi
+            ;;
+        *)
+            echo 'Invalid CI choice'
+            return 1
+            ;;
+    esac
+
+    if [[ "$is_error" -eq 1 ]]; then
+        handle_ci_fail "$choice"
+    fi
+}
+
 run_ci_bash() {
     run_ci_bash_shfmt
     run_ci_bash_shellcheck
@@ -233,29 +290,29 @@ run_ci_bash() {
 }
 
 run_ci_bash_bats() {
-    run_ci 'bats'
+    run_ci_files 'bats'
 }
 
 run_ci_bash_shellcheck() {
-    run_ci 'shellcheck'
+    run_ci_files 'shellcheck'
 }
 
 run_ci_bash_shfmt() {
-    run_ci 'shfmt'
-    run_ci 'shfmt_test'
+    run_ci_files 'shfmt'
+    run_ci_files 'shfmt_test'
 }
 
 run_ci_bash_shfmt_write() {
-    run_ci 'shfmt_write'
-    run_ci 'shfmt_write_test'
+    run_ci_files 'shfmt_write'
+    run_ci_files 'shfmt_write_test'
 }
 
 run_ci_markdown() {
-    run_ci 'markdown'
+    run_ci_files 'markdown'
 }
 
 run_ci_markdown_write() {
-    run_ci 'markdown_write'
+    run_ci_files 'markdown_write'
 }
 
 run_ci_python() {
@@ -284,28 +341,28 @@ run_ci_python() {
 }
 
 run_ci_python_black() {
-    run_ci 'black'
+    run_ci_files 'black'
 }
 
 run_ci_python_black_write() {
-    run_ci 'black_write'
+    run_ci_files 'black_write'
 }
 
 run_ci_python_isort() {
-    run_ci 'isort'
+    run_ci_files 'isort'
 }
 
 run_ci_python_isort_write() {
-    run_ci 'isort_write'
+    run_ci_files 'isort_write'
 }
 
 run_ci_python_mypy() {
-    run_ci 'mypy'
+    run_ci_files 'mypy'
 }
 
 run_ci_python_pylint() {
-    run_ci 'pylint'
-    run_ci 'pylint_test'
+    run_ci_files 'pylint'
+    run_ci_files 'pylint_test'
 }
 
 run_ci_python_test() {
@@ -430,6 +487,41 @@ run_ci_python_test_django_django() {
 
 run_ci_python_test_unittest() {
     run_ci_python_test 'unittest'
+}
+
+run_ci_vue() {
+    run_ci_vue_tsc
+    run_ci_vue_prettier
+    run_ci_vue_eslint
+    run_ci_vue_vitest
+}
+
+run_ci_vue_eslint() {
+    run_ci_project 'eslint'
+}
+
+run_ci_vue_eslint_write() {
+    run_ci_project 'eslint_write'
+}
+
+run_ci_vue_prettier() {
+    run_ci_project 'prettier'
+}
+
+run_ci_vue_prettier_write() {
+    run_ci_project 'prettier_write'
+}
+
+run_ci_vue_vitest() {
+    run_ci_project 'vitest'
+}
+
+run_ci_vue_vitest_coverage() {
+    run_ci_project 'vitest_coverage'
+}
+
+run_ci_vue_tsc() {
+    run_ci_project 'vue-tsc'
 }
 
 set_git_hooks_working_dir() {

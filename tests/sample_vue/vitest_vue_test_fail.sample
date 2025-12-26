@@ -1,0 +1,9 @@
+import { expect, test } from 'vitest'
+import CounterItem from '../CounterItem.vue'
+import { mount } from '@vue/test-utils'
+
+test('render counter', async () => {
+  const wrapper = mount(CounterItem)
+
+  expect(wrapper.text()).toContain('Count 1')
+})

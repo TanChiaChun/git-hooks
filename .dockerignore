@@ -3,3 +3,4 @@ htmlcov/
 .venv/
 **/*.pyc
 .coverage
+node_modules/

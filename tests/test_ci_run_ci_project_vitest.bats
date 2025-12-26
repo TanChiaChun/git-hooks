@@ -24,3 +24,23 @@ teardown() {
     run run_ci_project 'vitest'
     [ "$status" -ne 0 ]
 }
+
+@test "vue_pass()" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/vite.config.sample" 'vite.config.ts'
+    cp "$BATS_TEST_DIRNAME/sample_vue/vitest_vue.sample" 'CounterItem.vue'
+    mkdir '__test__'
+    cp "$BATS_TEST_DIRNAME/sample_vue/vitest_vue_test_pass.sample" \
+        './__test__/CounterItem.test.ts'
+    run run_ci_project 'vitest'
+    [ "$status" -eq 0 ]
+}
+
+@test "vue_fail()" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/vite.config.sample" 'vite.config.ts'
+    cp "$BATS_TEST_DIRNAME/sample_vue/vitest_vue.sample" 'CounterItem.vue'
+    mkdir '__test__'
+    cp "$BATS_TEST_DIRNAME/sample_vue/vitest_vue_test_fail.sample" \
+        './__test__/CounterItem.test.ts'
+    run run_ci_project 'vitest'
+    [ "$status" -ne 0 ]
+}

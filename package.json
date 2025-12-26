@@ -1,9 +1,12 @@
 {
   "dependencies": {
     "@eslint/js": "*",
+    "@vitejs/plugin-vue": "*",
+    "@vue/test-utils": "*",
     "@vue/tsconfig": "*",
     "eslint": "*",
     "jiti": "*",
+    "jsdom": "*",
     "prettier": "*",
     "typescript-eslint": "*",
     "vitest": "*",

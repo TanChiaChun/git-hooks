@@ -8,7 +8,7 @@ RUN ln --symbolic /usr/bin/python3 /usr/bin/python
 
 USER node
 
-ENV PATH="/home/node/git-hooks/node_modules/.bin:$PATH"
+ENV PATH="/home/node/$REPO_NAME/node_modules/.bin:$PATH"
 WORKDIR /home/node/$REPO_NAME/
 RUN npm install markdownlint-cli \
     && npm cache clean --force

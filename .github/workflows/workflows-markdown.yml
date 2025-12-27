@@ -26,12 +26,12 @@ jobs:
         run: >
           "$PWD/node_modules/.bin"
           | Out-File -FilePath $env:GITHUB_PATH -Append
-      - name: Install markdownlint
+      - name: Install markdownlint-cli2
         shell: bash
         run: |
           rm -f package.json
-          npm install markdownlint-cli
-          markdownlint --version
+          npm install markdownlint-cli2
+          markdownlint-cli2 --version
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -48,7 +48,7 @@ jobs:
       - name: Get Bash version
         run: bash --version
 
-      - name: Run markdownlint
+      - name: Run markdownlint-cli2
         shell: bash
         run: |
           source "$CI_SCRIPT_PATH"

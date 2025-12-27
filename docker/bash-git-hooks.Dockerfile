@@ -21,7 +21,7 @@ ENV PATH="/home/node/git-hooks/node_modules/.bin:$PATH"
 COPY --chown=node package.json /home/node/git-hooks/
 WORKDIR /home/node/git-hooks/
 RUN npm install \
-    && npm install markdownlint-cli \
+    && npm install markdownlint-cli2 \
     && npm cache clean --force
 
 COPY --chown=node pyproject.toml poetry.toml /home/node/git-hooks/

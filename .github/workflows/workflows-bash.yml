@@ -86,11 +86,11 @@ jobs:
           poetry sync
           poetry show
 
-      - name: Install markdownlint
+      - name: Install markdownlint-cli2
         if: ${{ !inputs.submodules }}
         run: |
-          npm install markdownlint-cli
-          markdownlint --version
+          npm install markdownlint-cli2
+          markdownlint-cli2 --version
 
       - name: Install Bash (macOS)
         if: ${{ inputs.os == 'macos-latest' }}

@@ -10,7 +10,7 @@ USER node
 
 ENV PATH="/home/node/$REPO_NAME/node_modules/.bin:$PATH"
 WORKDIR /home/node/$REPO_NAME/
-RUN npm install markdownlint-cli \
+RUN npm install markdownlint-cli2 \
     && npm cache clean --force
 
 COPY --chown=node --exclude=package.json . /home/node/$REPO_NAME/

@@ -75,16 +75,19 @@ jobs:
           python-version: '3.x'
       - name: Get Python version
         run: python --version
-      - name: Set up Poetry
+      - name: Set up uv
         if: ${{ !inputs.submodules }}
-        run: |
-          pipx install poetry
-          poetry --version
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: false
+      - name: Get uv version
+        if: ${{ !inputs.submodules }}
+        run: uv self version
       - name: Install Python dependencies
         if: ${{ !inputs.submodules }}
         run: |
-          poetry sync
-          poetry show
+          uv sync
+          uv tree
 
       - name: Install markdownlint-cli2
         if: ${{ !inputs.submodules }}

@@ -24,14 +24,16 @@ jobs:
           python-version: '3.x'
       - name: Get Python version
         run: python --version
-      - name: Set up Poetry
-        run: |
-          pipx install poetry
-          poetry --version
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: ${{ inputs.submodules && true || false }}
+      - name: Get uv version
+        run: uv self version
       - name: Install Python dependencies
         run: |
-          poetry sync
-          poetry show
+          uv sync
+          uv tree
 
       - name: Install Bash (macOS)
         if: ${{ inputs.os == 'macos-latest' }}

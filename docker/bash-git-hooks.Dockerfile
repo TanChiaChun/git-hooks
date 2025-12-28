@@ -25,7 +25,6 @@ RUN npm install \
     && npm cache clean --force
 
 COPY --chown=node pyproject.toml poetry.toml /home/node/git-hooks/
-WORKDIR /home/node/git-hooks/
 RUN poetry sync --no-cache
 
 COPY --chown=node --exclude=package.json . /home/node/git-hooks/

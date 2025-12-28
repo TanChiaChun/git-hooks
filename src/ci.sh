@@ -137,7 +137,7 @@ run_ci_files() {
         'black')
             local config_path
             config_path="$(update_path 'config/pyproject.toml')"
-            if ! poetry run \
+            if ! uv run \
                 black --check --diff --config "$config_path" "${files[@]}"; then
                 is_error=1
             fi
@@ -145,44 +145,35 @@ run_ci_files() {
         'black_write')
             local config_path
             config_path="$(update_path 'config/pyproject.toml')"
-            if ! poetry run \
+            if ! uv run \
                 black --config "$config_path" "${files[@]}"; then
                 is_error=1
             fi
             ;;
         'pylint')
-            local name_value
-            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
             local config_path
             config_path="$(update_path 'config/pylintrc.toml')"
             for file in "${files[@]}"; do
-                if ! env "$name_value" \
-                    poetry run \
+                if ! uv run --env-file './.env' \
                     pylint --rcfile "$config_path" "$file"; then
                     is_error=1
                 fi
             done
             ;;
         'pylint_test')
-            local name_value
-            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
             local config_path
             config_path="$(update_path 'config/pylintrc_test.toml')"
             for file in "${files[@]}"; do
-                if ! env "$name_value" \
-                    poetry run \
+                if ! uv run --env-file './.env' \
                     pylint --rcfile "$config_path" "$file"; then
                     is_error=1
                 fi
             done
             ;;
         'mypy')
-            local name_value
-            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
             local config_path
             config_path="$(update_path 'config/mypy.ini')"
-            if ! env "$name_value" \
-                poetry run \
+            if ! uv run --env-file './.env' \
                 mypy --config-file "$config_path" "${files[@]}"; then
                 is_error=1
             fi
@@ -190,7 +181,7 @@ run_ci_files() {
         'isort')
             local config_path
             config_path="$(update_path 'config/.isort.cfg')"
-            if ! poetry run \
+            if ! uv run \
                 isort --src-path "$(get_pythonpath_value)" --diff --check-only \
                 --settings-path "$config_path" "${files[@]}"; then
                 is_error=1
@@ -199,7 +190,7 @@ run_ci_files() {
         'isort_write')
             local config_path
             config_path="$(update_path 'config/.isort.cfg')"
-            if ! poetry run \
+            if ! uv run \
                 isort --src-path "$(get_pythonpath_value)" \
                 --settings-path "$config_path" "${files[@]}"; then
                 is_error=1
@@ -387,24 +378,18 @@ run_ci_python_test() {
     local is_error=0
     case "$choice" in
         'unittest')
-            local name_value
-            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
-            if ! env "$name_value" \
-                poetry run \
+            if ! uv run --env-file './.env' \
                 python -m unittest "${options[@]}"; then
                 is_error=1
             fi
             ;;
         'coverage_py')
-            local name_value
-            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
             local config_path
             config_path="$(update_path 'config/.coveragerc')"
-            if env "$name_value" \
-                poetry run \
+            if uv run --env-file './.env' \
                 coverage run --rcfile="$config_path" \
                 -m unittest "${options[@]}"; then
-                poetry run \
+                uv run \
                     coverage html
             else
                 is_error=1
@@ -458,16 +443,16 @@ run_ci_python_test_django() {
     local is_error=0
     case "$choice" in
         'django')
-            if ! poetry run \
+            if ! uv run \
                 python ./manage.py test; then
                 is_error=1
             fi
             ;;
         'coverage_py')
-            if poetry run \
+            if uv run \
                 coverage run --rcfile="$(update_path 'config/.coveragerc')" \
                 --source='.' ./manage.py test; then
-                poetry run \
+                uv run \
                     coverage html
             else
                 is_error=1

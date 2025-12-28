@@ -4,22 +4,14 @@ ARG REPO_NAME=repo
 ARG CI_SCRIPT_PATH=./git-hooks/src/ci.sh
 ENV CI_SCRIPT_PATH=$CI_SCRIPT_PATH
 
-RUN apt-get update \
-    && apt-get install --no-install-recommends --yes \
-        pipx \
-    && rm --force --recursive /var/lib/apt/lists/*
-
 RUN useradd --create-home --shell /bin/bash python
 USER python
 
-RUN pipx install --pip-args=--no-cache-dir poetry
-ENV PATH="/home/python/.local/bin:$PATH"
+COPY --from=astral/uv /uv /bin/
 
-COPY --chown=python \
-    pyproject.toml poetry.toml poetry.lock \
-    /home/python/$REPO_NAME/
+COPY --chown=python pyproject.toml uv.lock /home/python/$REPO_NAME/
 WORKDIR /home/python/$REPO_NAME/
-RUN poetry sync --no-cache
+RUN uv sync --no-cache
 
 COPY --chown=python . /home/python/$REPO_NAME/
 

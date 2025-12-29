@@ -262,6 +262,19 @@ run_ci_project() {
                 is_error=1
             fi
             ;;
+        'pytest')
+            local config_path
+            config_path="$(update_path 'config/pytest.toml')"
+            uv run --env-file ./.env \
+                pytest --config-file="$config_path" --rootdir=.
+            local exit_code=$?
+            if ((exit_code == 5)); then
+                echo 'No tests were collected'
+                return
+            elif ((exit_code != 0)); then
+                is_error=1
+            fi
+            ;;
         'eslint')
             if ! npx eslint .; then
                 is_error=1

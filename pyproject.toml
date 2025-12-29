@@ -8,5 +8,6 @@ dependencies = [
     "isort",
     "mypy",
     "pylint",
+    "pytest",
     "ruff",
 ]

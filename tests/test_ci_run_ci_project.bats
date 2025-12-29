@@ -23,6 +23,27 @@ teardown() {
     [ "$status" -ne 0 ]
 }
 
+@test "pytest_empty()" {
+    cp "$BATS_TEST_DIRNAME/../.env" .
+    run run_ci_project 'pytest'
+    [ "$status" -eq 0 ]
+    [[ "$output" == *'No tests were collected' ]]
+}
+
+@test "pytest_pass()" {
+    cp "$BATS_TEST_DIRNAME/../.env" .
+    cp "$BATS_TEST_DIRNAME/sample_python/pytest_pass.sample" 'test_sample.py'
+    run run_ci_project 'pytest'
+    [ "$status" -eq 0 ]
+}
+
+@test "pytest_fail()" {
+    cp "$BATS_TEST_DIRNAME/../.env" .
+    cp "$BATS_TEST_DIRNAME/sample_python/pytest_fail.sample" 'test_sample.py'
+    run run_ci_project 'pytest'
+    [ "$status" -ne 0 ]
+}
+
 @test "invalid_choice()" {
     mapfile -t expected_output <<EOF
 ##################################################

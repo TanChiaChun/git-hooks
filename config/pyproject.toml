@@ -1,2 +1,7 @@
 [tool.black]
 line-length = 80
+
+[tool.ruff]
+extend = "../pyproject.toml"
+line-length = 80
+show-fixes = true

@@ -48,6 +48,11 @@ jobs:
         run: |
           source "$CI_SCRIPT_PATH"
           run_ci_python_black
+      - name: Run Ruff Linter
+        shell: bash
+        run: |
+          source "$CI_SCRIPT_PATH"
+          run_ci_python_ruff_lint
       - name: Run Pylint
         shell: bash
         run: |

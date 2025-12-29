@@ -3,5 +3,8 @@
   "globs": [
     "**/*.md"
   ],
+  "ignores": [
+    "node_modules"
+  ],
   "showFound": true
 }

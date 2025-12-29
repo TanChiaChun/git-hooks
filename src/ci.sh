@@ -246,6 +246,22 @@ run_ci_project() {
 
     local is_error=0
     case "$choice" in
+        'ruff_lint')
+            local config_path
+            config_path="$(update_path 'config/pyproject.toml')"
+            if ! uv run \
+                ruff check --config "$config_path"; then
+                is_error=1
+            fi
+            ;;
+        'ruff_lint_write')
+            local config_path
+            config_path="$(update_path 'config/pyproject.toml')"
+            if ! uv run \
+                ruff check --fix --config "$config_path"; then
+                is_error=1
+            fi
+            ;;
         'eslint')
             if ! npx eslint .; then
                 is_error=1
@@ -333,6 +349,7 @@ run_ci_python() {
         fi
 
         run_ci_python_black
+        run_ci_python_ruff_lint
         run_ci_python_pylint
         run_ci_python_mypy
         run_ci_python_isort
@@ -369,6 +386,14 @@ run_ci_python_isort_write() {
 
 run_ci_python_mypy() {
     run_ci_files 'mypy'
+}
+
+run_ci_python_ruff_lint() {
+    run_ci_project 'ruff_lint'
+}
+
+run_ci_python_ruff_lint_write() {
+    run_ci_project 'ruff_lint_write'
 }
 
 run_ci_python_pylint() {

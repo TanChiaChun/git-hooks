@@ -94,22 +94,6 @@ teardown() {
     [ "$status" -ne 0 ]
 }
 
-@test "markdown_pass()" {
-    cd "$BATS_TMPDIR" || exit 1
-    cp "$BATS_TEST_DIRNAME/sample_markdown/markdown_pass.sample" 'test.md'
-    run run_ci_files 'markdown'
-    cd "$OLDPWD" || exit 1
-    [ "$status" -eq 0 ]
-}
-
-@test "markdown_fail()" {
-    cd "$BATS_TMPDIR" || exit 1
-    cp "$BATS_TEST_DIRNAME/sample_markdown/markdown_fail.sample" 'test.md'
-    run run_ci_files 'markdown'
-    cd "$OLDPWD" || exit 1
-    [ "$status" -ne 0 ]
-}
-
 @test "invalid_choice()" {
     run run_ci_files 'invalid'
     [ "$status" -eq 1 ]

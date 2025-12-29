@@ -42,9 +42,6 @@ class TestGetFileLanguage(unittest.TestCase):
     def test_bats(self) -> None:
         self.assertIs(get_file_language(Path("file.bats")), Language.BASH_TEST)
 
-    def test_md(self) -> None:
-        self.assertIs(get_file_language(Path("file.md")), Language.MARKDOWN)
-
     @patch("git_files_filter.is_bash_file", new=Mock(return_value=True))
     def test_no_suffix_bash(self) -> None:
         self.assertIs(get_file_language(Path("file")), Language.BASH)

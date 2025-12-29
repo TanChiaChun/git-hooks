@@ -1,11 +1,14 @@
 setup() {
     load '../src/ci.sh'
 
-    cd "$BATS_TMPDIR" || exit 1
+    export tmp_dir="$BATS_TMPDIR/tmpdir"
+    mkdir "$tmp_dir"
+    cd "$tmp_dir" || exit 1
 }
 
 teardown() {
     cd "$OLDPWD" || exit 1
+    rm -r "$tmp_dir"
 }
 
 @test "bats_empty()" {

@@ -47,6 +47,50 @@ has_python_files() {
     fi
 }
 
+run_ci_dir() {
+    local choice="$1"
+
+    echo '##################################################'
+    echo "Running $choice"
+    echo '##################################################'
+
+    local is_error=0
+    case "$choice" in
+        'bats')
+            if [[ ! -d './tests' ]]; then
+                echo 'bats tests directory not found'
+                return
+            fi
+
+            if ! bats --print-output-on-failure './tests'; then
+                is_error=1
+            fi
+            ;;
+        'markdown')
+            local config_path
+            config_path="$(update_path 'config/.markdownlint-cli2.jsonc')"
+            if ! markdownlint-cli2 --config "$config_path"; then
+                is_error=1
+            fi
+            ;;
+        'markdown_write')
+            local config_path
+            config_path="$(update_path 'config/.markdownlint-cli2.jsonc')"
+            if ! markdownlint-cli2 --config "$config_path" --fix; then
+                is_error=1
+            fi
+            ;;
+        *)
+            echo 'Invalid CI choice'
+            return 1
+            ;;
+    esac
+
+    if [[ "$is_error" -eq 1 ]]; then
+        handle_ci_fail "$choice"
+    fi
+}
+
 run_ci_files() {
     local choice="$1"
 
@@ -54,7 +98,7 @@ run_ci_files() {
         'shfmt' | 'shfmt_write')
             local language='BASH'
             ;;
-        'shfmt_test' | 'shfmt_write_test' | 'bats')
+        'shfmt_test' | 'shfmt_write_test')
             local language='BASH_TEST'
             ;;
         'shellcheck')
@@ -68,9 +112,6 @@ run_ci_files() {
             ;;
         'pylint_test')
             local language='PYTHON_TEST'
-            ;;
-        'markdown' | 'markdown_write')
-            local language='MARKDOWN'
             ;;
         *)
             echo 'Invalid CI choice'
@@ -126,13 +167,6 @@ run_ci_files() {
             if ! shellcheck --shell=bash "${files[@]}"; then
                 is_error=1
             fi
-            ;;
-        'bats')
-            for file in "${files[@]}"; do
-                if ! bats "$file"; then
-                    is_error=1
-                fi
-            done
             ;;
         'black')
             local config_path
@@ -193,21 +227,6 @@ run_ci_files() {
             if ! uv run \
                 isort --src-path "$(get_pythonpath_value)" \
                 --settings-path "$config_path" "${files[@]}"; then
-                is_error=1
-            fi
-            ;;
-        'markdown')
-            local config_path
-            config_path="$(update_path 'config/.markdownlint-cli2.jsonc')"
-            if ! markdownlint-cli2 --config "$config_path" "${files[@]}"; then
-                is_error=1
-            fi
-            ;;
-        'markdown_write')
-            local config_path
-            config_path="$(update_path 'config/.markdownlint-cli2.jsonc')"
-            if ! markdownlint-cli2 --config "$config_path" --fix \
-                "${files[@]}"; then
                 is_error=1
             fi
             ;;
@@ -282,7 +301,7 @@ run_ci_bash() {
 }
 
 run_ci_bash_bats() {
-    run_ci_files 'bats'
+    run_ci_dir 'bats'
 }
 
 run_ci_bash_shellcheck() {
@@ -300,11 +319,11 @@ run_ci_bash_shfmt_write() {
 }
 
 run_ci_markdown() {
-    run_ci_files 'markdown'
+    run_ci_dir 'markdown'
 }
 
 run_ci_markdown_write() {
-    run_ci_files 'markdown_write'
+    run_ci_dir 'markdown_write'
 }
 
 run_ci_python() {
@@ -360,7 +379,7 @@ run_ci_python_pylint() {
 run_ci_python_test() {
     local choice="$1"
 
-    if [[ ! -d ./tests ]]; then
+    if [[ ! -d './tests' ]]; then
         echo 'unittest tests directory not found'
         return
     fi

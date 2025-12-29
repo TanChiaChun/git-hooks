@@ -34,18 +34,6 @@ teardown() {
     [ "$status" -ne 0 ]
 }
 
-@test "bats_pass()" {
-    cp "$BATS_TEST_DIRNAME/sample_bash/test_pass.bats.sample" "$test_file"
-    run run_ci_files 'bats'
-    [ "$status" -eq 0 ]
-}
-
-@test "bats_fail()" {
-    cp "$BATS_TEST_DIRNAME/sample_bash/test_fail.bats.sample" "$test_file"
-    run run_ci_files 'bats'
-    [ "$status" -ne 0 ]
-}
-
 @test "black_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_python/black_pass.sample" "$test_file"
     run run_ci_files 'black'
@@ -91,19 +79,6 @@ teardown() {
 @test "isort_fail()" {
     cp "$BATS_TEST_DIRNAME/sample_python/isort_fail.sample" "$test_file"
     run run_ci_files 'isort'
-    [ "$status" -ne 0 ]
-}
-
-@test "markdown_pass()" {
-    cp "$BATS_TEST_DIRNAME/sample_markdown/markdown_pass.sample" "$test_file"
-    run run_ci_files 'markdown'
-    [ "$status" -eq 0 ]
-
-}
-
-@test "markdown_fail()" {
-    cp "$BATS_TEST_DIRNAME/sample_markdown/markdown_fail.sample" "$test_file"
-    run run_ci_files 'markdown'
     [ "$status" -ne 0 ]
 }
 

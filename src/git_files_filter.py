@@ -19,7 +19,6 @@ class Language(Enum):
     BASH_TEST = auto()
     PYTHON = auto()
     PYTHON_TEST = auto()
-    MARKDOWN = auto()
 
 
 class LanguageChoice(Enum):
@@ -31,7 +30,6 @@ class LanguageChoice(Enum):
     PYTHON = [Language.PYTHON]
     PYTHON_TEST = [Language.PYTHON_TEST]
     PYTHON_BOTH = [Language.PYTHON, Language.PYTHON_TEST]
-    MARKDOWN = [Language.MARKDOWN]
 
 
 def filter_git_files(
@@ -73,8 +71,6 @@ def get_file_language(file: Path) -> Optional[Language]:
                 file_language = Language.BASH
             case ".bats":
                 file_language = Language.BASH_TEST
-            case ".md":
-                file_language = Language.MARKDOWN
             case ".py":
                 if file.name.startswith("test") or file.parts[0].startswith(
                     "test"

@@ -160,7 +160,7 @@ run_ci_files() {
             ;;
         'bats')
             for file in "${files[@]}"; do
-                if ! bats "$file"; then
+                if ! bats --print-output-on-failure "$file"; then
                     is_error=1
                 fi
             done

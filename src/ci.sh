@@ -376,7 +376,7 @@ run_ci_python_pylint() {
 run_ci_python_test() {
     local choice="$1"
 
-    if [[ ! -d ./tests ]]; then
+    if [[ ! -d './tests' ]]; then
         echo 'unittest tests directory not found'
         return
     fi

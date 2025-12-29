@@ -1,3 +1,6 @@
+# Python
 *.pyc
 .coverage
+
+# Node.js
 node_modules/

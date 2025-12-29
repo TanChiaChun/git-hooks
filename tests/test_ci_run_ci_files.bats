@@ -95,15 +95,18 @@ teardown() {
 }
 
 @test "markdown_pass()" {
-    cp "$BATS_TEST_DIRNAME/sample_markdown/markdown_pass.sample" "$test_file"
+    cd "$BATS_TMPDIR" || exit 1
+    cp "$BATS_TEST_DIRNAME/sample_markdown/markdown_pass.sample" 'test.md'
     run run_ci_files 'markdown'
+    cd "$OLDPWD" || exit 1
     [ "$status" -eq 0 ]
-
 }
 
 @test "markdown_fail()" {
-    cp "$BATS_TEST_DIRNAME/sample_markdown/markdown_fail.sample" "$test_file"
+    cd "$BATS_TMPDIR" || exit 1
+    cp "$BATS_TEST_DIRNAME/sample_markdown/markdown_fail.sample" 'test.md'
     run run_ci_files 'markdown'
+    cd "$OLDPWD" || exit 1
     [ "$status" -ne 0 ]
 }
 

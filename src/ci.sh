@@ -199,15 +199,14 @@ run_ci_files() {
         'markdown')
             local config_path
             config_path="$(update_path 'config/.markdownlint-cli2.jsonc')"
-            if ! markdownlint-cli2 --config "$config_path" "${files[@]}"; then
+            if ! markdownlint-cli2 --config "$config_path"; then
                 is_error=1
             fi
             ;;
         'markdown_write')
             local config_path
             config_path="$(update_path 'config/.markdownlint-cli2.jsonc')"
-            if ! markdownlint-cli2 --config "$config_path" --fix \
-                "${files[@]}"; then
+            if ! markdownlint-cli2 --config "$config_path" --fix; then
                 is_error=1
             fi
             ;;

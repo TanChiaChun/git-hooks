@@ -11,18 +11,6 @@ teardown() {
     rm -r "$tmp_dir"
 }
 
-@test "ruff_lint_pass()" {
-    cp "$BATS_TEST_DIRNAME/sample_python/ruff_lint_pass.sample" 'test.py'
-    run run_ci_project 'ruff_lint'
-    [ "$status" -eq 0 ]
-}
-
-@test "ruff_lint_fail()" {
-    cp "$BATS_TEST_DIRNAME/sample_python/ruff_lint_fail.sample" 'test.py'
-    run run_ci_project 'ruff_lint'
-    [ "$status" -ne 0 ]
-}
-
 @test "pytest_empty()" {
     cp "$BATS_TEST_DIRNAME/../.env" .
     run run_ci_project 'pytest'

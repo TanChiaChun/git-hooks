@@ -56,6 +56,16 @@ run_ci_dir() {
 
     local is_error=0
     case "$choice" in
+        'bats')
+            if [[ ! -d './tests' ]]; then
+                echo 'bats tests directory not found'
+                return
+            fi
+
+            if ! bats --print-output-on-failure './tests'; then
+                is_error=1
+            fi
+            ;;
         'markdown')
             local config_path
             config_path="$(update_path 'config/.markdownlint-cli2.jsonc')"
@@ -88,7 +98,7 @@ run_ci_files() {
         'shfmt' | 'shfmt_write')
             local language='BASH'
             ;;
-        'shfmt_test' | 'shfmt_write_test' | 'bats')
+        'shfmt_test' | 'shfmt_write_test')
             local language='BASH_TEST'
             ;;
         'shellcheck')
@@ -155,16 +165,6 @@ run_ci_files() {
             ;;
         'shellcheck')
             if ! shellcheck --shell=bash "${files[@]}"; then
-                is_error=1
-            fi
-            ;;
-        'bats')
-            if [[ ! -d './tests' ]]; then
-                echo 'bats tests directory not found'
-                return
-            fi
-
-            if ! bats --print-output-on-failure './tests'; then
                 is_error=1
             fi
             ;;
@@ -301,7 +301,7 @@ run_ci_bash() {
 }
 
 run_ci_bash_bats() {
-    run_ci_files 'bats'
+    run_ci_dir 'bats'
 }
 
 run_ci_bash_shellcheck() {

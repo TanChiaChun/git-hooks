@@ -34,15 +34,32 @@ teardown() {
     [ "$status" -ne 0 ]
 }
 
-@test "bats_pass()" {
-    cp "$BATS_TEST_DIRNAME/sample_bash/test_pass.bats.sample" "$test_file"
+@test "bats_empty()" {
+    cd "$BATS_TMPDIR"
     run run_ci_files 'bats'
+    cd "$OLDPWD"
+    [ "$status" -eq 0 ]
+}
+
+@test "bats_pass()" {
+    cd "$BATS_TMPDIR"
+    mkdir 'tests'
+    cp "$BATS_TEST_DIRNAME/sample_bash/test_pass.bats.sample" \
+        './tests/test_ci.bats'
+    run run_ci_files 'bats'
+    rm -r './tests'
+    cd "$OLDPWD"
     [ "$status" -eq 0 ]
 }
 
 @test "bats_fail()" {
-    cp "$BATS_TEST_DIRNAME/sample_bash/test_fail.bats.sample" "$test_file"
+    cd "$BATS_TMPDIR"
+    mkdir 'tests'
+    cp "$BATS_TEST_DIRNAME/sample_bash/test_fail.bats.sample" \
+        './tests/test_ci.bats'
     run run_ci_files 'bats'
+    rm -r './tests'
+    cd "$OLDPWD"
     [ "$status" -ne 0 ]
 }
 

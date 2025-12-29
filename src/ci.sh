@@ -159,11 +159,14 @@ run_ci_files() {
             fi
             ;;
         'bats')
-            for file in "${files[@]}"; do
-                if ! bats --print-output-on-failure "$file"; then
-                    is_error=1
-                fi
-            done
+            if [[ ! -d './tests' ]]; then
+                echo 'bats tests directory not found'
+                return
+            fi
+
+            if ! bats --print-output-on-failure './tests'; then
+                is_error=1
+            fi
             ;;
         'black')
             local config_path

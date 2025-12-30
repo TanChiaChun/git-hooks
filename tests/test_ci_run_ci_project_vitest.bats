@@ -23,6 +23,17 @@ teardown() {
     [ "$status" -ne 0 ]
 }
 
+@test "ts_pass_coverage()" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/vitest_ts_test_pass.sample" 'main.test.ts'
+    run run_ci_project 'vitest_coverage'
+    local is_exist_index_html='false'
+    if [[ -f './coverage/index.html' ]]; then
+        is_exist_index_html='true'
+    fi
+    [ "$status" -eq 0 ]
+    [ "$is_exist_index_html" == 'true' ]
+}
+
 @test "vue_pass()" {
     cp "$BATS_TEST_DIRNAME/sample_vue/vite.config.sample" 'vite.config.ts'
     cp "$BATS_TEST_DIRNAME/sample_vue/vitest_vue.sample" 'CounterItem.vue'

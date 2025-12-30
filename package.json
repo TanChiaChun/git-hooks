@@ -2,6 +2,7 @@
   "dependencies": {
     "@eslint/js": "*",
     "@vitejs/plugin-vue": "*",
+    "@vitest/coverage-v8": "*",
     "@vue/test-utils": "*",
     "@vue/tsconfig": "*",
     "eslint": "*",

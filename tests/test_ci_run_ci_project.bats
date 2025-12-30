@@ -24,12 +24,7 @@ teardown() {
     cp "$BATS_TEST_DIRNAME/sample_python/pytest_pass.sample" \
         './src/test_sample.py'
     run run_ci_project 'pytest'
-    local is_exist_index_html='false'
-    if [[ -f './htmlcov/index.html' ]]; then
-        is_exist_index_html='true'
-    fi
     [ "$status" -eq 0 ]
-    [ "$is_exist_index_html" == 'true' ]
 }
 
 @test "pytest_fail()" {
@@ -37,6 +32,20 @@ teardown() {
     cp "$BATS_TEST_DIRNAME/sample_python/pytest_fail.sample" 'test_sample.py'
     run run_ci_project 'pytest'
     [ "$status" -ne 0 ]
+}
+
+@test "pytest_pass_coverage()" {
+    cp "$BATS_TEST_DIRNAME/../.env" .
+    mkdir 'src'
+    cp "$BATS_TEST_DIRNAME/sample_python/pytest_pass.sample" \
+        './src/test_sample.py'
+    run run_ci_project 'pytest_coverage'
+    local is_exist_index_html='false'
+    if [[ -f './htmlcov/index.html' ]]; then
+        is_exist_index_html='true'
+    fi
+    [ "$status" -eq 0 ]
+    [ "$is_exist_index_html" == 'true' ]
 }
 
 @test "invalid_choice()" {

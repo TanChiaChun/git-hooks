@@ -20,9 +20,16 @@ teardown() {
 
 @test "pytest_pass()" {
     cp "$BATS_TEST_DIRNAME/../.env" .
-    cp "$BATS_TEST_DIRNAME/sample_python/pytest_pass.sample" 'test_sample.py'
+    mkdir 'src'
+    cp "$BATS_TEST_DIRNAME/sample_python/pytest_pass.sample" \
+        './src/test_sample.py'
     run run_ci_project 'pytest'
+    local is_exist_index_html='false'
+    if [[ -f './htmlcov/index.html' ]]; then
+        is_exist_index_html='true'
+    fi
     [ "$status" -eq 0 ]
+    [ "$is_exist_index_html" == 'true' ]
 }
 
 @test "pytest_fail()" {

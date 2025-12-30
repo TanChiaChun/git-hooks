@@ -9,5 +9,6 @@ dependencies = [
     "mypy",
     "pylint",
     "pytest",
+    "pytest-cov",
     "ruff",
 ]

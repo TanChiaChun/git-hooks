@@ -266,7 +266,8 @@ run_ci_project() {
             local config_path
             config_path="$(update_path 'config/pytest.toml')"
             uv run --env-file ./.env \
-                pytest --config-file="$config_path" --rootdir=.
+                pytest --config-file="$config_path" --rootdir=. \
+                --cov="$(get_pythonpath_value)"
             local exit_code=$?
             if ((exit_code == 5)); then
                 echo 'No tests were collected'

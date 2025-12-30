@@ -282,6 +282,23 @@ run_ci_project() {
                 is_error=1
             fi
             ;;
+        'vue-tsc')
+            if ! npx vue-tsc --build; then
+                is_error=1
+            fi
+            ;;
+        'prettier')
+            config_path="$(update_path 'config/.prettierrc.json')"
+            if ! npx prettier --check --config "$config_path" ./src; then
+                is_error=1
+            fi
+            ;;
+        'prettier_write')
+            config_path="$(update_path 'config/.prettierrc.json')"
+            if ! npx prettier --config "$config_path" --write ./src; then
+                is_error=1
+            fi
+            ;;
         'eslint')
             if ! npx eslint .; then
                 is_error=1
@@ -292,18 +309,6 @@ run_ci_project() {
                 is_error=1
             fi
             ;;
-        'prettier')
-            config_path="$(update_path 'config/.prettierrc.json')"
-            if ! npx prettier --check --config "$config_path" .; then
-                is_error=1
-            fi
-            ;;
-        'prettier_write')
-            config_path="$(update_path 'config/.prettierrc.json')"
-            if ! npx prettier --config "$config_path" --write .; then
-                is_error=1
-            fi
-            ;;
         'vitest')
             if ! npx vitest run; then
                 is_error=1
@@ -311,11 +316,6 @@ run_ci_project() {
             ;;
         'vitest_coverage')
             if ! npx vitest run --coverage; then
-                is_error=1
-            fi
-            ;;
-        'vue-tsc')
-            if ! npx vue-tsc --build; then
                 is_error=1
             fi
             ;;

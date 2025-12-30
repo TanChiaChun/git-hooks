@@ -28,7 +28,7 @@ EOF
 
 @test "bats_pass()" {
     mkdir 'tests'
-    cp "$BATS_TEST_DIRNAME/sample_bash/test_pass.bats.sample" \
+    cp "$BATS_TEST_DIRNAME/sample_bash/bats_pass.sample" \
         './tests/test_ci.bats'
     run run_ci_dir 'bats'
     rm -r './tests'
@@ -37,7 +37,7 @@ EOF
 
 @test "bats_fail()" {
     mkdir 'tests'
-    cp "$BATS_TEST_DIRNAME/sample_bash/test_fail.bats.sample" \
+    cp "$BATS_TEST_DIRNAME/sample_bash/bats_fail.sample" \
         './tests/test_ci.bats'
     run run_ci_dir 'bats'
     rm -r './tests'

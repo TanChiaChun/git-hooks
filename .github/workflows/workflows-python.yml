@@ -68,8 +68,8 @@ jobs:
         run: |
           source "$CI_SCRIPT_PATH"
           run_ci_python_isort
-      - name: Run pytest
+      - name: Run pytest with coverage
         shell: bash
         run: |
           source "$CI_SCRIPT_PATH"
-          run_ci_python_pytest
+          run_ci_python_pytest_coverage

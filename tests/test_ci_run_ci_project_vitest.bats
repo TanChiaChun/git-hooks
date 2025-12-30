@@ -12,14 +12,12 @@ teardown() {
 }
 
 @test "ts_pass()" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/vitest_ts.sample" 'main.ts'
     cp "$BATS_TEST_DIRNAME/sample_vue/vitest_ts_test_pass.sample" 'main.test.ts'
     run run_ci_project 'vitest'
     [ "$status" -eq 0 ]
 }
 
 @test "ts_fail()" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/vitest_ts.sample" 'main.ts'
     cp "$BATS_TEST_DIRNAME/sample_vue/vitest_ts_test_fail.sample" 'main.test.ts'
     run run_ci_project 'vitest'
     [ "$status" -ne 0 ]

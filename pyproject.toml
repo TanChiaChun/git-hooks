@@ -10,5 +10,6 @@ dependencies = [
     "pylint",
     "pytest",
     "pytest-cov",
+    "pytest-mock",
     "ruff",
 ]

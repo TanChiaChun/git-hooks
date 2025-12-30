@@ -22,3 +22,15 @@ teardown() {
     run run_ci_project 'ruff_lint'
     [ "$status" -ne 0 ]
 }
+
+@test "lint_pt_pass()" {
+    cp "$BATS_TEST_DIRNAME/sample_python/ruff_lint_pt_pass.sample" 'test.py'
+    run run_ci_project 'ruff_lint'
+    [ "$status" -eq 0 ]
+}
+
+@test "lint_pt_fail()" {
+    cp "$BATS_TEST_DIRNAME/sample_python/ruff_lint_pt_fail.sample" 'test.py'
+    run run_ci_project 'ruff_lint'
+    [ "$status" -ne 0 ]
+}

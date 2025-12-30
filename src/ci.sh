@@ -369,7 +369,7 @@ run_ci_python() {
         if (is_django_project); then
             run_ci_python_test_django_django
         else
-            run_ci_python_test_unittest
+            run_ci_python_pytest
         fi
     else
         if (has_python_files); then
@@ -412,6 +412,10 @@ run_ci_python_ruff_lint_write() {
 run_ci_python_pylint() {
     run_ci_files 'pylint'
     run_ci_files 'pylint_test'
+}
+
+run_ci_python_pytest() {
+    run_ci_project 'pytest'
 }
 
 run_ci_python_test() {

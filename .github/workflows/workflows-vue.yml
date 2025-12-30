@@ -17,6 +17,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
+          cache: 'npm'
       - name: Get Node.js version
         run: node --version
       - name: Install Node.js dependencies

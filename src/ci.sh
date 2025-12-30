@@ -262,12 +262,18 @@ run_ci_project() {
                 is_error=1
             fi
             ;;
-        'pytest')
+        'pytest' | 'pytest_coverage')
             local config_path
             config_path="$(update_path 'config/pytest.toml')"
-            uv run --env-file ./.env \
-                pytest --config-file="$config_path" --rootdir=. \
-                --cov="$(get_pythonpath_value)"
+            if [[ "$choice" == 'pytest_coverage' ]]; then
+                uv run --env-file ./.env \
+                    pytest --config-file="$config_path" --rootdir=. \
+                    --cov="$(get_pythonpath_value)" --cov-report=term \
+                    --cov-report=html --cov-branch
+            else
+                uv run --env-file ./.env \
+                    pytest --config-file="$config_path" --rootdir=.
+            fi
             local exit_code=$?
             if ((exit_code == 5)); then
                 echo 'No tests were collected'
@@ -417,6 +423,10 @@ run_ci_python_pylint() {
 
 run_ci_python_pytest() {
     run_ci_project 'pytest'
+}
+
+run_ci_python_pytest_coverage() {
+    run_ci_project 'pytest_coverage'
 }
 
 run_ci_python_test_django() {

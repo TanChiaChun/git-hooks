@@ -1,0 +1,8 @@
+[pytest]
+addopts = [
+    "--import-mode=importlib",
+    "--cov-report=term",
+    "--cov-report=html",
+    "--cov-branch"
+]
+strict = true

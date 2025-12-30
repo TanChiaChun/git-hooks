@@ -11,15 +11,31 @@ teardown() {
     rm -r "$tmp_dir"
 }
 
-@test "ruff_lint_pass()" {
-    cp "$BATS_TEST_DIRNAME/sample_python/ruff_lint_pass.sample" 'test.py'
-    run run_ci_project 'ruff_lint'
+@test "pytest_empty()" {
+    cp "$BATS_TEST_DIRNAME/../.env" .
+    run run_ci_project 'pytest'
     [ "$status" -eq 0 ]
+    [[ "$output" == *'No tests were collected' ]]
 }
 
-@test "ruff_lint_fail()" {
-    cp "$BATS_TEST_DIRNAME/sample_python/ruff_lint_fail.sample" 'test.py'
-    run run_ci_project 'ruff_lint'
+@test "pytest_pass()" {
+    cp "$BATS_TEST_DIRNAME/../.env" .
+    mkdir 'src'
+    cp "$BATS_TEST_DIRNAME/sample_python/pytest_pass.sample" \
+        './src/test_sample.py'
+    run run_ci_project 'pytest'
+    local is_exist_index_html='false'
+    if [[ -f './htmlcov/index.html' ]]; then
+        is_exist_index_html='true'
+    fi
+    [ "$status" -eq 0 ]
+    [ "$is_exist_index_html" == 'true' ]
+}
+
+@test "pytest_fail()" {
+    cp "$BATS_TEST_DIRNAME/../.env" .
+    cp "$BATS_TEST_DIRNAME/sample_python/pytest_fail.sample" 'test_sample.py'
+    run run_ci_project 'pytest'
     [ "$status" -ne 0 ]
 }
 

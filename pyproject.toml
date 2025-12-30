@@ -4,9 +4,11 @@ version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
     "black",
-    "coverage",
     "isort",
     "mypy",
     "pylint",
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
     "ruff",
 ]

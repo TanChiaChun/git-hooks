@@ -5,3 +5,6 @@ line-length = 80
 extend = "../pyproject.toml"
 line-length = 80
 show-fixes = true
+
+[tool.ruff.lint]
+extend-select = ["PT"]

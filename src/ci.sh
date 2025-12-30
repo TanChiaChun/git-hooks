@@ -419,63 +419,6 @@ run_ci_python_pytest() {
     run_ci_project 'pytest'
 }
 
-run_ci_python_test() {
-    local choice="$1"
-
-    if [[ ! -d './tests' ]]; then
-        echo 'unittest tests directory not found'
-        return
-    fi
-
-    echo '##################################################'
-    echo "Running $choice"
-    echo '##################################################'
-
-    local script_path
-    script_path="$(update_path 'src/unittest_options.py')"
-    local options_raw
-    options_raw="$(python "$script_path")"
-    mapfile -t options <<<"${options_raw//$'\r'/}"
-
-    local is_error=0
-    case "$choice" in
-        'unittest')
-            if ! uv run --env-file './.env' \
-                python -m unittest "${options[@]}"; then
-                is_error=1
-            fi
-            ;;
-        'coverage_py')
-            local config_path
-            config_path="$(update_path 'config/.coveragerc')"
-            if uv run --env-file './.env' \
-                coverage run --rcfile="$config_path" \
-                -m unittest "${options[@]}"; then
-                uv run \
-                    coverage html
-            else
-                is_error=1
-            fi
-            ;;
-        *)
-            echo 'Invalid test choice'
-            return 1
-            ;;
-    esac
-
-    if [[ "$is_error" -eq 1 ]]; then
-        handle_ci_fail "$choice"
-    fi
-}
-
-run_ci_python_test_coverage_py() {
-    if (is_django_project); then
-        run_ci_python_test_django 'coverage_py'
-    else
-        run_ci_python_test 'coverage_py'
-    fi
-}
-
 run_ci_python_test_django() {
     local choice="$1"
 
@@ -531,10 +474,6 @@ run_ci_python_test_django() {
 
 run_ci_python_test_django_django() {
     run_ci_python_test_django 'django'
-}
-
-run_ci_python_test_unittest() {
-    run_ci_python_test 'unittest'
 }
 
 run_ci_vue() {

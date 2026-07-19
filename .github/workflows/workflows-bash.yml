@@ -98,7 +98,6 @@ jobs:
       - name: Install Bash (macOS)
         if: ${{ inputs.os == 'macos-latest' }}
         run: |
-          brew update
           brew install bash
       - name: Get Bash version
         run: bash --version

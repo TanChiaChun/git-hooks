@@ -185,29 +185,38 @@ run_ci_files() {
             fi
             ;;
         'pylint')
+            local name_value
+            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
             local config_path
             config_path="$(update_path 'config/pylintrc.toml')"
             for file in "${files[@]}"; do
-                if ! uv run --env-file './.env' \
+                if ! env "$name_value" \
+                    uv run \
                     pylint --rcfile "$config_path" "$file"; then
                     is_error=1
                 fi
             done
             ;;
         'pylint_test')
+            local name_value
+            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
             local config_path
             config_path="$(update_path 'config/pylintrc_test.toml')"
             for file in "${files[@]}"; do
-                if ! uv run --env-file './.env' \
+                if ! env "$name_value" \
+                    uv run \
                     pylint --rcfile "$config_path" "$file"; then
                     is_error=1
                 fi
             done
             ;;
         'mypy')
+            local name_value
+            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
             local config_path
             config_path="$(update_path 'config/mypy.ini')"
-            if ! uv run --env-file './.env' \
+            if ! env "$name_value" \
+                uv run \
                 mypy --config-file "$config_path" "${files[@]}"; then
                 is_error=1
             fi
@@ -263,15 +272,19 @@ run_ci_project() {
             fi
             ;;
         'pytest' | 'pytest_coverage')
+            local name_value
+            name_value="$(get_first_env_var './.env' 'PYTHONPATH')"
             local config_path
             config_path="$(update_path 'config/pytest.toml')"
             if [[ "$choice" == 'pytest_coverage' ]]; then
-                uv run --env-file ./.env \
+                env "$name_value" \
+                    uv run \
                     pytest --config-file="$config_path" --rootdir=. \
                     --cov="$(get_pythonpath_value)" --cov-report=term \
                     --cov-report=html --cov-branch
             else
-                uv run --env-file ./.env \
+                env "$name_value" \
+                    uv run \
                     pytest --config-file="$config_path" --rootdir=.
             fi
             local exit_code=$?

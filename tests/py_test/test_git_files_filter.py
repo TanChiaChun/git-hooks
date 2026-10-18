@@ -25,7 +25,6 @@ def files_fixture() -> list[Path]:
         Path("tests/py_test/test_git_files_filter.py"),
         Path("tests/test_bash.bats"),
         Path("tests/test_pre-commit.bats"),
-        Path("mysite/productivity/migrations/0001_initial.py"),
     ]
 
 
@@ -116,25 +115,12 @@ def test_is_bash_file_false_dir() -> None:
     assert not git_files_filter.is_bash_file(Path(""))
 
 
-@pytest.mark.parametrize(
-    ("file", "expected"),
-    [
-        ("mysite/productivity/migrations/0001_initial.py", True),
-        ("src/git_files_filter.py", False),
-        ("git_files_filter.py", False),
-    ],
-)
-def test_is_in_migrations_dir(file: str, expected: bool) -> None:
-    assert git_files_filter.is_in_migrations_dir(Path(file)) == expected
-
-
 class TestGetFileLanguage:
     @pytest.mark.parametrize(
         ("file", "expected"),
         [
             (Path("file.bats"), git_files_filter.Language.BASH_TEST),
             (Path("file.py"), git_files_filter.Language.PYTHON),
-            (Path("migrations", "file.py"), None),
             (Path("test", "file.py"), git_files_filter.Language.PYTHON_TEST),
             (Path("test_file.py"), git_files_filter.Language.PYTHON_TEST),
             (Path("file.sh"), git_files_filter.Language.BASH),

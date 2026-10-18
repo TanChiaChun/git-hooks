@@ -364,20 +364,12 @@ run_ci_markdown_write() {
 
 run_ci_python() {
     if [[ -d './.venv' ]]; then
-        if (is_django_project); then
-            set_django_env_var
-        fi
-
         run_ci_python_black
         run_ci_python_ruff_lint
         run_ci_python_pylint
         run_ci_python_mypy
         run_ci_python_isort
-        if (is_django_project); then
-            run_ci_python_test_django_django
-        else
-            run_ci_python_pytest
-        fi
+        run_ci_python_pytest
     else
         if (has_python_files); then
             echo 'python files found, but venv not created'
@@ -427,63 +419,6 @@ run_ci_python_pytest() {
 
 run_ci_python_pytest_coverage() {
     run_ci_project 'pytest_coverage'
-}
-
-run_ci_python_test_django() {
-    local choice="$1"
-
-    local test_name
-    case "$choice" in
-        'django')
-            test_name='Django test'
-            ;;
-        'coverage_py')
-            test_name='Django test - Coverage.py'
-            ;;
-        *)
-            echo 'Invalid django test choice'
-            return 1
-            ;;
-    esac
-
-    echo '##################################################'
-    echo "Running $test_name"
-    echo '##################################################'
-
-    local django_dir
-    django_dir="$(get_env_value \
-        "$(get_first_env_var './.env' 'MY_DJANGO_PROJECT')")"
-    cd "$django_dir" || return 1
-
-    local is_error=0
-    case "$choice" in
-        'django')
-            if ! uv run \
-                python ./manage.py test; then
-                is_error=1
-            fi
-            ;;
-        'coverage_py')
-            if uv run \
-                coverage run --rcfile="$(update_path 'config/.coveragerc')" \
-                --source='.' ./manage.py test; then
-                uv run \
-                    coverage html
-            else
-                is_error=1
-            fi
-            ;;
-    esac
-
-    cd "$OLDPWD" || exit 1
-
-    if [[ "$is_error" -eq 1 ]]; then
-        handle_ci_fail "$test_name"
-    fi
-}
-
-run_ci_python_test_django_django() {
-    run_ci_python_test_django 'django'
 }
 
 run_ci_vue() {

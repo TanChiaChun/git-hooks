@@ -180,9 +180,7 @@ class TestMain:
 
         git_files_filter.main()
 
-        assert capsys.readouterr().out == "\n".join(
-            ["src/bash.sh", "src/pre-commit", ""]
-        )
+        assert capsys.readouterr().out == "src/bash.sh\nsrc/pre-commit\n"
 
     def test_bats(
         self,

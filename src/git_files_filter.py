@@ -7,7 +7,6 @@ import subprocess
 import sys
 from enum import Enum, auto
 from pathlib import Path
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -24,12 +23,12 @@ class Language(Enum):
 class LanguageChoice(Enum):
     """Choice of Languages."""
 
-    BASH = [Language.BASH]
-    BASH_TEST = [Language.BASH_TEST]
-    BASH_BOTH = [Language.BASH, Language.BASH_TEST]
-    PYTHON = [Language.PYTHON]
-    PYTHON_TEST = [Language.PYTHON_TEST]
-    PYTHON_BOTH = [Language.PYTHON, Language.PYTHON_TEST]
+    BASH = (Language.BASH,)
+    BASH_TEST = (Language.BASH_TEST,)
+    BASH_BOTH = (Language.BASH, Language.BASH_TEST)
+    PYTHON = (Language.PYTHON,)
+    PYTHON_TEST = (Language.PYTHON_TEST,)
+    PYTHON_BOTH = (Language.PYTHON, Language.PYTHON_TEST)
 
 
 def filter_git_files(
@@ -53,7 +52,7 @@ def filter_git_files(
     ]
 
 
-def get_file_language(file: Path) -> Optional[Language]:
+def get_file_language(file: Path) -> Language | None:
     """Determine Language of file.
 
     Args:

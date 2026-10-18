@@ -1,4 +1,17 @@
 {
-  "semi": false,
-  "singleQuote": true
+  "overrides": [
+    {
+      "files": ["*.ts", "*.vue"],
+      "options": {
+        "semi": false,
+        "singleQuote": true
+      }
+    },
+    {
+      "files": "*.vue",
+      "options": {
+        "plugins": ["prettier-plugin-tailwindcss"]
+      }
+    }
+  ]
 }

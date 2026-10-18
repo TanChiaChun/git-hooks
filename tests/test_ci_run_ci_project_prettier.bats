@@ -38,8 +38,16 @@ teardown() {
     [ "$status" -eq 0 ]
 }
 
-@test "vue_fail()" {
-    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_vue_fail.sample" './src/App.vue'
+@test "vue_fail_semicolon()" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_vue_fail_semicolon.sample" \
+        './src/App.vue'
+    run run_ci_project 'prettier'
+    [ "$status" -ne 0 ]
+}
+
+@test "vue_fail_tailwind()" {
+    cp "$BATS_TEST_DIRNAME/sample_vue/prettier_vue_fail_tailwind.sample" \
+        './src/App.vue'
     run run_ci_project 'prettier'
     [ "$status" -ne 0 ]
 }

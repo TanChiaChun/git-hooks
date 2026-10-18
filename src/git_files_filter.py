@@ -75,7 +75,7 @@ def get_file_language(file: Path) -> Language | None:
                     "test"
                 ):
                     file_language = Language.PYTHON_TEST
-                elif not is_in_migrations_dir(file):
+                else:
                     file_language = Language.PYTHON
     else:
         if is_bash_file(file):
@@ -128,21 +128,6 @@ def is_bash_file(file: Path) -> bool:
         return "bash" in first_line
 
     return False
-
-
-def is_in_migrations_dir(file: Path) -> bool:
-    """Check if file is inside a 'migrations' directory.
-
-    E.g. Django generated migration file.
-
-    Args:
-        file:
-            File path.
-
-    Returns:
-        True if file inside 'migrations' directory, False if no.
-    """
-    return (len(file.parts) > 1) and (file.parts[-2] == "migrations")
 
 
 def main() -> None:

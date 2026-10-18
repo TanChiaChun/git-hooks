@@ -9,6 +9,7 @@
     "jiti": "*",
     "jsdom": "*",
     "prettier": "*",
+    "prettier-plugin-tailwindcss": "*",
     "typescript-eslint": "*",
     "vitest": ">=4.1.0",
     "vue": "*",

@@ -6,6 +6,12 @@
         "semi": false,
         "singleQuote": true
       }
+    },
+    {
+      "files": "*.vue",
+      "options": {
+        "plugins": ["prettier-plugin-tailwindcss"]
+      }
     }
   ]
 }

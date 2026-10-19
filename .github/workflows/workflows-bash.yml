@@ -13,9 +13,6 @@ jobs:
       CI_SCRIPT_PATH: ${{ inputs.submodules && './git-hooks/src/ci.sh' ||
         './src/ci.sh' }}
     steps:
-      - name: Set Git autocrlf (Windows)
-        if: ${{ inputs.os == 'windows-latest' }}
-        run: git config --global core.autocrlf input
       - name: Check out repository code
         uses: actions/checkout@v7
         with:

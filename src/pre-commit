@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # shellcheck source=/dev/null
-source "$HOME/.bashrc"
 source "${0%/*}/ci.sh"
 
 get_git_branch() {
@@ -17,9 +16,22 @@ reject_commit_main_branch() {
     fi
 }
 
+source_bashrc() {
+    if [[ -f "$HOME/.bashrc" ]]; then
+        # shellcheck source=/dev/null
+        source "$HOME/.bashrc"
+
+        echo 'Sourced bashrc'
+    else
+        echo 'bashrc not sourced'
+    fi
+}
+
 main() {
     set -o errexit
     set -o pipefail
+
+    source_bashrc
 
     reject_commit_main_branch "$(get_git_branch)"
 

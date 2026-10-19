@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# shellcheck source=/dev/null
-source "$HOME/.bashrc"
-source "${0%/*}/ci.sh"
-
 get_git_branch() {
     git branch --show-current
 }
@@ -17,9 +13,35 @@ reject_commit_main_branch() {
     fi
 }
 
+source_bashrc() {
+    if [[ -f "$HOME/.bashrc" ]]; then
+        # shellcheck source=/dev/null
+        source "$HOME/.bashrc"
+
+        echo 'Sourced bashrc'
+    else
+        echo 'bashrc not sourced'
+    fi
+}
+
+source_ci_sh() {
+    local sh_path="${0%/*}/ci.sh"
+
+    if [[ ! -f "$sh_path" ]]; then
+        echo "$sh_path not found"
+        exit 1
+    fi
+
+    # shellcheck source=/dev/null
+    source "$sh_path"
+}
+
 main() {
     set -o errexit
     set -o pipefail
+
+    source_bashrc
+    source_ci_sh
 
     reject_commit_main_branch "$(get_git_branch)"
 

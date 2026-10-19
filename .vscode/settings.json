@@ -1,11 +1,11 @@
 {
-    "files.associations": {
-        "*.bats": "shellscript"
-    },
-    "files.eol": "\n",
-    "python.testing.pytestEnabled": true,
-    "python.testing.pytestArgs": [
-        "--config-file=./config/pytest.toml",
-        "--rootdir=."
-    ]
+  "files.associations": {
+    "*.bats": "shellscript"
+  },
+  "files.eol": "\n",
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": [
+    "--config-file=./config/pytest.toml",
+    "--rootdir=."
+  ]
 }

@@ -11,7 +11,7 @@
     "prettier": "*",
     "prettier-plugin-tailwindcss": "*",
     "typescript-eslint": "*",
-    "vitest": ">=4.1.0",
+    "vitest": ">=4.1.11",
     "vue": "*",
     "vue-tsc": "*"
   }

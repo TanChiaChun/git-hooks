@@ -1,11 +1,6 @@
 {
   "gitignore": true,
-  "globs": [
-    "**/*.md"
-  ],
-  "ignores": [
-    "node_modules",
-    "git-hooks"
-  ],
-  "showFound": true
+  "globs": ["**/*.md"],
+  "ignores": ["node_modules", "git-hooks"],
+  "showFound": true,
 }

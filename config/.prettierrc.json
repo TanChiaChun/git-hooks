@@ -1,7 +1,7 @@
 {
   "overrides": [
     {
-      "files": ["*.ts", "*.vue"],
+      "files": ["*.ts", "*.mts", "*.vue"],
       "options": {
         "semi": false,
         "singleQuote": true

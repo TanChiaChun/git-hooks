@@ -1,58 +1,58 @@
 #!/usr/bin/env bash
 
 get_git_branch() {
-    git branch --show-current
+  git branch --show-current
 }
 
 reject_commit_main_branch() {
-    local current_branch="$1"
+  local current_branch="$1"
 
-    if [[ "$current_branch" == 'main' ]]; then
-        echo 'Cannot commit to main branch.'
-        exit 1
-    fi
+  if [[ "$current_branch" == 'main' ]]; then
+    echo 'Cannot commit to main branch.'
+    exit 1
+  fi
 }
 
 source_bashrc() {
-    if [[ -f "$HOME/.bashrc" ]]; then
-        # shellcheck source=/dev/null
-        source "$HOME/.bashrc"
+  if [[ -f "$HOME/.bashrc" ]]; then
+    # shellcheck source=/dev/null
+    source "$HOME/.bashrc"
 
-        echo 'Sourced bashrc'
-    else
-        echo 'bashrc not sourced'
-    fi
+    echo 'Sourced bashrc'
+  else
+    echo 'bashrc not sourced'
+  fi
 }
 
 source_ci_sh() {
-    local sh_path="${0%/*}/ci.sh"
+  local sh_path="${0%/*}/ci.sh"
 
-    if [[ ! -f "$sh_path" ]]; then
-        echo "$sh_path not found"
-        exit 1
-    fi
+  if [[ ! -f "$sh_path" ]]; then
+    echo "$sh_path not found"
+    exit 1
+  fi
 
-    # shellcheck source=/dev/null
-    source "$sh_path"
+  # shellcheck source=/dev/null
+  source "$sh_path"
 }
 
 main() {
-    set -o errexit
-    set -o pipefail
+  set -o errexit
+  set -o pipefail
 
-    source_bashrc
-    source_ci_sh
+  source_bashrc
+  source_ci_sh
 
-    reject_commit_main_branch "$(get_git_branch)"
+  reject_commit_main_branch "$(get_git_branch)"
 
-    run_ci_bash
-    run_ci_python
-    if [[ -f './tsconfig.json' ]]; then
-        run_ci_vue
-    fi
-    run_ci_markdown
+  run_ci_bash
+  run_ci_python
+  if [[ -f './tsconfig.json' ]]; then
+    run_ci_vue
+  fi
+  run_ci_markdown
 }
 
 if [[ "$0" != *"bats-core"* ]]; then
-    main
+  main
 fi

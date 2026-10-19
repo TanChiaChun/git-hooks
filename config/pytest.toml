@@ -1,15 +1,15 @@
 [pytest]
 addopts = ["--import-mode=importlib"]
 norecursedirs = [
-    "*.egg",
-    ".*",
-    "_darcs",
-    "build",
-    "CVS",
-    "dist",
-    "node_modules",
-    "venv",
-    "{arch}",
-    "git-hooks"
+  "*.egg",
+  ".*",
+  "_darcs",
+  "build",
+  "CVS",
+  "dist",
+  "node_modules",
+  "venv",
+  "{arch}",
+  "git-hooks"
 ]
 strict = true

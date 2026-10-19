@@ -7,5 +7,7 @@
   "python.testing.pytestArgs": [
     "--config-file=./config/pytest.toml",
     "--rootdir=."
-  ]
+  ],
+  "black-formatter.args": ["--config", "./config/pyproject.toml"],
+  "prettier.configPath": "./config/.prettierrc.json"
 }

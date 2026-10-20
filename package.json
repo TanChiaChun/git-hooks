@@ -1,5 +1,5 @@
 {
-  "dependencies": {
+  "devDependencies": {
     "@eslint/js": "*",
     "@vitejs/plugin-vue": "*",
     "@vitest/coverage-v8": "*",

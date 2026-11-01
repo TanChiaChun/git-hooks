@@ -1,5 +1,5 @@
 setup() {
-  load '../src/ci.sh'
+  load '../../src/ci.sh'
 
   export tmp_dir="$BATS_TMPDIR/tmpdir"
   mkdir "$tmp_dir"
@@ -28,8 +28,9 @@ EOF
 
 @test "bats_pass()" {
   mkdir 'tests'
+  mkdir 'tests/bash'
   cp "$BATS_TEST_DIRNAME/sample_bash/bats_pass.sample" \
-    './tests/test_ci.bats'
+    './tests/bash/test_ci.bats'
   run run_ci_dir 'bats'
   rm -r './tests'
   [ "$status" -eq 0 ]
@@ -37,8 +38,9 @@ EOF
 
 @test "bats_fail()" {
   mkdir 'tests'
+  mkdir 'tests/bash'
   cp "$BATS_TEST_DIRNAME/sample_bash/bats_fail.sample" \
-    './tests/test_ci.bats'
+    './tests/bash/test_ci.bats'
   run run_ci_dir 'bats'
   rm -r './tests'
   [ "$status" -ne 0 ]

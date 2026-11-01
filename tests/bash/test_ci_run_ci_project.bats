@@ -1,5 +1,5 @@
 setup() {
-  load '../src/ci.sh'
+  load '../../src/ci.sh'
 }
 
 @test "invalid_choice()" {

@@ -57,12 +57,12 @@ run_ci_dir() {
   local is_error=0
   case "$choice" in
     'bats')
-      if [[ ! -d './tests' ]]; then
+      if [[ ! -d './tests/bash' ]]; then
         echo 'bats tests directory not found'
         return
       fi
 
-      if ! bats --print-output-on-failure './tests'; then
+      if ! bats --print-output-on-failure './tests/bash'; then
         is_error=1
       fi
       ;;

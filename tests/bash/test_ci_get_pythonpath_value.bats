@@ -1,5 +1,5 @@
 setup() {
-  load '../src/ci.sh'
+  load '../../src/ci.sh'
 
   export env_file='./.env'
   cd "$BATS_TMPDIR" || exit 1

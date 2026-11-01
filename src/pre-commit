@@ -45,9 +45,9 @@ main() {
 
   reject_commit_main_branch "$(get_git_branch)"
 
-  run_ci_bash
-  run_ci_python
   run_ci_vue
+  run_ci_python
+  run_ci_bash
   run_ci_markdown
 }
 

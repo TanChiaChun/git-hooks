@@ -12,17 +12,14 @@ on:
         required: true
         type: boolean
         default: true
-        description: "Run Python"
       run_bash:
         required: true
         type: boolean
         default: true
-        description: "Run Bash"
       run_markdown:
         required: true
         type: boolean
         default: true
-        description: "Run Markdown"
 permissions:
   contents: read
 jobs:

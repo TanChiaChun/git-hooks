@@ -435,10 +435,19 @@ run_ci_python_pytest_coverage() {
 }
 
 run_ci_vue() {
-  run_ci_vue_tsc
-  run_ci_vue_prettier
-  run_ci_vue_eslint
-  run_ci_vue_vitest
+  if [[ -f './tsconfig.json' ]]; then
+    if [[ -d './node_modules' ]]; then
+      run_ci_vue_tsc
+      run_ci_vue_prettier
+      run_ci_vue_eslint
+      run_ci_vue_vitest
+    else
+      echo 'tsconfig.json found, but node_modules is missing'
+      return 1
+    fi
+  else
+    echo 'no tsconfig.json'
+  fi
 }
 
 run_ci_vue_eslint() {

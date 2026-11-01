@@ -435,10 +435,14 @@ run_ci_python_pytest_coverage() {
 }
 
 run_ci_vue() {
-  run_ci_vue_tsc
-  run_ci_vue_prettier
-  run_ci_vue_eslint
-  run_ci_vue_vitest
+  if [[ -f './tsconfig.json' ]]; then
+    run_ci_vue_tsc
+    run_ci_vue_prettier
+    run_ci_vue_eslint
+    run_ci_vue_vitest
+  else
+    echo 'no tsconfig.json'
+  fi
 }
 
 run_ci_vue_eslint() {

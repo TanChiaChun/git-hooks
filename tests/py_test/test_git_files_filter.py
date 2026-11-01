@@ -23,8 +23,8 @@ def files_fixture() -> list[Path]:
         Path("src/pre-commit"),
         Path("tests/py_test/__init__.py"),
         Path("tests/py_test/test_git_files_filter.py"),
-        Path("tests/test_bash.bats"),
-        Path("tests/test_pre-commit.bats"),
+        Path("tests/bash/test_bash.bats"),
+        Path("tests/bash/test_pre-commit.bats"),
     ]
 
 

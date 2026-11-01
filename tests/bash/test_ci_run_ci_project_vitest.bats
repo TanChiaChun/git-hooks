@@ -1,5 +1,5 @@
 setup() {
-  load '../src/ci.sh'
+  load '../../src/ci.sh'
 
   export tmp_dir="$BATS_TEST_DIRNAME/tmpdir"
   mkdir "$tmp_dir"

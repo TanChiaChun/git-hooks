@@ -1,5 +1,5 @@
 setup() {
-  load '../src/py.sh'
+  load '../../src/py.sh'
 }
 
 @test "get_venv_bin_path_custom_dir()" {

@@ -1,5 +1,5 @@
 setup() {
-  load '../src/helper.sh'
+  load '../../src/helper.sh'
 }
 
 @test "get_env_value()" {

@@ -1,11 +1,11 @@
 # Python
-.venv/
+.venv
 **/*.pyc
-.ruff_cache/
-.mypy_cache/
-.pytest_cache/
+.ruff_cache
+.mypy_cache
+.pytest_cache
 .coverage
-htmlcov/
+htmlcov
 
 # Node.js
-node_modules/
+node_modules

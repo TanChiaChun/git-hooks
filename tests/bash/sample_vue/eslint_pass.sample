@@ -1,5 +1,9 @@
-import path from "node:path"
 import { statSync } from "node:fs"
+import path from "node:path"
+
+export interface FileMetadata {
+  name: string
+}
 
 function square(n: number): number {
   return n * n

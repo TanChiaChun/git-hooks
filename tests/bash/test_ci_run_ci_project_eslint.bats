@@ -32,3 +32,10 @@ teardown() {
   run run_ci_project 'eslint'
   [ "$status" -ne 0 ]
 }
+
+@test "fail_module_sort()" {
+  cp "$BATS_TEST_DIRNAME/sample_vue/eslint.config.sample" 'eslint.config.mts'
+  cp "$BATS_TEST_DIRNAME/sample_vue/eslint_fail_module_sort.sample" 'main.ts'
+  run run_ci_project 'eslint'
+  [ "$status" -ne 0 ]
+}

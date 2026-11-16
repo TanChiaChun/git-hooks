@@ -1,8 +1,11 @@
 import perfectionist from 'eslint-plugin-perfectionist'
-import { defineConfig } from 'eslint/config'
+import { defineConfig, globalIgnores } from 'eslint/config'
 import tseslint from 'typescript-eslint'
 
 export default defineConfig([
+  // ESLint ignores node_modules and .git by default.
+  globalIgnores(['.venv', 'git-hooks/']),
+
   tseslint.configs.recommended,
   perfectionist.configs['recommended-alphabetical'],
   {

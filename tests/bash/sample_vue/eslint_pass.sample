@@ -1,5 +1,5 @@
-import path from "node:path"
 import { statSync } from "node:fs"
+import path from "node:path"
 
 function square(n: number): number {
   return n * n

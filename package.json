@@ -6,6 +6,7 @@
     "@vue/test-utils": "*",
     "@vue/tsconfig": "*",
     "eslint": "*",
+    "eslint-plugin-perfectionist": "*",
     "jiti": "*",
     "jsdom": "*",
     "prettier": "*",

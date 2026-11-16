@@ -1,11 +1,12 @@
-import baseConfig from "../../../config/eslint.base.mts";
-import { defineConfig } from "eslint/config";
 import js from "@eslint/js";
+import { defineConfig } from "eslint/config";
+
+import baseConfig from "../../../config/eslint.base.mts";
 
 export default defineConfig([
   baseConfig,
   {
-    plugins: { js },
     extends: ["js/recommended"],
+    plugins: { js },
   },
 ]);
